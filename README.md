@@ -1,17 +1,21 @@
-Go to board_backend folder in cmd. The manage.py file should be inside this folder. 
-From cmd, type: python manage.py runserver
-This will start the server and generate a link like this:
+# Setting up:
+All of these interactions occur on the command terminal.  
+After cloning the repository, go (cd) into the event_management folder and run the following command:  
+`pip install -r requirements.txt`  
+This will download all necessary dependencies.  
+  
+# Running the server
+In the events_management folder where "manage.py" is located, run the following command:  
+`python manage.py runserver`  
+This will start the backend locally and a link to it will be provided. Information regarding the endpoints is in the document.  
+  
+# Admin management  
+Go to http://127.0.0.1:8000/admin/ to access the admin panel. The credentials are:  
+**Email: admin@admin.com**  
+**Password: admin**  
+From the admin panel, you can interact with the database and make any changes you want. This is also from where we will turn viewers into handlers
 
-![image](https://github.com/user-attachments/assets/c141bcdd-50fe-415c-b0d6-6c975e98003d)
+# Mockup Website  
+FYI, I used AI to make a mockup website that demonstrtes the basic usage of the endpoints and token storage. It's all in a single index.html located in the root. Feed the file into any AI and it should be able to help explain whatever is happening.
+Information regarding authentication and the endpoints is in the word document located at the root.
 
-All the endpoints like /api/ will come after the link that is generated: http://127.0.0.1:8000/
-
-So, for example, to get all events, we would send a GET request on http://127.0.0.1:8000/api/events/
-
-To access the admin panel, go to http://127.0.0.1:8000/admin/
-The credentials are:
-
-Username: admin  
-Password: 123456
-
-This is the superuser view and from this view, we can make specific users handlers
