@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management API Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            overflow: auto;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event Management API Demo</h1>
+    <p>This demo showcases all endpoints of the Event Management API</p>
+    
+    <!-- Storage for tokens -->
+    <div id="tokens" class="hidden">
+        <p>Access Token: <span id="accessToken">None</span></p>
+        <p>Refresh Token: <span id="refreshToken">None</span></p>
+    </div>
+
+    <!-- Auth Status -->
+    <div>
+        <h3>Authentication Status: <span id="authStatus">Not Authenticated</span></h3>
+        <p>Current User: <span id="currentUser">None</span></p>
+        <p>User Type: <span id="userType">None</span></p>
+    </div>
+
+    <!-- Registration Section -->
+    <section>
+        <h2>Register New User</h2>
+        <form id="registerForm">
+            <div>
+                <label for="regUsername">Username:</label>
+                <input type="text" id="regUsername" required>
+            </div>
+            <div>
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" required>
+            </div>
+            <div>
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" required>
+            </div>
+            <div>
+                <label for="regPassword2">Confirm Password:</label>
+                <input type="password" id="regPassword2" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <pre id="registerResult"></pre>
+    </section>
+
+    <!-- Login Section -->
+    <section>
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div>
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <pre id="loginResult"></pre>
+    </section>
+
+    <!-- Token Management -->
+    <section>
+        <h2>Token Management</h2>
+        <button id="refreshTokenBtn">Refresh Access Token</button>
+        <button id="logoutBtn">Logout</button>
+        <pre id="tokenResult"></pre>
+    </section>
+
+    <!-- User Management -->
+    <section>
+        <h2>User Management</h2>
+        <button id="getCurrentUserBtn">Get Current User Details</button>
+        <button id="getCurrentUserFieldsBtn">Get Specific User Fields (username, email)</button>
+        <button id="getAllUsersBtn">Get All Users (Admin Only)</button>
+        <button id="deleteAccountBtn">Delete My Account</button>
+        <pre id="userResult"></pre>
+    </section>
+
+    <!-- Event List -->
+    <section>
+        <h2>Event List</h2>
+        <div>
+            <button id="getAllEventsBtn">Get All Events</button>
+            <button id="getMyEventsBtn">Get My Events</button>
+            <input type="text" id="eventSearchInput" placeholder="Search events...">
+            <button id="searchEventsBtn">Search</button>
+        </div>
+        <div id="eventListContainer"></div>
+    </section>
+
+    <!-- Create Event -->
+    <section>
+        <h2>Create Event (Handlers Only)</h2>
+        <form id="createEventForm">
+            <div>
+                <label for="eventName">Event Name:</label>
+                <input type="text" id="eventName" required>
+            </div>
+            <div>
+                <label for="eventDate">Date:</label>
+                <input type="date" id="eventDate" required>
+            </div>
+            <div>
+                <label for="eventStartTime">Start Time:</label>
+                <input type="time" id="eventStartTime" required>
+            </div>
+            <div>
+                <label for="eventEndTime">End Time:</label>
+                <input type="time" id="eventEndTime" required>
+            </div>
+            <div>
+                <label for="eventLocation">Location:</label>
+                <input type="text" id="eventLocation" required>
+            </div>
+            <div>
+                <label for="eventDescription">Description:</label>
+                <textarea id="eventDescription" required></textarea>
+            </div>
+            <div>
+                <!-- For image upload -->
+                <label for="eventBanner">Banner Image:</label>
+                <input type="file" id="eventBanner" accept="image/*">
+            </div>
+            <button type="submit">Create Event</button>
+        </form>
+        <pre id="createEventResult"></pre>
+    </section>
+
+    <!-- Event Details -->
+    <section>
+        <h2>Event Details</h2>
+        <div>
+            <label for="eventId">Event ID:</label>
+            <input type="number" id="eventId">
+            <button id="getEventBtn">Get Event Details</button>
+            <button id="getEventFieldsBtn">Get Specific Fields (name, date, location)</button>
+        </div>
+        <div id="eventDetails"></div>
+    </section>
+
+    <!-- Update Event -->
+    <section>
+        <h2>Update Event (Event Host Only)</h2>
+        <form id="updateEventForm">
+            <div>
+                <label for="updateEventId">Event ID:</label>
+                <input type="number" id="updateEventId" required>
+            </div>
+            <div>
+                <label for="updateEventName">New Name:</label>
+                <input type="text" id="updateEventName">
+            </div>
+            <div>
+                <label for="updateEventDescription">New Description:</label>
+                <textarea id="updateEventDescription"></textarea>
+            </div>
+            <div>
+                <label for="updateEventLocation">New Location:</label>
+                <input type="text" id="updateEventLocation">
+            </div>
+            <div>
+                <label for="updateEventBanner">New Banner Image:</label>
+                <input type="file" id="updateEventBanner" accept="image/*">
+            </div>
+            <button type="submit">Update Event</button>
+        </form>
+        <pre id="updateEventResult"></pre>
+    </section>
+
+    <!-- Delete Event -->
+    <section>
+        <h2>Delete Event (Event Host Only)</h2>
+        <div>
+            <label for="deleteEventId">Event ID:</label>
+            <input type="number" id="deleteEventId" required>
+            <button id="deleteEventBtn">Delete Event</button>
+        </div>
+        <pre id="deleteEventResult"></pre>
+    </section>
+
+    <script>
+        // Base URL for API requests
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+        // Store tokens in memory (in a real app, use more secure storage)
+        let accessToken = '';
+        let refreshToken = '';
+        let currentUser = null;
+
+        // Check if we have tokens stored in localStorage
+        function loadStoredAuth() {
+            accessToken = localStorage.getItem('accessToken') || '';
+            refreshToken = localStorage.getItem('refreshToken') || '';
+            
+            if (accessToken) {
+                document.getElementById('accessToken').textContent = accessToken;
+                document.getElementById('refreshToken').textContent = refreshToken;
+                document.getElementById('authStatus').textContent = 'Authenticated';
+                
+                // Get current user info
+                fetchCurrentUser();
+            }
+        }
+
+        // Store tokens in localStorage
+        function storeTokens(tokens) {
+            accessToken = tokens.access;
+            refreshToken = tokens.refresh;
+            
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            
+            document.getElementById('accessToken').textContent = accessToken;
+            document.getElementById('refreshToken').textContent = refreshToken;
+            document.getElementById('authStatus').textContent = 'Authenticated';
+        }
+
+        // Clear tokens from localStorage
+        function clearTokens() {
+            accessToken = '';
+            refreshToken = '';
+            currentUser = null;
+            
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            
+            document.getElementById('accessToken').textContent = 'None';
+            document.getElementById('refreshToken').textContent = 'None';
+            document.getElementById('authStatus').textContent = 'Not Authenticated';
+            document.getElementById('currentUser').textContent = 'None';
+            document.getElementById('userType').textContent = 'None';
+        }
+
+        // Helper function for API requests
+        async function apiRequest(endpoint, method = 'GET', data = null, isFormData = false) {
+            const url = `${API_BASE_URL}${endpoint}`;
+            const headers = {};
+            
+            if (accessToken) {
+                headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+            
+            // Don't set Content-Type for FormData (browser will set it with boundary)
+            if (data && !isFormData) {
+                headers['Content-Type'] = 'application/json';
+            }
+            
+            const options = {
+                method,
+                headers,
+                // Don't stringify FormData objects
+                body: data ? (isFormData ? data : JSON.stringify(data)) : null
+            };
+            
+            try {
+                const response = await fetch(url, options);
+                
+                // For 204 No Content responses
+                if (response.status === 204 || response.status === 205) {
+                    return { status: response.status, statusText: response.statusText };
+                }
+                
+                // Try to parse response as JSON, but handle non-JSON responses
+                let responseData;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    responseData = await response.json();
+                } else {
+                    responseData = await response.text();
+                }
+                
+                if (!response.ok) {
+                    throw new Error(JSON.stringify(responseData));
+                }
+                
+                return responseData;
+            } catch (error) {
+                console.error('API Request Error:', error);
+                throw error;
+            }
+        }
+
+        // Function to fetch current user info
+        async function fetchCurrentUser() {
+            try {
+                const user = await apiRequest('/users/me/');
+                currentUser = user;
+                document.getElementById('currentUser').textContent = user.username;
+                document.getElementById('userType').textContent = user.user_type;
+                return user;
+            } catch (error) {
+                console.error('Error fetching current user:', error);
+                document.getElementById('currentUser').textContent = 'Error fetching user';
+                return null;
+            }
+        }
+
+        // Format JSON for display
+        function formatJSON(obj) {
+            return JSON.stringify(obj, null, 2);
+        }
+
+        // Create an HTML table from event data
+        function createEventTable(events) {
+            if (!Array.isArray(events)) {
+                events = [events]; // Convert single event to array
+            }
+            
+            const table = document.createElement('table');
+            
+            // Create header row
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headers = ['ID', 'Name', 'Date', 'Time', 'Location', 'Host', 'Actions'];
+            
+            headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            
+            // Create body rows
+            const tbody = document.createElement('tbody');
+            
+            events.forEach(event => {
+                const row = document.createElement('tr');
+                
+                // ID
+                const idCell = document.createElement('td');
+                idCell.textContent = event.id;
+                row.appendChild(idCell);
+                
+                // Name
+                const nameCell = document.createElement('td');
+                nameCell.textContent = event.name;
+                row.appendChild(nameCell);
+                
+                // Date
+                const dateCell = document.createElement('td');
+                dateCell.textContent = event.date;
+                row.appendChild(dateCell);
+                
+                // Time
+                const timeCell = document.createElement('td');
+                timeCell.textContent = `${event.start_time} - ${event.end_time}`;
+                row.appendChild(timeCell);
+                
+                // Location
+                const locCell = document.createElement('td');
+                locCell.textContent = event.location;
+                row.appendChild(locCell);
+                
+                // Host
+                const hostCell = document.createElement('td');
+                hostCell.textContent = event.host_username;
+                row.appendChild(hostCell);
+                
+                // Actions
+                const actionsCell = document.createElement('td');
+                
+                const viewBtn = document.createElement('button');
+                viewBtn.textContent = 'View';
+                viewBtn.onclick = () => {
+                    document.getElementById('eventId').value = event.id;
+                    document.getElementById('getEventBtn').click();
+                };
+                actionsCell.appendChild(viewBtn);
+                
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => {
+                    document.getElementById('updateEventId').value = event.id;
+                    document.getElementById('updateEventName').value = event.name;
+                    document.getElementById('updateEventDescription').value = event.description;
+                    document.getElementById('updateEventLocation').value = event.location;
+                };
+                actionsCell.appendChild(editBtn);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => {
+                    document.getElementById('deleteEventId').value = event.id;
+                };
+                actionsCell.appendChild(deleteBtn);
+                
+                row.appendChild(actionsCell);
+                tbody.appendChild(row);
+            });
+            
+            table.appendChild(tbody);
+            return table;
+        }
+
+        // Display event details
+        function displayEventDetails(event) {
+            const container = document.getElementById('eventDetails');
+            container.innerHTML = '';
+            
+            // Create details div
+            const details = document.createElement('div');
+            
+            // Add banner image if exists
+            if (event.banner) {
+                const img = document.createElement('img');
+                img.src = event.banner;
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                details.appendChild(img);
+            }
+            
+            // Create a details list
+            const fields = [
+                { label: 'Name', value: event.name },
+                { label: 'Host', value: event.host_username },
+                { label: 'Date', value: event.date },
+                { label: 'Time', value: `${event.start_time} - ${event.end_time}` },
+                { label: 'Location', value: event.location },
+                { label: 'Description', value: event.description },
+                { label: 'Created', value: event.created_at },
+                { label: 'Updated', value: event.updated_at }
+            ];
+            
+            fields.forEach(field => {
+                const p = document.createElement('p');
+                p.innerHTML = `<strong>${field.label}:</strong> ${field.value}`;
+                details.appendChild(p);
+            });
+            
+            container.appendChild(details);
+        }
+
+        // Add event listeners once the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load any stored auth tokens
+            loadStoredAuth();
+            
+            // Register form submission
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const resultDiv = document.getElementById('registerResult');
+                
+                try {
+                    const data = {
+                        username: document.getElementById('regUsername').value,
+                        email: document.getElementById('regEmail').value,
+                        password: document.getElementById('regPassword').value,
+                        password2: document.getElementById('regPassword2').value
+                    };
+                    
+                    const result = await apiRequest('/users/register/', 'POST', data);
+                    resultDiv.textContent = formatJSON(result);
+                    
+                    // Pre-fill login form
+                    document.getElementById('loginEmail').value = data.email;
+                    document.getElementById('loginPassword').value = data.password;
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Login form submission
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const resultDiv = document.getElementById('loginResult');
+                
+                try {
+                    const data = {
+                        email: document.getElementById('loginEmail').value,
+                        password: document.getElementById('loginPassword').value
+                    };
+                    
+                    const result = await apiRequest('/users/login/', 'POST', data);
+                    resultDiv.textContent = formatJSON(result);
+                    
+                    // Store tokens
+                    storeTokens(result);
+                    
+                    // Get current user info
+                    await fetchCurrentUser();
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Refresh token
+            document.getElementById('refreshTokenBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('tokenResult');
+                
+                try {
+                    const data = {
+                        refresh: refreshToken
+                    };
+                    
+                    const result = await apiRequest('/users/token/refresh/', 'POST', data);
+                    resultDiv.textContent = formatJSON(result);
+                    
+                    // Update access token
+                    accessToken = result.access;
+                    localStorage.setItem('accessToken', accessToken);
+                    document.getElementById('accessToken').textContent = accessToken;
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('tokenResult');
+                
+                try {
+                    const data = {
+                        refresh: refreshToken
+                    };
+                    
+                    const result = await apiRequest('/users/logout/', 'POST', data);
+                    resultDiv.textContent = `Logout successful. Status: ${result.status} ${result.statusText}`;
+                    
+                    // Clear tokens
+                    clearTokens();
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get current user
+            document.getElementById('getCurrentUserBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('userResult');
+                
+                try {
+                    const result = await apiRequest('/users/me/');
+                    resultDiv.textContent = formatJSON(result);
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get specific user fields
+            document.getElementById('getCurrentUserFieldsBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('userResult');
+                
+                try {
+                    // Using the query parameter approach
+                    const result = await apiRequest('/users/me/?fields=username,email');
+                    resultDiv.textContent = formatJSON(result);
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get all users (admin only)
+            document.getElementById('getAllUsersBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('userResult');
+                
+                try {
+                    const result = await apiRequest('/users/');
+                    resultDiv.textContent = formatJSON(result);
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Delete account
+            document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('userResult');
+                
+                if (!confirm('Are you sure you want to delete your account? This cannot be undone!')) {
+                    return;
+                }
+                
+                try {
+                    const result = await apiRequest('/users/delete/', 'DELETE');
+                    resultDiv.textContent = 'Account deleted successfully';
+                    
+                    // Clear tokens
+                    clearTokens();
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get all events
+            document.getElementById('getAllEventsBtn').addEventListener('click', async () => {
+                const container = document.getElementById('eventListContainer');
+                
+                try {
+                    const events = await apiRequest('/events/');
+                    container.innerHTML = '';
+                    
+                    if (events.length === 0) {
+                        container.textContent = 'No events found';
+                    } else {
+                        const table = createEventTable(events);
+                        container.appendChild(table);
+                    }
+                } catch (error) {
+                    container.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get my events
+            document.getElementById('getMyEventsBtn').addEventListener('click', async () => {
+                const container = document.getElementById('eventListContainer');
+                
+                try {
+                    const events = await apiRequest('/events/my-events/');
+                    container.innerHTML = '';
+                    
+                    if (events.length === 0) {
+                        container.textContent = 'You have not created any events';
+                    } else {
+                        const table = createEventTable(events);
+                        container.appendChild(table);
+                    }
+                } catch (error) {
+                    container.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Search events
+            document.getElementById('searchEventsBtn').addEventListener('click', async () => {
+                const container = document.getElementById('eventListContainer');
+                const searchTerm = document.getElementById('eventSearchInput').value;
+                
+                try {
+                    const events = await apiRequest(`/events/?search=${encodeURIComponent(searchTerm)}`);
+                    container.innerHTML = '';
+                    
+                    if (events.length === 0) {
+                        container.textContent = 'No events found matching your search';
+                    } else {
+                        const table = createEventTable(events);
+                        container.appendChild(table);
+                    }
+                } catch (error) {
+                    container.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Create event form
+            document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const resultDiv = document.getElementById('createEventResult');
+                
+                try {
+                    // Using FormData for handling file uploads
+                    const formData = new FormData();
+                    formData.append('name', document.getElementById('eventName').value);
+                    formData.append('date', document.getElementById('eventDate').value);
+                    formData.append('start_time', document.getElementById('eventStartTime').value);
+                    formData.append('end_time', document.getElementById('eventEndTime').value);
+                    formData.append('location', document.getElementById('eventLocation').value);
+                    formData.append('description', document.getElementById('eventDescription').value);
+                    
+                    // Only append banner if a file is selected
+                    const bannerInput = document.getElementById('eventBanner');
+                    if (bannerInput.files.length > 0) {
+                        formData.append('banner', bannerInput.files[0]);
+                    }
+                    
+                    // Use FormData instead of JSON
+                    const result = await apiRequest('/events/', 'POST', formData, true);
+                    resultDiv.textContent = formatJSON(result);
+                    
+                    // Clear form
+                    document.getElementById('createEventForm').reset();
+                    
+                    // Refresh event list
+                    document.getElementById('getAllEventsBtn').click();
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get event details
+            document.getElementById('getEventBtn').addEventListener('click', async () => {
+                const eventId = document.getElementById('eventId').value;
+                if (!eventId) {
+                    alert('Please enter an Event ID');
+                    return;
+                }
+                
+                try {
+                    const event = await apiRequest(`/events/${eventId}/`);
+                    displayEventDetails(event);
+                } catch (error) {
+                    document.getElementById('eventDetails').textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Get specific event fields
+            document.getElementById('getEventFieldsBtn').addEventListener('click', async () => {
+                const eventId = document.getElementById('eventId').value;
+                if (!eventId) {
+                    alert('Please enter an Event ID');
+                    return;
+                }
+                
+                try {
+                    const event = await apiRequest(`/events/${eventId}/?fields=name,date,location`);
+                    document.getElementById('eventDetails').textContent = formatJSON(event);
+                } catch (error) {
+                    document.getElementById('eventDetails').textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Update event form
+            document.getElementById('updateEventForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const resultDiv = document.getElementById('updateEventResult');
+                const eventId = document.getElementById('updateEventId').value;
+                
+                if (!eventId) {
+                    alert('Please enter an Event ID');
+                    return;
+                }
+                
+                try {
+                    // Using FormData for handling file uploads in updates
+                    const formData = new FormData();
+                    
+                    // Only append fields that have values
+                    const name = document.getElementById('updateEventName').value;
+                    if (name) formData.append('name', name);
+                    
+                    const description = document.getElementById('updateEventDescription').value;
+                    if (description) formData.append('description', description);
+                    
+                    const location = document.getElementById('updateEventLocation').value;
+                    if (location) formData.append('location', location);
+                    
+                    // Only append banner if a file is selected
+                    const bannerInput = document.getElementById('updateEventBanner');
+                    if (bannerInput.files.length > 0) {
+                        formData.append('banner', bannerInput.files[0]);
+                    }
+                    
+                    // Use PATCH for partial updates with FormData
+                    const result = await apiRequest(`/events/${eventId}/`, 'PATCH', formData, true);
+                    resultDiv.textContent = formatJSON(result);
+                    
+                    // Clear form
+                    document.getElementById('updateEventForm').reset();
+                    
+                    // Refresh event list
+                    document.getElementById('getAllEventsBtn').click();
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+            
+            // Delete event
+            document.getElementById('deleteEventBtn').addEventListener('click', async () => {
+                const resultDiv = document.getElementById('deleteEventResult');
+                const eventId = document.getElementById('deleteEventId').value;
+                
+                if (!eventId) {
+                    alert('Please enter an Event ID');
+                    return;
+                }
+                
+                if (!confirm(`Are you sure you want to delete event #${eventId}? This cannot be undone!`)) {
+                    return;
+                }
+                
+                try {
+                    const result = await apiRequest(`/events/${eventId}/`, 'DELETE');
+                    resultDiv.textContent = `Event #${eventId} deleted successfully`;
+                    
+                    // Refresh event list
+                    document.getElementById('getAllEventsBtn').click();
+                } catch (error) {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
