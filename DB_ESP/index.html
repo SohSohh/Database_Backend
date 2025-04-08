@@ -127,6 +127,15 @@
         </div>
         <div id="eventListContainer"></div>
     </section>
+	
+		<!-- User's Attending Events Section -->
+	<section>
+		<h2>My Attending Events</h2>
+		<div>
+			<button id="getAttendingEventsBtn">Get Events I'm Attending</button>
+		</div>
+		<div id="attendingEventsContainer"></div>
+	</section>
 
     <!-- Create Event -->
     <section>
@@ -468,6 +477,26 @@
                 p.innerHTML = `<strong>${field.label}:</strong> ${field.value}`;
                 details.appendChild(p);
             });
+						// Add attendance action buttons
+			const attendanceDiv = document.createElement('div');
+			attendanceDiv.style.marginTop = '10px';
+
+			const attendBtn = document.createElement('button');
+			attendBtn.textContent = event.is_attending ? 'Unattend Event' : 'Attend Event';
+			attendBtn.onclick = async () => {
+				try {
+					const action = event.is_attending ? 'unattend' : 'attend';
+					const result = await apiRequest(`/events/${event.id}/attendance/`, 'POST', { action });
+					alert(result.detail);
+					// Refresh event details to update attendance status
+					document.getElementById('getEventBtn').click();
+				} catch (error) {
+					alert(`Error: ${error.message}`);
+				}
+			};
+
+			attendanceDiv.appendChild(attendBtn);
+			details.appendChild(attendanceDiv);
             
             container.appendChild(details);
         }
@@ -658,6 +687,24 @@
                     container.textContent = `Error: ${error.message}`;
                 }
             });
+			// Get events user is attending
+			document.getElementById('getAttendingEventsBtn').addEventListener('click', async () => {
+				const container = document.getElementById('attendingEventsContainer');
+				
+				try {
+					const events = await apiRequest('/events/attending/');
+					container.innerHTML = '';
+					
+					if (events.length === 0) {
+						container.textContent = 'You are not attending any events';
+					} else {
+						const table = createEventTable(events);
+						container.appendChild(table);
+					}
+				} catch (error) {
+					container.textContent = `Error: ${error.message}`;
+				}
+			});
             
             // Search events
             document.getElementById('searchEventsBtn').addEventListener('click', async () => {

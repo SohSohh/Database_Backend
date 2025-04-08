@@ -1,5 +1,7 @@
+# events/models.py
 from django.db import models
 from django.conf import settings
+
 
 class Event(models.Model):
     """Event model representing an event in the system"""
@@ -10,6 +12,12 @@ class Event(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='hosted_events'
+    )
+    # Add many-to-many relationship for attendees
+    attendees = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='attending_events',
+        blank=True
     )
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -22,6 +30,11 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{self.name} on {self.date}"
+
+    @property
+    def attendee_count(self):
+        """Return the count of attendees"""
+        return self.attendees.count()
 
     class Meta:
         ordering = ['date', 'start_time']

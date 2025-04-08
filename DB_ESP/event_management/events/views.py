@@ -56,3 +56,76 @@ class HandlerEventListView(generics.ListAPIView):
         """Get only events created by the current user"""
         user = self.request.user
         return Event.objects.filter(host=user)
+
+
+# events/views.py (rewritten with more generics)
+from rest_framework import generics, filters, permissions, status
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Event
+from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, AttendeeSerializer
+from .permissions import IsHandlerOrReadOnly, IsEventHost
+
+
+# Keep existing views (EventListView, EventDetailView, HandlerEventListView)
+
+# Rewritten with generics for attendance management
+class EventAttendanceView(generics.GenericAPIView):
+    """
+    Manage event attendance.
+    - POST: Attend or unattend an event
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AttendeeSerializer
+    queryset = Event.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        """Handle attendance actions"""
+        event = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            action = serializer.validated_data['action']
+            user = request.user
+
+            if action == 'attend':
+                # Add user to attendees if not already attending
+                if not event.attendees.filter(id=user.id).exists():
+                    event.attendees.add(user)
+                    return Response(
+                        {"detail": "You are now attending this event", "attendee_count": event.attendee_count},
+                        status=status.HTTP_200_OK
+                    )
+                return Response(
+                    {"detail": "You are already attending this event", "attendee_count": event.attendee_count},
+                    status=status.HTTP_200_OK
+                )
+
+            elif action == 'unattend':
+                # Remove user from attendees if attending
+                if event.attendees.filter(id=user.id).exists():
+                    event.attendees.remove(user)
+                    return Response(
+                        {"detail": "You are no longer attending this event", "attendee_count": event.attendee_count},
+                        status=status.HTTP_200_OK
+                    )
+                return Response(
+                    {"detail": "You are not attending this event", "attendee_count": event.attendee_count},
+                    status=status.HTTP_200_OK
+                )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserAttendingEventsView(generics.ListAPIView):
+    """List all events the current user is attending"""
+    serializer_class = EventSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['date', 'location']
+    search_fields = ['name', 'description', 'location']
+    ordering_fields = ['date', 'start_time', 'name']
+
+    def get_queryset(self):
+        """Get only events the current user is attending"""
+        return self.request.user.attending_events.all()
