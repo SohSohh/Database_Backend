@@ -6,8 +6,7 @@ from .views import (
     UserLogoutView,
     UserDeleteView,
     UserListView,
-    UserDetailView,
-    CurrentUserView
+    UserDetailView
 )
 
 urlpatterns = [
@@ -20,7 +19,5 @@ urlpatterns = [
 
     # User information endpoints
     path('', UserListView.as_view(), name='user_list'),  # Admin only
-    path('me/', CurrentUserView.as_view(), name='current_user'),
     path('<int:pk>/', UserDetailView.as_view(), name='user_detail'),
-    path('me/<str:fields>/', CurrentUserView.as_view(), name='current_user_fields'),  # Alternate way to specify fields
 ]
