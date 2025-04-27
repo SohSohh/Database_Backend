@@ -66,19 +66,15 @@ class UserListView(generics.ListAPIView):
 
 
 class UserDetailView(generics.RetrieveAPIView):
-    """View to get a specific user's details with field filtering"""
+    """View to get user details with field filtering"""
     serializer_class = UserDetailSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
-        # If looking up current user, return current user
-        if self.kwargs.get('pk') == 'me':
+        # If looking up current user with 'me' parameter
+        if str(self.kwargs.get('pk')).lower() == 'me':
             return self.request.user
-        # Otherwise get user by ID (but only admins can see other users)
-        if not self.request.user.is_staff:
-            # Regular users can only view themselves
-            if str(self.request.user.id) != self.kwargs.get('pk'):
-                self.permission_denied(self.request)
+        # Any authenticated user can see other users' basic info
         return User.objects.get(pk=self.kwargs.get('pk'))
 
     def get_serializer(self, *args, **kwargs):
@@ -88,18 +84,3 @@ class UserDetailView(generics.RetrieveAPIView):
             kwargs['fields'] = fields.split(',')
         return super().get_serializer(*args, **kwargs)
 
-
-class CurrentUserView(generics.RetrieveAPIView):
-    """View to get current user details with field filtering"""
-    serializer_class = UserDetailSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_object(self):
-        return self.request.user
-
-    def get_serializer(self, *args, **kwargs):
-        """Get serializer with dynamic field filtering"""
-        fields = self.request.query_params.get('fields')
-        if fields:
-            kwargs['fields'] = fields.split(',')
-        return super().get_serializer(*args, **kwargs)
