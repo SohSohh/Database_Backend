@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub - Your Event Management Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav id="main-nav">
+            <div class="logo">
+                <h1>EventHub</h1>
+            </div>
+            <ul class="nav-links" id="nav-menu">
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="announcements.html">Announcements</a></li>
+                <li><a href="profile.html">Profile</a></li>
+
+                <!-- Auth links will be dynamically updated based on login status -->
+                <li class="auth-link"><a href="login.html">Login</a></li>
+                <li class="auth-link"><a href="register.html">Register</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover and Create Memorable Events</h1>
+            <p>Your one-stop platform for finding great events and managing your own</p>
+            <div class="hero-buttons">
+                <a href="events.html" class="btn-primary">Explore Events</a>
+                <a href="register.html" class="btn-secondary">Join EventHub</a>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section class="featured-events">
+            <div class="container">
+                <h2 class="section-title">Featured Events</h2>
+                <div class="events-grid" id="featuredEventsContainer">
+                    <!-- Events will be populated by JavaScript -->
+                    <div class="event-card">
+                        <div class="event-image">
+                            <img src="images/tech-conference.jpg" alt="Tech Conference">
+                            <div class="event-date">
+                                <span class="month">APR</span>
+                                <span class="day">25</span>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <span class="event-category">Technology</span>
+                            <h3>Annual Tech Conference</h3>
+                            <div class="event-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Convention Center</span>
+                                <span><i class="fas fa-clock"></i> 9:00 AM - 5:00 PM</span>
+                            </div>
+                            <p class="event-description">Join industry leaders and innovators for a day of tech talks and networking.</p>
+                            <div class="event-actions">
+                                <a href="event-details.html?id=1" class="btn-small">Details</a>
+                                <button class="rsvp-btn" data-event-id="1">RSVP</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="event-card">
+                        <div class="event-image">
+                            <img src="images/music-festival.jpg" alt="Music Festival">
+                            <div class="event-date">
+                                <span class="month">MAY</span>
+                                <span class="day">10</span>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <span class="event-category">Entertainment</span>
+                            <h3>Spring Music Festival</h3>
+                            <div class="event-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> City Park</span>
+                                <span><i class="fas fa-clock"></i> All Day</span>
+                            </div>
+                            <p class="event-description">Three days of amazing performances from top artists and local talents.</p>
+                            <div class="event-actions">
+                                <a href="event-details.html?id=2" class="btn-small">Details</a>
+                                <button class="rsvp-btn" data-event-id="2">RSVP</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="event-card">
+                        <div class="event-image">
+                            <img src="images/charity-run.jpg" alt="Charity Run">
+                            <div class="event-date">
+                                <span class="month">MAY</span>
+                                <span class="day">18</span>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <span class="event-category">Community</span>
+                            <h3>Charity Marathon</h3>
+                            <div class="event-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Riverside Park</span>
+                                <span><i class="fas fa-clock"></i> 7:00 AM</span>
+                            </div>
+                            <p class="event-description">Run for a cause! Join us for our annual charity marathon.</p>
+                            <div class="event-actions">
+                                <a href="event-details.html?id=3" class="btn-small">Details</a>
+                                <button class="rsvp-btn" data-event-id="3">RSVP</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-all-container">
+                    <a href="events.html" class="btn-secondary">View All Events</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="latest-announcements">
+            <div class="container">
+                <h2 class="section-title">Latest Announcements</h2>
+                <div class="announcements-list" id="latestAnnouncementsContainer">
+                    <!-- Announcements will be loaded here dynamically -->
+                    <div class="announcement-card">
+                        <div class="announcement-header">
+                            <span class="announcement-category">Platform Updates</span>
+                            <span class="announcement-date">April 5, 2025</span>
+                        </div>
+                        <h3>New Features Released</h3>
+                        <p class="announcement-excerpt">We're excited to announce several new features that enhance your event management experience...</p>
+                        <a href="announcement-details.html?id=1" class="read-more">Read More</a>
+                    </div>
+                    
+                    <div class="announcement-card">
+                        <div class="announcement-header">
+                            <span class="announcement-category">Event News</span>
+                            <span class="announcement-date">April 2, 2025</span>
+                        </div>
+                        <h3>Summer Events Series Announced</h3>
+                        <p class="announcement-excerpt">Get ready for an exciting summer with our new summer events series! We're partnering with top organizers...</p>
+                        <a href="announcement-details.html?id=2" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="view-all-container">
+                    <a href="announcements.html" class="btn-secondary">View All Announcements</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="call-to-action">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Want to Get Info On Events?</h2>
+                    <p>Register and start creating exceptional experiences today.</p>
+                    <div class="cta-buttons">
+                        <a href="register.html" class="btn-primary">Register Now</a>
+                        <a href="about.html" class="btn-outline">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content container">
+            <div class="footer-section">
+                <h3>EventHub</h3>
+                <p>Your one-stop platform for event discovery and management.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="announcements.html">Announcements</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> info@eventhub.com</p>
+                <p><i class="fas fa-phone"></i> (123) 456-7890</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Event Street, City</p>
+            </div>
+            <div class="footer-section">
+                <h3>Subscribe</h3>
+                <p>Stay updated with the latest events and announcements.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 EventHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

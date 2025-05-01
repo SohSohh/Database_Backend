@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event - EventHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav id="main-nav">
+            <div class="logo">
+                <h1>EventHub</h1>
+            </div>
+            <ul class="nav-links" id="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="announcements.html">Announcements</a></li>
+                <li><a href="handler-dashboard.html">Dashboard</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Create New Event</h1>
+                <p>Fill out the form below to create a new event that viewers can discover and attend.</p>
+            </div>
+        </section>
+
+        <section class="create-event-section">
+            <div class="container">
+                <form id="createEventForm" class="event-form">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title*</label>
+                        <input type="text" id="eventTitle" name="eventTitle" placeholder="Enter event title" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Event Date*</label>
+                            <input type="date" id="eventDate" name="eventDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventTime">Event Time*</label>
+                            <input type="time" id="eventTime" name="eventTime" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventLocation">Location*</label>
+                        <input type="text" id="eventLocation" name="eventLocation" placeholder="Enter event location" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventCategory">Category*</label>
+                            <select id="eventCategory" name="eventCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="educational">Educational</option>
+                                <option value="social">Social</option>
+                                <option value="professional">Professional</option>
+                                <option value="cultural">Cultural</option>
+                                <option value="sports">Sports</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxAttendees">Maximum Attendees</label>
+                            <input type="number" id="maxAttendees" name="maxAttendees" placeholder="Leave blank if no limit" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescription">Event Description*</label>
+                        <textarea id="eventDescription" name="eventDescription" rows="6" placeholder="Provide details about your event" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventImage">Event Image</label>
+                        <input type="file" id="eventImage" name="eventImage" accept="image/*">
+                        <p class="form-help">Recommended image size: 1200 x 630 pixels</p>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="requireRegistration" name="requireRegistration">
+                            <label for="requireRegistration">Require Registration</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="isImportant" name="isImportant">
+                            <label for="isImportant">Mark as Important Event</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-actions">
+                        <button type="button" id="cancelEventBtn" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">Create Event</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content container">
+            <div class="footer-section">
+                <h3>EventHub</h3>
+                <p>Your one-stop platform for event discovery and management.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> info@eventhub.com</p>
+                <p><i class="fas fa-phone"></i> (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 EventHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/create-event.js"></script>
+</body>
+</html>

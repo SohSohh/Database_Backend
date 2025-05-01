@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Handler Dashboard - EventHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar handler-sidebar">
+            <div class="sidebar-header">
+                <h3><a href="index.html">EventHub</a></h3>
+                <span class="user-role handler-role">Event Handler</span>
+            </div>
+            <div class="user-profile-brief">
+                <img src="images/default-profile.jpg" alt="Profile" id="sidebar-profile-img">
+                <div class="user-info-brief">
+                    <h4 id="sidebar-user-name">Jane Smith</h4>
+                    <p id="sidebar-user-email">jane@example.com</p>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li class="active"><a href="handler-dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="manage-events.html"><i class="fas fa-calendar-plus"></i> Manage Events</a></li>
+                    <li><a href="create-event.html"><i class="fas fa-plus-circle"></i> Create Event</a></li>
+                    <li><a href="attendees.html"><i class="fas fa-users"></i> Attendees</a></li>
+                    <li><a href="event-feedback.html"><i class="fas fa-comment"></i> Feedback</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="#" id="sidebar-logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="Search your events...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notification-dropdown">
+                        <button class="icon-btn"><i class="fas fa-bell"></i>
+                            <span class="notification-badge">5</span>
+                        </button>
+                    </div>
+                    <div class="user-dropdown">
+                        <img src="images/default-profile.jpg" alt="Profile" class="top-profile-img">
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="dashboard-welcome">
+                    <h2>Welcome, <span id="user-name-display">Jane</span>!</h2>
+                    <p class="current-date" id="current-date">Tuesday, April 8, 2025</p>
+                    <div class="action-buttons">
+                        <a href="create-event.html" class="btn-primary"><i class="fas fa-plus"></i> Create Event</a>
+                    </div>
+                </div>
+
+                <div class="dashboard-summary">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Active Events</h3>
+                            <p class="stat-value" id="active-events-count">4</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Total Attendees</h3>
+                            <p class="stat-value" id="total-attendees-count">128</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Feedback Received</h3>
+                            <p class="stat-value" id="feedback-count">32</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Attendance Rate</h3>
+                            <p class="stat-value" id="attendance-rate">87%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="content-section handler-events">
+                        <div class="section-header">
+                            <h3>Your Events</h3>
+                            <a href="manage-events.html" class="view-all">Manage All</a>
+                        </div>
+                        <div class="admin-table-container">
+                            <table class="admin-table" id="events-table">
+                                <thead>
+                                    <tr>
+                                        <th>Event Name</th>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Attendees</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Tech Conference 2025</td>
+                                        <td>April 15, 2025</td>
+                                        <td>Convention Center</td>
+                                        <td>48/100</td>
+                                        <td><span class="status-badge active">Active</span></td>
+                                        <td class="table-actions">
+                                            <button class="icon-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn" title="Edit Event"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn" title="Manage Attendees"><i class="fas fa-users"></i></button>
+                                            <button class="icon-btn" title="Cancel Event"><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Workshop: Advanced JavaScript</td>
+                                        <td>April 25, 2025</td>
+                                        <td>Tech Hub</td>
+                                        <td>32/50</td>
+                                        <td><span class="status-badge active">Active</span></td>
+                                        <td class="table-actions">
+                                            <button class="icon-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn" title="Edit Event"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn" title="Manage Attendees"><i class="fas fa-users"></i></button>
+                                            <button class="icon-btn" title="Cancel Event"><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Product Launch Party</td>
+                                        <td>May 10, 2025</td>
+                                        <td>Downtown Venue</td>
+                                        <td>35/75</td>
+                                        <td><span class="status-badge active">Active</span></td>
+                                        <td class="table-actions">
+                                            <button class="icon-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn" title="Edit Event"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn" title="Manage Attendees"><i class="fas fa-users"></i></button>
+                                            <button class="icon-btn" title="Cancel Event"><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Networking Mixer</td>
+                                        <td>May 20, 2025</td>
+                                        <td>Business Center</td>
+                                        <td>13/50</td>
+                                        <td><span class="status-badge active">Active</span></td>
+                                        <td class="table-actions">
+                                            <button class="icon-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn" title="Edit Event"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn" title="Manage Attendees"><i class="fas fa-users"></i></button>
+                                            <button class="icon-btn" title="Cancel Event"><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="content-section recent-attendees">
+                        <div class="section-header">
+                            <h3>Recent Registrations</h3>
+                            <a href="attendees.html" class="view-all">View All</a>
+                        </div>
+                        <div class="attendees-list">
+                            <div class="attendee-item">
+                                <img src="images/attendee1.jpg" alt="Attendee" class="attendee-avatar">
+                                <div class="attendee-info">
+                                    <h4>Michael Brown</h4>
+                                    <p>Registered for: Tech Conference 2025</p>
+                                    <span class="registration-time">5 hours ago</span>
+                                </div>
+                                <div class="attendee-actions">
+                                    <button class="icon-btn" title="View Profile"><i class="fas fa-user"></i></button>
+                                    <button class="icon-btn" title="Send Message"><i class="fas fa-envelope"></i></button>
+                                </div>
+                            </div>
+                            <div class="attendee-item">
+                                <img src="images/attendee2.jpg" alt="Attendee" class="attendee-avatar">
+                                <div class="attendee-info">
+                                    <h4>Sarah Johnson</h4>
+                                    <p>Registered for: Workshop: Advanced JavaScript</p>
+                                    <span class="registration-time">12 hours ago</span>
+                                </div>
+                                <div class="attendee-actions">
+                                    <button class="icon-btn" title="View Profile"><i class="fas fa-user"></i></button>
+                                    <button class="icon-btn" title="Send Message"><i class="fas fa-envelope"></i></button>
+                                </div>
+                            </div>
+                            <div class="attendee-item">
+                                <img src="images/attendee3.jpg" alt="Attendee" class="attendee-avatar">
+                                <div class="attendee-info">
+                                    <h4>David Wilson</h4>
+                                    <p>Registered for: Product Launch Party</p>
+                                    <span class="registration-time">1 day ago</span>
+                                </div>
+                                <div class="attendee-actions">
+                                    <button class="icon-btn" title="View Profile"><i class="fas fa-user"></i></button>
+                                    <button class="icon-btn" title="Send Message"><i class="fas fa-envelope"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-secondary">
+                    <div class="content-section feedback-overview">
+                        <div class="section-header">
+                            <h3>Recent Feedback</h3>
+                            <a href="event-feedback.html" class="view-all">View All</a>
+                        </div>
+                        <div class="feedback-list">
+                            <div class="feedback-item">
+                                <div class="feedback-header">
+                                    <div class="feedback-event">
+                                        <strong>Tech Conference 2024</strong>
+                                    </div>
+                                    <div class="feedback-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <span>4.5</span>
+                                    </div>
+                                </div>
+                                <p class="feedback-text">"Great event! The speakers were excellent and I learned a lot. Looking forward to next year's conference."</p>
+                                <div class="feedback-footer">
+                                    <span class="feedback-author">Robert M.</span>
+                                    <span class="feedback-date">March 30, 2025</span>
+                                </div>
+                            </div>
+                            <div class="feedback-item">
+                                <div class="feedback-header">
+                                    <div class="feedback-event">
+                                        <strong>Workshop: Advanced JavaScript</strong>
+                                    </div>
+                                    <div class="feedback-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <span>4.0</span>
+                                    </div>
+                                </div>
+                                <p class="feedback-text">"The content was very informative. Would have liked more hands-on exercises, but overall it was worth attending."</p>
+                                <div class="feedback-footer">
+                                    <span class="feedback-author">Emily T.</span>
+                                    <span class="feedback-date">April 3, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/handler-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub - Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">EventHub</a>
+            </div>
+            <nav class="profile-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="handlers.html">Societies</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li class="user-menu">
+                        <a href="#" class="current" id="currentUser">Username</a>
+                        <div class="dropdown-menu">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logoutBtn">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <button class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="https://via.placeholder.com/150" alt="Profile Avatar" id="profileAvatar">
+                    <div class="upload-avatar viewer-only">
+                        <label for="avatarUpload">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="avatarUpload" accept="image/*">
+                    </div>
+                </div>
+                <h2 id="profileUsername">Username</h2>
+                <p class="profile-type" id="profileType">Viewer</p>
+            </div>
+
+            <nav class="profile-nav">
+                <ul>
+                    <li><a href="#overview" class="active">Overview</a></li>
+                    <li><a href="#my-events">My Events</a></li>
+                    <li class="handler-only"><a href="#created-events">Created Events</a></li>
+                    <li class="handler-only"><a href="#team-members">Team Members</a></li>
+                    <li><a href="#account-settings">Account Settings</a></li>
+                </ul>
+            </nav>
+
+            <div class="profile-actions">
+                <button id="logoutButton" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+                <button id="deleteAccountButton" class="btn btn-danger own-profile-only">
+                    <i class="fas fa-trash"></i> Delete Account
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <!-- Overview Section -->
+            <section id="overview" class="profile-section active">
+                <h2>Profile Overview</h2>
+                <div class="profile-info-card">
+                    <div class="info-item">
+                        <span class="label">Username:</span>
+                        <span class="value" id="usernameValue">Username</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Email:</span>
+                        <span class="value" id="emailValue">user@example.com</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Member Since:</span>
+                        <span class="value" id="memberSinceValue">January 1, 2023</span>
+                    </div>
+                    <div class="info-item handler-only">
+                        <span class="label">Handler ID:</span>
+                        <span class="value" id="handlerIdValue">HND12345</span>
+                    </div>
+                    <div class="info-item handler-only">
+                        <span class="label">Events Created:</span>
+                        <span class="value" id="eventsCreatedValue">15</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Events Attending:</span>
+                        <span class="value" id="eventsAttendingValue">8</span>
+                    </div>
+                </div>
+
+                <div class="profile-bio-card own-profile-only">
+                    <h3>About Me</h3>
+                    <div class="bio-display" id="bioDisplay">
+                        <p id="bioText">Click to add a bio...</p>
+                        <button class="btn btn-sm edit-bio-btn"><i class="fas fa-edit"></i></button>
+                    </div>
+                    <div class="bio-edit" id="bioEdit">
+                        <textarea id="bioTextarea" placeholder="Tell us about yourself..."></textarea>
+                        <div class="bio-actions">
+                            <button class="btn btn-primary save-bio-btn">Save</button>
+                            <button class="btn btn-outline cancel-bio-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="handler-description handler-only">
+                    <h3>About This Society</h3>
+                    <p id="handlerDescription">This society is dedicated to organizing amazing events for the community.</p>
+                </div>
+            </section>
+
+            <!-- My Events Section -->
+            <section id="my-events" class="profile-section">
+                <h2>My Events</h2>
+                <div class="events-filter">
+                    <button class="filter-btn active" data-filter="upcoming">Upcoming</button>
+                    <button class="filter-btn" data-filter="past">Past</button>
+                    <button class="filter-btn" data-filter="all">All</button>
+                </div>
+                
+                <div class="events-grid" id="rsvpEvents">
+                    <!-- Sample RSVP Event -->
+                    <div class="event-card" data-event-type="upcoming">
+                        <div class="event-image">
+                            <img src="https://via.placeholder.com/300x200" alt="Event Image">
+                            <span class="event-date">May 15, 2025</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Tech Conference 2025</h3>
+                            <p class="event-organizer">Organized by: Tech Society</p>
+                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> University Hall</p>
+                            <div class="event-actions">
+                                <a href="event-details.html?id=1" class="btn btn-sm btn-outline">View Details</a>
+                                <button class="btn btn-sm btn-danger cancel-rsvp-btn">Cancel RSVP</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- More RSVP events would be dynamically added here -->
+                </div>
+                
+                <div class="empty-state" id="noRsvpEvents" style="display: none;">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Events Found</h3>
+                    <p>You haven't RSVP'd to any events yet.</p>
+                    <a href="events.html" class="btn btn-primary">Browse Events</a>
+                </div>
+            </section>
+
+            <!-- Created Events Section (Handler Only) -->
+            <section id="created-events" class="profile-section handler-only">
+                <h2>Created Events</h2>
+                <div class="section-header">
+                    <div class="events-filter">
+                        <button class="filter-btn active" data-filter="upcoming">Upcoming</button>
+                        <button class="filter-btn" data-filter="past">Past</button>
+                        <button class="filter-btn" data-filter="all">All</button>
+                    </div>
+                    <button class="btn btn-primary own-profile-only" id="createEventBtn">
+                        <i class="fas fa-plus"></i> Create Event
+                    </button>
+                </div>
+                
+                <div class="events-grid" id="createdEvents">
+                    <!-- Sample Created Event -->
+                    <div class="event-card" data-event-type="upcoming">
+                        <div class="event-image">
+                            <img src="https://via.placeholder.com/300x200" alt="Event Image">
+                            <span class="event-date">June 10, 2025</span>
+                            <span class="attendee-count"><i class="fas fa-user"></i> 42</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Annual Hackathon</h3>
+                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Innovation Center</p>
+                            <div class="event-actions own-profile-only">
+                                <a href="event-details.html?id=2" class="btn btn-sm btn-outline">View</a>
+                                <a href="edit-event.html?id=2" class="btn btn-sm btn-primary">Edit</a>
+                                <button class="btn btn-sm btn-danger delete-event-btn">Delete</button>
+                            </div>
+                            <div class="event-actions other-profile-only">
+                                <a href="event-details.html?id=2" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- More created events would be dynamically added here -->
+                </div>
+                
+                <div class="empty-state own-profile-only" id="noCreatedEvents" style="display: none;">
+                    <i class="fas fa-calendar-plus"></i>
+                    <h3>No Events Created</h3>
+                    <p>You haven't created any events yet.</p>
+                    <button class="btn btn-primary" id="createFirstEventBtn">Create Your First Event</button>
+                </div>
+            </section>
+
+            <!-- Team Members Section (Handler Only) -->
+            <section id="team-members" class="profile-section handler-only">
+                <h2>Team Members</h2>
+                <div class="section-header own-profile-only">
+                    <button class="btn btn-primary" id="addTeamMemberBtn">
+                        <i class="fas fa-user-plus"></i> Add Member
+                    </button>
+                </div>
+                
+                <div class="team-members-grid" id="teamMembersGrid">
+                    <!-- Sample Team Member -->
+                    <div class="team-member-card">
+                        <div class="team-member-avatar">
+                            <img src="https://via.placeholder.com/100" alt="Team Member">
+                        </div>
+                        <div class="team-member-info">
+                            <h3>John Doe</h3>
+                            <p class="member-role">Administrator</p>
+                            <p class="member-email">john.doe@example.com</p>
+                        </div>
+                        <div class="team-member-actions own-profile-only">
+                            <button class="btn btn-sm btn-outline edit-member-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger remove-member-btn">
+                                <i class="fas fa-user-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- More team members would be dynamically added here -->
+                </div>
+                
+                <div class="empty-state" id="noTeamMembers" style="display: none;">
+                    <i class="fas fa-users"></i>
+                    <h3>No Team Members</h3>
+                    <p>This society doesn't have any team members listed.</p>
+                    <button class="btn btn-primary own-profile-only" id="addFirstTeamMemberBtn">Add Your First Team Member</button>
+                </div>
+            </section>
+
+            <!-- Account Settings Section -->
+            <section id="account-settings" class="profile-section own-profile-only">
+                <h2>Account Settings</h2>
+                
+                <div class="settings-card">
+                    <h3>Personal Information</h3>
+                    <form id="personalInfoForm">
+                        <div class="form-group">
+                            <label for="updateUsername">Username</label>
+                            <input type="text" id="updateUsername" name="username" placeholder="Your username">
+                        </div>
+                        <div class="form-group">
+                            <label for="updateEmail">Email</label>
+                            <input type="email" id="updateEmail" name="email" placeholder="Your email">
+                        </div>
+                        <div class="form-group handler-only">
+                            <label for="updateSocietyName">Society Name</label>
+                            <input type="text" id="updateSocietyName" name="societyName" placeholder="Society name">
+                        </div>
+                        <div class="form-group handler-only">
+                            <label for="updateSocietyDescription">Society Description</label>
+                            <textarea id="updateSocietyDescription" name="societyDescription" placeholder="Describe your society"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="settings-card">
+                    <h3>Change Password</h3>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+                            <div class="password-strength">
+                                <div class="strength-meter" id="strengthMeter"></div>
+                                <span id="strengthText">Password strength</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" placeholder="Confirm new password">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="settings-card">
+                    <h3>Notifications</h3>
+                    <form id="notificationsForm">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emailNotifications" name="emailNotifications" checked>
+                                <span class="checkbox-custom"></span>
+                                Email notifications for new events
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rsvpReminders" name="rsvpReminders" checked>
+                                <span class="checkbox-custom"></span>
+                                RSVP reminders
+                            </label>
+                        </div>
+                        <div class="form-group handler-only">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="attendeeNotifications" name="attendeeNotifications" checked>
+                                <span class="checkbox-custom"></span>
+                                Notifications when someone RSVPs to your event
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Preferences</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="settings-card danger-zone">
+                    <h3>Danger Zone</h3>
+                    <div class="danger-actions">
+                        <div class="danger-action">
+                            <div>
+                                <h4>Delete Your Account</h4>
+                                <p>Once you delete your account, there is no going back. Please be certain.</p>
+                            </div>
+                            <button id="deleteAccountBtn" class="btn btn-danger">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>EventHub</h2>
+                    <p>Connecting people through events</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="events.html">Events</a></li>
+                            <li><a href="handlers.html">Societies</a></li>
+                            <li><a href="about.html">About</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Support</h3>
+                        <ul>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 EventHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div class="modal" id="deleteAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Delete Account</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                <p>All your data, including events and RSVPs, will be permanently deleted.</p>
+                <form id="deleteAccountConfirmForm">
+                    <div class="form-group">
+                        <label for="deleteConfirmPassword">Enter your password to confirm:</label>
+                        <input type="password" id="deleteConfirmPassword" name="password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelDeleteBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Team Member Modal (Handler Only) -->
+    <div class="modal" id="addTeamMemberModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Team Member</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addTeamMemberForm">
+                    <div class="form-group">
+                        <label for="memberEmail">Email Address</label>
+                        <input type="email" id="memberEmail" name="email" required placeholder="Enter member's email">
+                    </div>
+                    <div class="form-group">
+                        <label for="memberRole">Role</label>
+                        <select id="memberRole" name="role" required>
+                            <option value="">Select role</option>
+                            <option value="admin">Administrator</option>
+                            <option value="organizer">Organizer</option>
+                            <option value="member">Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberPermissions">Permissions</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="permissions[]" value="create_events">
+                                <span class="checkbox-custom"></span>
+                                Create Events
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="permissions[]" value="edit_events">
+                                <span class="checkbox-custom"></span>
+                                Edit Events
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="permissions[]" value="delete_events">
+                                <span class="checkbox-custom"></span>
+                                Delete Events
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="permissions[]" value="manage_members">
+                                <span class="checkbox-custom"></span>
+                                Manage Members
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelAddMemberBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmAddMemberBtn">Add Member</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>
