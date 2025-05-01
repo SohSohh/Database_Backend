@@ -1,10 +1,8 @@
-from rest_framework import generics, filters, permissions, status
+from rest_framework import generics, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Event
-from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, AttendeeSerializer
+from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer
 from .permissions import IsHandlerOrReadOnly, IsEventHost
-from rest_framework.response import Response
-
 
 
 class EventListView(generics.ListCreateAPIView):
@@ -13,13 +11,12 @@ class EventListView(generics.ListCreateAPIView):
     - GET: Any authenticated user can view all events
     - POST: Only handlers can create events
     """
-    queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [IsHandlerOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['date', 'location', 'host', 'category']  # Added category
-    search_fields = ['name', 'description', 'location']
-    ordering_fields = ['date', 'start_time', 'name']
+    filterset_fields = ['date', 'location', 'host']  # Filter by any field
+    search_fields = ['name', 'description', 'location']  # Search in these fields
+    ordering_fields = ['date', 'start_time', 'name']  # Order by these fields
 
     def get_queryset(self):
         """Get all events"""
@@ -51,27 +48,28 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class HandlerEventListView(generics.ListAPIView):
-    """
-    List events created by a specific handler or the current user
-    - If user_id parameter is provided, show events by that user
-    - If no parameter, show current user's events
-    """
+    """List all events created by the current handler"""
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['date', 'location', 'category']
-    search_fields = ['name', 'description', 'location']
-    ordering_fields = ['date', 'start_time', 'name']
 
     def get_queryset(self):
-        """Get events created by a specific user or current user"""
-        user_id = self.request.query_params.get('user_id')
-        if user_id:
-            # If user_id provided as query parameter, show that user's events
-            return Event.objects.filter(host_id=user_id)
-        # Otherwise, show current user's events
-        return Event.objects.filter(host=self.request.user)
+        """Get only events created by the current user"""
+        user = self.request.user
+        return Event.objects.filter(host=user)
 
+
+# events/views.py (rewritten with more generics)
+from rest_framework import generics, filters, permissions, status
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Event
+from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, AttendeeSerializer
+from .permissions import IsHandlerOrReadOnly, IsEventHost
+
+
+# Keep existing views (EventListView, EventDetailView, HandlerEventListView)
+
+# Rewritten with generics for attendance management
 class EventAttendanceView(generics.GenericAPIView):
     """
     Manage event attendance.
@@ -131,33 +129,3 @@ class UserAttendingEventsView(generics.ListAPIView):
     def get_queryset(self):
         """Get only events the current user is attending"""
         return self.request.user.attending_events.all()
-
-
-# Add to your views.py
-from .models import Category, Comment
-from .serializers import CategorySerializer, CommentSerializer
-
-
-class CategoryListView(generics.ListAPIView):
-    """List all categories"""
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class EventCommentsView(generics.ListCreateAPIView):
-    """
-    List all comments for a specific event or create a new comment
-    """
-    serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        """Get comments for a specific event"""
-        event_id = self.kwargs.get('pk')
-        return Comment.objects.filter(event_id=event_id)
-
-    def perform_create(self, serializer):
-        """Set event from URL and user from request"""
-        event_id = self.kwargs.get('pk')
-        serializer.save(user=self.request.user, event_id=event_id)

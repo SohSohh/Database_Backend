@@ -1,13 +1,13 @@
 # events/serializers.py
 from rest_framework import serializers
-from .models import Event, Category, Comment
+from .models import Event
 
 
 class EventSerializer(serializers.ModelSerializer):
+    """Full Event serializer"""
     host_username = serializers.CharField(source='host.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
-    category_name = serializers.CharField(source='category.name', read_only=True)
 
     class Meta:
         model = Event
@@ -15,7 +15,7 @@ class EventSerializer(serializers.ModelSerializer):
             'id', 'name', 'host', 'host_username', 'start_time',
             'end_time', 'date', 'location', 'description',
             'banner', 'created_at', 'updated_at', 'attendee_count',
-            'is_attending', 'category', 'category_name'
+            'is_attending'
         )
         read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count')
 
@@ -89,26 +89,3 @@ class AttendeeSerializer(serializers.Serializer):
         if value not in ['attend', 'unattend']:
             raise serializers.ValidationError("Action must be either 'attend' or 'unattend'")
         return value
-
-class CategorySerializer(serializers.ModelSerializer):
-    """Serializer for categories"""
-
-    class Meta:
-        model = Category
-        fields = ('id', 'name', 'description')
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    """Serializer for comments"""
-    user_username = serializers.CharField(source='user.username', read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = ('id', 'event', 'user', 'user_username', 'content', 'created_at', 'updated_at')
-        read_only_fields = ('event', 'user', 'created_at', 'updated_at')
-
-
-    def create(self, validated_data):
-        """Set user as the current user when creating a comment"""
-        validated_data['user'] = self.context['request'].user
-        return super().create(validated_data)

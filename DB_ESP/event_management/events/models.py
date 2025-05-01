@@ -27,13 +27,6 @@ class Event(models.Model):
     banner = models.ImageField(upload_to='event_banners/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(
-        'Category',
-        on_delete=models.SET_NULL,
-        related_name='events',
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
         return f"{self.name} on {self.date}"
@@ -45,39 +38,3 @@ class Event(models.Model):
 
     class Meta:
         ordering = ['date', 'start_time']
-
-
-class Category(models.Model):
-    """Category model for classifying events"""
-    name = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "Categories"
-        ordering = ['name']
-
-
-class Comment(models.Model):
-    """Comment model for event feedback"""
-    event = models.ForeignKey(
-        Event,
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Comment by {self.user.username} on {self.event.name}"
-
-    class Meta:
-        ordering = ['-created_at']

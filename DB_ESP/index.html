@@ -115,16 +115,7 @@
         <button id="deleteAccountBtn">Delete My Account</button>
         <pre id="userResult"></pre>
     </section>
-	<!-- View Other User Section -->
-	<section>
-		<h2>View Other User Profile</h2>
-		<div>
-			<label for="otherUserId">User ID:</label>
-			<input type="number" id="otherUserId" required>
-			<button id="viewUserBtn">View User Profile</button>
-		</div>
-		<pre id="otherUserResult"></pre>
-	</section>
+
     <!-- Event List -->
     <section>
         <h2>Event List</h2>
@@ -136,16 +127,6 @@
         </div>
         <div id="eventListContainer"></div>
     </section>
-	<!-- Handler's Events Section -->
-	<section>
-		<h2>View Handler's Events</h2>
-		<div>
-			<label for="handlerId">Handler User ID:</label>
-			<input type="number" id="handlerId" required>
-			<button id="getHandlerEventsBtn">Get Handler's Events</button>
-		</div>
-		<div id="handlerEventsContainer"></div>
-	</section>
 	
 		<!-- User's Attending Events Section -->
 	<section>
@@ -155,22 +136,6 @@
 		</div>
 		<div id="attendingEventsContainer"></div>
 	</section>
-	
-	<section>
-    <h2>Event Categories</h2>
-    <div>
-        <button id="getAllCategoriesBtn">Get All Categories</button>
-        <div>
-            <label for="categoryFilter">Filter Events by Category:</label>
-            <select id="categoryFilter">
-                <option value="">All Categories</option>
-                <!-- Categories will be populated dynamically -->
-            </select>
-            <button id="filterByCategoryBtn">Filter</button>
-        </div>
-    </div>
-    <div id="categoriesContainer"></div>
-</section>
 
     <!-- Create Event -->
     <section>
@@ -196,13 +161,6 @@
                 <label for="eventLocation">Location:</label>
                 <input type="text" id="eventLocation" required>
             </div>
-			<div>
-				<label for="eventCategory">Category:</label>
-				<select id="eventCategory">
-					<option value="">-- Select Category --</option>
-					<!-- Categories will be populated dynamically -->
-				</select>
-			</div>
             <div>
                 <label for="eventDescription">Description:</label>
                 <textarea id="eventDescription" required></textarea>
@@ -228,24 +186,7 @@
         </div>
         <div id="eventDetails"></div>
     </section>
-	
-	<!-- Event Comments Section -->
-	<section>
-		<h2>Event Comments</h2>
-		<div>
-			<label for="commentEventId">Event ID:</label>
-			<input type="number" id="commentEventId">
-			<button id="getCommentsBtn">Get Comments</button>
-		</div>
-		<div id="commentsContainer"></div>
-		
-		<!-- Add Comment Form -->
-		<div id="addCommentForm" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-			<h3>Add Comment</h3>
-			<textarea id="commentContent" rows="3" style="width: 100%;" placeholder="Write your comment here..."></textarea>
-			<button id="submitCommentBtn" style="margin-top: 10px;">Submit Comment</button>
-		</div>
-	</section>
+
     <!-- Update Event -->
     <section>
         <h2>Update Event (Event Host Only)</h2>
@@ -266,13 +207,6 @@
                 <label for="updateEventLocation">New Location:</label>
                 <input type="text" id="updateEventLocation">
             </div>
-			<div>
-				<label for="updateEventCategory">Category:</label>
-				<select id="updateEventCategory">
-					<option value="">-- Select Category --</option>
-					<!-- Categories will be populated dynamically -->
-				</select>
-			</div>
             <div>
                 <label for="updateEventBanner">New Banner Image:</label>
                 <input type="file" id="updateEventBanner" accept="image/*">
@@ -535,8 +469,7 @@
                 { label: 'Location', value: event.location },
                 { label: 'Description', value: event.description },
                 { label: 'Created', value: event.created_at },
-                { label: 'Updated', value: event.updated_at },
-				{ label: 'Category', value: event.category_name || 'None' }
+                { label: 'Updated', value: event.updated_at }
             ];
             
             fields.forEach(field => {
@@ -544,7 +477,7 @@
                 p.innerHTML = `<strong>${field.label}:</strong> ${field.value}`;
                 details.appendChild(p);
             });
-			// Add attendance action buttons
+						// Add attendance action buttons
 			const attendanceDiv = document.createElement('div');
 			attendanceDiv.style.marginTop = '10px';
 
@@ -566,154 +499,8 @@
 			details.appendChild(attendanceDiv);
             
             container.appendChild(details);
-	
-		const commentsLink = document.createElement('div');
-		commentsLink.style.marginTop = '10px';
+        }
 
-		const viewCommentsBtn = document.createElement('button');
-		viewCommentsBtn.textContent = 'View Comments';
-		viewCommentsBtn.onclick = () => {
-			document.getElementById('commentEventId').value = event.id;
-			document.getElementById('getCommentsBtn').click();
-			// Scroll to comments section
-			document.querySelector('section:has(#commentsContainer)').scrollIntoView({
-				behavior: 'smooth'
-			});
-		};
-
-		commentsLink.appendChild(viewCommentsBtn);
-		details.appendChild(commentsLink);
-		}
-		// Format comment date
-		function formatDate(dateString) {
-			const date = new Date(dateString);
-			return date.toLocaleString();
-		}
-
-		// Create an HTML table from categories data
-		function createCategoryTable(categories) {
-			const table = document.createElement('table');
-			
-			// Create header row
-			const thead = document.createElement('thead');
-			const headerRow = document.createElement('tr');
-			const headers = ['ID', 'Name', 'Description'];
-			
-			headers.forEach(headerText => {
-				const th = document.createElement('th');
-				th.textContent = headerText;
-				headerRow.appendChild(th);
-			});
-			
-			thead.appendChild(headerRow);
-			table.appendChild(thead);
-			
-			// Create body rows
-			const tbody = document.createElement('tbody');
-			
-			categories.forEach(category => {
-				const row = document.createElement('tr');
-				
-				// ID
-				const idCell = document.createElement('td');
-				idCell.textContent = category.id;
-				row.appendChild(idCell);
-				
-				// Name
-				const nameCell = document.createElement('td');
-				nameCell.textContent = category.name;
-				row.appendChild(nameCell);
-				
-				// Description
-				const descCell = document.createElement('td');
-				descCell.textContent = category.description;
-				row.appendChild(descCell);
-				
-				tbody.appendChild(row);
-			});
-			
-			table.appendChild(tbody);
-			return table;
-		}
-
-		// Display comments for an event
-		function displayComments(comments) {
-			const container = document.getElementById('commentsContainer');
-			container.innerHTML = '';
-			
-			if (comments.length === 0) {
-				container.textContent = 'No comments yet.';
-				return;
-			}
-			
-			const commentsDiv = document.createElement('div');
-			commentsDiv.style.marginBottom = '20px';
-			
-			comments.forEach(comment => {
-				const commentDiv = document.createElement('div');
-				commentDiv.style.padding = '10px';
-				commentDiv.style.margin = '10px 0';
-				commentDiv.style.borderBottom = '1px solid #eee';
-				
-				const userInfo = document.createElement('p');
-				userInfo.innerHTML = `<strong>${comment.user_username}</strong> - <small>${formatDate(comment.created_at)}</small>`;
-				commentDiv.appendChild(userInfo);
-				
-				const content = document.createElement('p');
-				content.textContent = comment.content;
-				commentDiv.appendChild(content);
-				
-				commentsDiv.appendChild(commentDiv);
-			});
-			
-			container.appendChild(commentsDiv);
-		}
-
-		// Fetch categories and populate dropdowns
-		async function loadCategories() {
-			try {
-				const categories = await apiRequest('/events/categories/');
-				
-				// Populate category filter dropdown
-				const filterDropdown = document.getElementById('categoryFilter');
-				const createEventDropdown = document.getElementById('eventCategory');
-				const updateEventDropdown = document.getElementById('updateEventCategory');
-				
-				// Clear existing options except first one
-				filterDropdown.options.length = 1;
-				createEventDropdown.options.length = 1;
-				updateEventDropdown.options.length = 1;
-				
-				// Add categories to dropdowns
-				categories.forEach(category => {
-					// Filter dropdown
-					const filterOption = document.createElement('option');
-					filterOption.value = category.id;
-					filterOption.textContent = category.name;
-					filterDropdown.appendChild(filterOption);
-					
-					// Create event form dropdown
-					const createOption = document.createElement('option');
-					createOption.value = category.id;
-					createOption.textContent = category.name;
-					createEventDropdown.appendChild(createOption);
-					
-					// Update event form dropdown
-					const updateOption = document.createElement('option');
-					updateOption.value = category.id;
-					updateOption.textContent = category.name;
-					updateEventDropdown.appendChild(updateOption);
-				});
-				
-				return categories;
-			} catch (error) {
-				console.error('Error loading categories:', error);
-				return [];
-			}
-		}
-			
-	
-		
         // Add event listeners once the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             // Load any stored auth tokens
@@ -953,10 +740,6 @@
                     formData.append('end_time', document.getElementById('eventEndTime').value);
                     formData.append('location', document.getElementById('eventLocation').value);
                     formData.append('description', document.getElementById('eventDescription').value);
-					const categoryId = document.getElementById('eventCategory').value;
-					if (categoryId) {
-						formData.append('category', categoryId);
-					}
                     
                     // Only append banner if a file is selected
                     const bannerInput = document.getElementById('eventBanner');
@@ -1040,11 +823,7 @@
                     if (bannerInput.files.length > 0) {
                         formData.append('banner', bannerInput.files[0]);
                     }
-					const categoryId = document.getElementById('updateEventCategory').value;
-					if (categoryId) {
-						formData.append('category', categoryId);
-}
-					
+                    
                     // Use PATCH for partial updates with FormData
                     const result = await apiRequest(`/events/${eventId}/`, 'PATCH', formData, true);
                     resultDiv.textContent = formatJSON(result);
@@ -1083,137 +862,6 @@
                     resultDiv.textContent = `Error: ${error.message}`;
                 }
             });
-			// Load categories when page loads
-			loadCategories();
-
-			// Get all categories
-			document.getElementById('getAllCategoriesBtn').addEventListener('click', async () => {
-				const container = document.getElementById('categoriesContainer');
-				
-				try {
-					const categories = await apiRequest('/events/categories/');
-					container.innerHTML = '';
-					
-					if (categories.length === 0) {
-						container.textContent = 'No categories found';
-					} else {
-						const table = createCategoryTable(categories);
-						container.appendChild(table);
-					}
-				} catch (error) {
-					container.textContent = `Error: ${error.message}`;
-				}
-			});
-
-			// Filter events by category
-			document.getElementById('filterByCategoryBtn').addEventListener('click', async () => {
-				const container = document.getElementById('eventListContainer');
-				const categoryId = document.getElementById('categoryFilter').value;
-				
-				try {
-					const endpoint = categoryId ? `/events/?category=${categoryId}` : '/events/';
-					const events = await apiRequest(endpoint);
-					container.innerHTML = '';
-					
-					if (events.length === 0) {
-						container.textContent = 'No events found for this category';
-					} else {
-						const table = createEventTable(events);
-						container.appendChild(table);
-					}
-				} catch (error) {
-					container.textContent = `Error: ${error.message}`;
-				}
-			});
-
-			// Get comments for an event
-			document.getElementById('getCommentsBtn').addEventListener('click', async () => {
-				const eventId = document.getElementById('commentEventId').value;
-				if (!eventId) {
-					alert('Please enter an Event ID');
-					return;
-				}
-				
-				try {
-					const comments = await apiRequest(`/events/${eventId}/comments/`);
-					displayComments(comments);
-					
-					// Prepare form for adding a comment to this event
-					document.getElementById('addCommentForm').style.display = 'block';
-				} catch (error) {
-					document.getElementById('commentsContainer').textContent = `Error: ${error.message}`;
-				}
-			});
-
-			// Submit a new comment
-			document.getElementById('submitCommentBtn').addEventListener('click', async () => {
-				const eventId = document.getElementById('commentEventId').value;
-				const content = document.getElementById('commentContent').value.trim();
-				
-				if (!eventId) {
-					alert('Please enter an Event ID');
-					return;
-				}
-				
-				if (!content) {
-					alert('Please enter a comment');
-					return;
-				}
-				
-				try {
-					await apiRequest(`/events/${eventId}/comments/`, 'POST', { content });
-					
-					// Clear the text area
-					document.getElementById('commentContent').value = '';
-					
-					// Refresh comments
-					document.getElementById('getCommentsBtn').click();
-				} catch (error) {
-					alert(`Error submitting comment: ${error.message}`);
-				}
-			});
-			// View other user profile
-			document.getElementById('viewUserBtn').addEventListener('click', async () => {
-				const userId = document.getElementById('otherUserId').value;
-				const resultDiv = document.getElementById('otherUserResult');
-				
-				if (!userId) {
-					alert('Please enter a User ID');
-					return;
-				}
-				
-				try {
-					const user = await apiRequest(`/users/${userId}/`);
-					resultDiv.textContent = formatJSON(user);
-				} catch (error) {
-					resultDiv.textContent = `Error: ${error.message}`;
-				}
-			});
-
-			// Get handler's events
-			document.getElementById('getHandlerEventsBtn').addEventListener('click', async () => {
-				const handlerId = document.getElementById('handlerId').value;
-				const container = document.getElementById('handlerEventsContainer');
-				
-				if (!handlerId) {
-					alert('Please enter a Handler User ID');
-					return;
-				}
-				
-				try {
-					const events = await apiRequest(`/events/handler/${handlerId}/events/`);
-					container.innerHTML = '';
-					
-					if (events.length === 0) {
-						container.textContent = 'This handler has not created any events';
-					} else {
-						const table = createEventTable(events);
-						container.appendChild(table);
-					}
-				} catch (error) {
-					container.textContent = `Error: ${error.message}`;
-				}
-			});
         });
     </script>
 </body>
