@@ -1,95 +1,131 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in (for demonstration purposes)
-    const isLoggedIn = localStorage.getItem('authToken') !== null;
-    const userType = localStorage.getItem('userType'); // This would be set during login
-    
-    // Update navigation based on login status
-    updateNavigation(isLoggedIn, userType);
-    
-    // Animation for stats (simple counter animation when section is in view)
-    const statsSection = document.querySelector('.stats-section');
-    const statNumbers = document.querySelectorAll('.stat-item h3');
-    
-    // Convert stat text to numbers for animation
-    const statValues = Array.from(statNumbers).map(stat => {
-        const value = parseInt(stat.textContent.replace(/,|\+/g, ''));
-        stat.textContent = '0';
-        return value;
+// Counter animation with intersection observer
+const stats = document.querySelectorAll('.stat-number');
+const options = {
+    threshold: 0.5,
+    rootMargin: "0px"
+};
+
+const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const target = entry.target;
+            const endValue = parseInt(target.getAttribute('data-target'), 10);
+            animateValue(target, 0, endValue, 2000);
+            observer.unobserve(target);
+        }
     });
-    
-    // Check if element is in viewport
-    function isInViewport(element) {
-        const rect = element.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
+}, options);
+
+stats.forEach(stat => {
+    observer.observe(stat);
+});
+
+function animateValue(element, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        element.textContent = value + (end >= 100 ? '+' : '');
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            element.textContent = end + (end >= 100 ? '+' : '');
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+// Mobile Navigation Toggle
+const hamburger = document.querySelector('.hamburger');
+const navMenu = document.querySelector('#nav-menu');
+
+if (hamburger) {
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    });
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!hamburger?.contains(e.target) && !navMenu?.contains(e.target)) {
+        hamburger?.classList.remove('active');
+        navMenu?.classList.remove('active');
     }
-    
-    // Animate stats when scrolled into view
-    let animated = false;
-    window.addEventListener('scroll', function() {
-        if (isInViewport(statsSection) && !animated) {
-            animated = true;
-            
-            statNumbers.forEach((stat, index) => {
-                const targetValue = statValues[index];
-                const duration = 2000; // 2 seconds
-                const frameRate = 60;
-                const totalFrames = duration / 1000 * frameRate;
-                const increment = targetValue / totalFrames;
-                
-                let currentValue = 0;
-                const counter = setInterval(() => {
-                    currentValue += increment;
-                    
-                    if (currentValue >= targetValue) {
-                        clearInterval(counter);
-                        stat.textContent = targetValue.toLocaleString() + '+';
-                    } else {
-                        stat.textContent = Math.floor(currentValue).toLocaleString();
-                    }
-                }, 1000 / frameRate);
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        
+        // Skip empty or javascript:void(0) links
+        if (href === '#' || href === 'javascript:void(0)') return;
+        
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
+            
+            // Close mobile menu when clicking a link
+            hamburger?.classList.remove('active');
+            navMenu?.classList.remove('active');
         }
     });
 });
 
-function updateNavigation(isLoggedIn, userType) {
-    const navLinks = document.querySelector('.nav-links');
+// Scroll reveal animation for sections
+const revealElements = document.querySelectorAll('.features-row, .milestone-card, .team-card');
+const revealOptions = {
+    threshold: 0.15,
+    rootMargin: "0px 0px -50px 0px"
+};
+
+const revealOnScroll = new IntersectionObserver((entries, revealOnScroll) => {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        
+        setTimeout(() => {
+            entry.target.classList.add('appear');
+        }, 100); // Small delay for better visual effect
+        
+        revealOnScroll.unobserve(entry.target);
+    });
+}, revealOptions);
+
+revealElements.forEach(element => {
+    element.classList.add('reveal-element'); // Add class for initial state
+    revealOnScroll.observe(element);
+});
+
+// Check if user is logged in and update profile icon link
+const updateProfileLink = () => {
+    const profileLink = document.getElementById('profileLink');
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     
-    if (isLoggedIn) {
-        // Remove login and register links
-        const loginLink = document.querySelector('.nav-links li a[href="login.html"]').parentNode;
-        const registerLink = document.querySelector('.nav-links li a[href="register.html"]').parentNode;
-        
-        if (loginLink) loginLink.remove();
-        if (registerLink) registerLink.remove();
-        
-        // Add dashboard and logout links
-        const dashboardLi = document.createElement('li');
-        const dashboardLink = document.createElement('a');
-        dashboardLink.href = userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html';
-        dashboardLink.textContent = 'Dashboard';
-        dashboardLi.appendChild(dashboardLink);
-        
-        const logoutLi = document.createElement('li');
-        const logoutLink = document.createElement('a');
-        logoutLink.href = '#';
-        logoutLink.textContent = 'Logout';
-        logoutLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Clear auth data
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userType');
-            // Redirect to home page
-            window.location.href = 'index.html';
-        });
-        logoutLi.appendChild(logoutLink);
-        
-        navLinks.appendChild(dashboardLi);
-        navLinks.appendChild(logoutLi);
+    if (profileLink) {
+        profileLink.href = isLoggedIn ? 'profile.html' : 'register.html';
     }
-}
+};
+
+// Call on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateProfileLink();
+    
+    // Add animation classes
+    document.querySelectorAll('.milestone-card, .team-card, .feature-card').forEach((el, index) => {
+        el.style.transitionDelay = `${index * 100}ms`;
+    });
+});
+
+// Add this if you want to handle window resize events
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        hamburger?.classList.remove('active');
+        navMenu?.classList.remove('active');
+    }
+});

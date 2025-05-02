@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event - EventHub</title>
+    <link rel="stylesheet" href="handler-dashboard.css">
+    <link rel="stylesheet" href="create-event.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>EventHub</h1>
+            <h2>Event Handler</h2>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li class="nav-item">
+                    <a href="handler-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="manage-events.html" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        Manage Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="create-event.html" class="nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Event
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="attendees.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Attendees
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-feedback.html" class="nav-link">
+                        <i class="fas fa-comment"></i>
+                        Feedback
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logout-btn" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <!-- Edit Event Form -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-edit"></i> Edit Event</h2>
+                </div>
+                <form id="editEventForm" class="event-form">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3>Basic Information</h3>
+                        <div class="form-group">
+                            <label for="eventName">Event Name</label>
+                            <input type="text" id="eventName" name="eventName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventDescription">Event Description</label>
+                            <textarea id="eventDescription" name="eventDescription" rows="4" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div class="form-section">
+                        <h3>Date and Time</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventDate">Event Date</label>
+                                <input type="date" id="eventDate" name="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventTime">Event Time</label>
+                                <input type="time" id="eventTime" name="eventTime" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-section">
+                        <h3>Location</h3>
+                        <div class="form-group">
+                            <label for="eventLocation">Event Location</label>
+                            <input type="text" id="eventLocation" name="eventLocation" required>
+                        </div>
+                    </div>
+
+                    <!-- Capacity -->
+                    <div class="form-section">
+                        <h3>Capacity</h3>
+                        <div class="form-group">
+                            <label for="eventCapacity">Maximum Attendees</label>
+                            <input type="number" id="eventCapacity" name="eventCapacity" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-section">
+                        <h3>Event Image</h3>
+                        <div class="form-group">
+                            <label for="eventImage">Current Image</label>
+                            <img id="currentEventImage" src="" alt="Current event image" class="event-preview-image">
+                            <label for="eventImage">Upload New Image</label>
+                            <input type="file" id="eventImage" name="eventImage" accept="image/*">
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='manage-events.html'">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="edit-event.js"></script>
+</body>
+</html> 

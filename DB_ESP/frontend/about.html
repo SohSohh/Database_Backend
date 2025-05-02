@@ -3,128 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Event Management System</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>About Us - EventHub</title>
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="about.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <nav>
-            <div class="logo">
-                <h1>Event Management System</h1>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li class="active"><a href="about.html">About Us</a></li>
-                <li><a href="announcements.html">Announcements</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
+        <nav class="main-nav">
+          <div class="logo">
+            <a href="index.html">EventHub</a>
+          </div>
+          <ul class="nav-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="announcements.html">Explore</a></li>
+            <li><a href="viewer-dashboard.html">Viewer Dashboard</a></li>
+            <li><a href="handler-dashboard.html">Handler Dashboard</a></li>
+          </ul>
+          <div class="profile-icon">
+            <a href="register.html" title="Profile">
+              <i class="fas fa-user-circle"></i>
+            </a>
+          </div>
         </nav>
-    </header>
+      </header>
 
-    <main>
-        <section class="page-header">
-            <div class="container">
-                <h1>About Us</h1>
+    <main class="about-page">
+        <!-- Hero Section -->
+        <section class="about-hero-stats">
+            <div class="about-hero-row">
+                <div class="about-hero-left">
+                    <h1>Never Miss an Event Again</h1>
+                    <p>
+                        EventHub brings all your campus events and announcements into one organized space, eliminating the chaos of scattered messages and buried emails. Our platform ensures you stay connected with your community and never miss out on important events or updates.
+                    </p>
+                    <div class="btn-row">
+                        <a href="events.html" class="btn-primary">Explore Events</a>
+                        <a href="announcements.html" class="btn-secondary">View Announcements</a>
+                    </div>
+                </div>
+                <div class="about-hero-right">
+                    <img src="/api/placeholder/500/650" alt="Professional team member">
+                </div>
+            </div>
+            <div class="about-stats-row">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="1000">0</div>
+                    <div class="stat-label">Events Discovered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-label">Societies Connected</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="5000">0</div>
+                    <div class="stat-label">Announcements Posted</div>
+                </div>
             </div>
         </section>
 
-        <section class="about-section">
-            <div class="container">
-                <div class="about-content">
-                    <div class="about-text">
-                        <h2>Our Story</h2>
-                        <p>The Event Management System was founded in 2023 with a simple mission: to make event creation, management, and discovery easier for everyone. What started as a small project has grown into a comprehensive platform serving event organizers and attendees alike.</p>
-                        
-                        <h2>Our Mission</h2>
-                        <p>We aim to connect people through meaningful events and experiences. Our platform provides the tools and resources that event organizers need to create successful events, while making it easy for participants to discover and attend events that match their interests.</p>
-                        
-                        <h2>What We Offer</h2>
-                        <ul class="about-list">
-                            <li>
-                                <h3>For Event Handlers</h3>
-                                <p>Comprehensive tools to create, manage, and promote events. From registration and ticketing to attendee management and post-event analytics, we provide everything you need to run successful events.</p>
-                            </li>
-                            <li>
-                                <h3>For Viewers</h3>
-                                <p>An intuitive platform to discover events, register for participation, and connect with organizers and fellow attendees. Stay updated with announcements and easily manage your event calendar.</p>
-                            </li>
-                        </ul>
+        <!-- Features/Expertise Section -->
+        <section class="features">
+            <div class="about-container">
+                <div class="features-row">
+                    <div class="feature-image">
+                        <img src="/api/placeholder/550/400" alt="Team member">
                     </div>
-                    <div class="about-image">
-                        <img src="https://via.placeholder.com/500x300" alt="Event Management Team">
+                    <div class="feature-content">
+                        <h2>Your Central Hub for Campus Events</h2>
+                        <p>We understand the challenges of staying updated with campus events and announcements. Our platform provides a seamless experience for discovering, managing, and participating in events across your campus.</p>
+                        
+                        <div class="benefits-grid">
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Centralized Event Management</h4>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Real-time Announcements</h4>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Easy RSVP Management</h4>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Category-based Organization</h4>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Feedback System</h4>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="team-section">
-            <div class="container">
-                <h2>Our Team</h2>
+        <!-- Milestones Section -->
+        <section class="milestones">
+            <div class="about-container">
+                <div class="milestones-header">
+                    <h2>Key Milestones in Campus Event Management</h2>
+                    <p>Discover how EventHub has transformed the way students and societies connect through events and announcements.</p>
+                </div>
+                
+                <div class="milestones-grid">
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Event Management (2023)</h3>
+                        <p>Launched our comprehensive event management system for seamless event creation and discovery.</p>
+                    </div>
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3>Announcements Hub (2023)</h3>
+                        <p>Introduced real-time announcements to keep everyone informed about important updates.</p>
+                    </div>
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Community Growth (2024)</h3>
+                        <p>Expanded our platform to connect multiple societies and student organizations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team">
+            <div class="about-container">
+                <h2>Meet our experts</h2>
                 <div class="team-grid">
-                    <div class="team-member">
-                        <div class="member-image">
-                            <img src="https://via.placeholder.com/150" alt="Team Member">
+                    <div class="team-card">
+                        <div class="team-image">
+                            <img src="/api/placeholder/350/300" alt="Saneha Akhtar">
                         </div>
-                        <h3>Jane Doe</h3>
-                        <p class="member-title">Founder & CEO</p>
-                        <p class="member-bio">With over 15 years of experience in event management, Jane leads our company vision and strategy.</p>
-                    </div>
-                    
-                    <div class="team-member">
-                        <div class="member-image">
-                            <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <div class="team-info">
+                            <div class="team-name"><i class="fas fa-user"></i> Saneha Akhtar</div>
+                            <div class="team-role"><i class="fas fa-code"></i> Frontend Developer</div>
+                            <div class="team-desc">Created intuitive user interfaces and responsive designs. Expert in HTML, CSS, and JS.</div>
                         </div>
-                        <h3>John Smith</h3>
-                        <p class="member-title">CTO</p>
-                        <p class="member-bio">John oversees all technical aspects of the platform, ensuring a seamless experience for all users.</p>
                     </div>
-                    
-                    <div class="team-member">
-                        <div class="member-image">
-                            <img src="https://via.placeholder.com/150" alt="Team Member">
+                    <div class="team-card">
+                        <div class="team-image">
+                            <img src="/api/placeholder/350/300" alt="Sohaib Mubashir">
                         </div>
-                        <h3>Emily Johnson</h3>
-                        <p class="member-title">Head of Customer Success</p>
-                        <p class="member-bio">Emily ensures that all our users receive the support they need to succeed on our platform.</p>
+                        <div class="team-info">
+                            <div class="team-name"><i class="fas fa-user"></i> Sohaib Mubashir</div>
+                            <div class="team-role"><i class="fas fa-database"></i> Backend Developer</div>
+                            <div class="team-desc">Leads the backend development with expertise in database design, API architecture, and server optimization.</div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="stats-section">
-            <div class="container">
-                <h2>Our Impact</h2>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <h3>10,000+</h3>
-                        <p>Events Hosted</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>500,000+</h3>
-                        <p>Attendees</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>1,000+</h3>
-                        <p>Event Organizers</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>50+</h3>
-                        <p>Countries</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="cta-section">
-            <div class="container">
-                <div class="cta-content">
-                    <h2>Join Our Community</h2>
-                    <p>Whether you're an event organizer or an attendee, our platform has something for you.</p>
-                    <div class="cta-buttons">
-                        <a href="register.html" class="btn-primary">Get Started</a>
-                        <a href="contact.html" class="btn-secondary">Contact Us</a>
+                    <div class="team-card">
+                        <div class="team-image">
+                            <img src="/api/placeholder/350/300" alt="Azka Hafeez">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name"><i class="fas fa-user"></i> Azka Hafeez</div>
+                            <div class="team-role"><i class="fas fa-code"></i> Frontend Developer</div>
+                            <div class="team-desc">Created intuitive user interfaces and responsive designs. Expert in HTML, CSS, and JS.</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,8 +199,8 @@
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Event Management System</h3>
-                <p>Your one-stop solution for event management and participation.</p>
+                <h3>EventHub</h3>
+                <p>Your one-stop platform for event management and participation.</p>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
@@ -143,19 +208,19 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About Us</a></li>
                     <li><a href="announcements.html">Announcements</a></li>
-                    <li><a href="events.html">Events</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: info@eventsystem.com</p>
+                <p>Email: info@eventhub.com</p>
                 <p>Phone: (123) 456-7890</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 Event Management System. All rights reserved.</p>
+            <p>&copy; 2025 EventHub. All rights reserved.</p>
         </div>
     </footer>
+
 
     <script src="about.js"></script>
 </body>

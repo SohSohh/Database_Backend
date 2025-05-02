@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - EventHub</title>
+    <title>Register Handler - EventHub</title>
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="login.css">
-    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="register-handler.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -17,29 +17,21 @@
                 <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to website</a>
             </div>
             <div class="welcome-content">
-                <h1>Welcome to EventHub!<br>Start Your Journey</h1>
+                <h1>Register Your Society/Handler</h1>
             </div>
         </div>
         
         <div class="form-section">
             <div class="form-container">
-                <h2>Create an account</h2>
+                <h2>Create a Handler Account</h2>
                 <p class="subtitle">Please fill in your details</p>
                 
-                <form id="registerForm" class="login-form">
-                    <div class="form-row">
-                        <div class="form-group half-width">
-                            <input type="text" id="firstName" name="firstName" placeholder="First name" required>
-                        </div>
-                        <div class="form-group half-width">
-                            <input type="text" id="lastName" name="lastName" placeholder="Last name" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="username" name="username" placeholder="Username" required>
-                    </div>
+                <form id="registerHandlerForm" class="login-form">
                     <div class="form-group">
                         <input type="email" id="email" name="email" placeholder="Email address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="handlerName" name="handlerName" placeholder="Society/Handler Name" required>
                     </div>
                     <div class="form-group">
                         <input type="password" id="password" name="password" placeholder="Password" required>
@@ -47,30 +39,13 @@
                     <div class="form-group">
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
                     </div>
-                    
                     <div class="form-options">
                         <div class="remember-me">
                             <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
                             <label for="agreeTerms">I agree to the Terms & Conditions</label>
                         </div>
                     </div>
-                    
-                    <button type="submit" class="login-button">Create Account</button>
-                    
-                    <div class="divider">
-                        <span>Or register with</span>
-                    </div>
-
-                    <div class="social-login">
-                        <button type="button" class="social-button google">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-                            <span>Google</span>
-                        </button>
-                        <button type="button" class="social-button apple">
-                            <i class="fab fa-apple"></i>
-                            <span>Apple</span>
-                        </button>
-                    </div>
+                    <button type="submit" class="login-button">Create Handler Account</button>
                 </form>
                 
                 <div class="register-link">
@@ -79,8 +54,6 @@
             </div>
         </div>
     </main>
-
-    <script src="js/auth.js"></script>
-    <script src="js/register.js"></script>
+    <script src="register-handler.js"></script>
 </body>
 </html>

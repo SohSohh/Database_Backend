@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Feedback - EventHub</title>
+    <link rel="stylesheet" href="handler-dashboard.css">
+    <link rel="stylesheet" href="handler-feedback.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="auth.js"></script>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>EventHub</h1>
+            <h2>Event Handler</h2>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li class="nav-item">
+                    <a href="handler-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="manage-events.html" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        Manage Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="create-event.html" class="nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Event
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-analytics.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="society-members.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Members
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-feedback.html" class="nav-link active">
+                        <i class="fas fa-comment"></i>
+                        Feedback
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logout-btn" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <!-- Filter Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-filter"></i> Filter Feedback</h2>
+                </div>
+                <div class="filter-controls">
+                    <select class="form-control" id="eventFilter">
+                        <option value="all">All Events</option>
+                        <!-- Events will be populated dynamically -->
+                    </select>
+                    <select class="form-control" id="ratingFilter">
+                        <option value="all">All Ratings</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                    <select class="form-control" id="sortFilter">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="highest">Highest Rating</option>
+                        <option value="lowest">Lowest Rating</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Feedback List -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-comment"></i> Event Feedback</h2>
+                </div>
+                <div class="handler-feedback-list" id="feedbackList">
+                    <!-- Example Feedback Item -->
+                    <div class="handler-feedback-item">
+                        <div class="feedback-avatar">
+                            <img src="https://ui-avatars.com/api/?name=John+Doe&background=5C0000&color=fff" alt="User Avatar">
+                        </div>
+                        <div class="handler-feedback-content">
+                            <div class="feedback-header">
+                                <div class="feedback-user-info">
+                                    <h3>John Doe</h3>
+                                    <div class="feedback-event">Tech Workshop 2024</div>
+                                </div>
+                                <div class="handler-feedback-rating">
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star empty"></i>
+                                </div>
+                            </div>
+                            <div class="handler-feedback-comment">
+                                Great workshop! The content was very informative and well-presented. Looking forward to more events like this.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- More feedback items will be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="event-feedback.js"></script>
+</body>
+</html> 

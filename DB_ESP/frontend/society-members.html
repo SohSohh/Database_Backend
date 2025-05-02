@@ -1,0 +1,197 @@
+<style>
+    .join-requests-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+    }
+    .join-requests-table th, .join-requests-table td {
+        padding: 10px 8px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+    .join-requests-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+    .btn-sm {
+      padding: 2px 10px !important;
+      font-size: 0.85rem !important;
+      border-radius: 4px !important;
+      min-width: 0 !important;
+      line-height: 1.1 !important;
+      height: 28px !important;
+      margin-right: 6px;
+      margin-bottom: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .join-requests-table td {
+      vertical-align: middle;
+    }
+    .join-requests-table .btn {
+      margin-bottom: 0 !important;
+    }
+
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - EventHub</title>
+    <link rel="stylesheet" href="handler-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>EventHub</h1>
+            <h2>Event Handler</h2>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li class="nav-item">
+                    <a href="handler-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="manage-events.html" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        Manage Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="create-event.html" class="nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Event
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-analytics.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="society-members.html" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        Members
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-feedback.html" class="nav-link">
+                        <i class="fas fa-comment"></i>
+                        Feedback
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logout-btn" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <!-- Header Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Members</h2>
+                    <button class="btn btn-primary" onclick="showAddMemberForm()">
+                        <i class="fas fa-plus"></i> Add Member
+                    </button>
+                </div>
+            </div>
+
+            <!-- Add Member Form (Hidden by default) -->
+            <div class="content-section" id="addMemberForm" style="display: none;">
+                <div class="section-header">
+                    <h3>Add New Member</h3>
+                </div>
+                <form id="memberForm" class="form-section">
+                    <div class="form-group">
+                        <label for="memberName">Full Name</label>
+                        <input type="text" id="memberName" name="memberName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberEmail">Email</label>
+                        <input type="email" id="memberEmail" name="memberEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberRole">Role</label>
+                        <select id="memberRole" name="memberRole" required>
+                            <option value="member">Member</option>
+                            <option value="coordinator">Coordinator</option>
+                            <option value="executive">Executive</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideAddMemberForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Member</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add this above the Members List section -->
+            <div class="content-section" id="joinRequestsSection">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-plus"></i> Pending Join Requests</h3>
+                </div>
+                <div class="join-requests-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Viewer Name</th>
+                                <th>Email</th>
+                                <th>Society</th>
+                                <th>Referral Code</th>
+                                <th>Requested At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="joinRequestsList">
+                            <!-- Requests will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Members List -->
+            <div class="content-section">
+                <div class="members-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Join Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersList">
+                            <!-- Members will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="society-members.js"></script>
+</body>
+</html> 

@@ -1,8 +1,9 @@
 from rest_framework import generics, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Event
-from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer
+from .models import Event, Feedback
+from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, FeedbackSerializer
 from .permissions import IsHandlerOrReadOnly, IsEventHost
+from django.shortcuts import get_object_or_404
 
 
 class EventListView(generics.ListCreateAPIView):
@@ -129,3 +130,52 @@ class UserAttendingEventsView(generics.ListAPIView):
     def get_queryset(self):
         """Get only events the current user is attending"""
         return self.request.user.attending_events.all()
+
+
+class FeedbackCreateView(generics.CreateAPIView):
+    """View for creating feedback"""
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        event_id = self.kwargs.get('event_id')
+        event = get_object_or_404(Event, id=event_id)
+        serializer.save(user=self.request.user, event=event)
+
+
+class EventFeedbackListView(generics.ListAPIView):
+    """View for listing all feedback for an event"""
+    serializer_class = FeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        event_id = self.kwargs.get('event_id')
+        return Feedback.objects.filter(event_id=event_id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # Calculate average rating
+        if queryset.exists():
+            avg_rating = sum(fb.rating for fb in queryset) / queryset.count()
+        else:
+            avg_rating = 0
+        
+        response_data = {
+            'average_rating': round(avg_rating, 1),
+            'total_feedback': queryset.count(),
+            'feedback': serializer.data
+        }
+        
+        return Response(response_data)
+
+
+class UserFeedbackListView(generics.ListAPIView):
+    """View for listing all feedback by a user"""
+    serializer_class = FeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Feedback.objects.filter(user=self.request.user)

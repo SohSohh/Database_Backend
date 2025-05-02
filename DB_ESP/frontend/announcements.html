@@ -4,30 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcements - Event Management System</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="announcements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <nav>
-            <div class="logo">
-                <h1>Event Management System</h1>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
+        <header>
+            <nav class="main-nav">
+              <div class="logo">
+                <a href="index.html">EventHub</a>
+              </div>
+              <ul class="nav-links">
                 <li><a href="about.html">About Us</a></li>
-                <li class="active"><a href="announcements.html">Announcements</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
-        </nav>
-    </header>
+                <li><a href="announcements.html">Explore</a></li>
+                <li><a href="viewer-dashboard.html">Viewer Dashboard</a></li>
+                <li><a href="handler-dashboard.html">Handler Dashboard</a></li>
+              </ul>
+              <div class="profile-icon">
+                <a href="register.html" title="Profile">
+                  <i class="fas fa-user-circle"></i>
+                </a>
+              </div>
+            </nav>
+          </header>
 
     <main>
         <section class="page-header">
             <div class="container">
-                <h1>Announcements</h1>
+                <h1>Explore</h1>
                 <p>Stay updated with the latest news and events from our platform.</p>
             </div>
         </section>
@@ -43,25 +50,21 @@
 
                 <div class="announcements-container" id="announcements-container">
                     <!-- Announcement cards will be displayed here -->
-                    <div class="announcement-card important" data-category="important">
-                        <div class="category-tag important-tag">Important</div>
-                        <div class="card-content">
-                            <h3>Mid-Term Examination Schedule</h3>
-                            <p class="post-date">Posted on April 1, 2025</p>
-                            <p class="description">Mid-term examinations will be conducted from March 25th to April 5th, 2024. The detailed schedule is now available on the student portal.</p>
-                            <div class="card-actions">
-                                <a href="announcement-details.html?id=1" class="read-more">Read More</a>
-                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-                            </div>
+                    <div class="announcement-card" data-category="event">
+                        <div class="announcement-image">
+                            <img src="event1.jpg" alt="Event 1">
                         </div>
-                    </div>
-
-                    <div class="announcement-card event" data-category="event">
-                        <div class="category-tag event-tag">Event</div>
                         <div class="card-content">
-                            <h3>Annual Sports Day</h3>
-                            <p class="post-date">Posted on March 15, 2025</p>
-                            <p class="description">Join us for the Annual Sports Day on March 30th. Various inter-house competitions and exciting prizes await!</p>
+                            <div class="card-header-row">
+                                <h3>Annual Science Fair</h3>
+                                <span class="category-tag event-tag">Event</span>
+                            </div>
+                            <div class="event-meta-col">
+                                <div class="event-date"><i class="fas fa-calendar-alt"></i> 2024-06-10</div>
+                                <div class="event-time"><i class="fas fa-clock"></i> 14:00</div>
+                                <div class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</div>
+                            </div>
+                            <p class="description">Join us for the annual science fair with exciting projects and prizes!</p>
                             <div class="card-actions">
                                 <a href="announcement-details.html?id=2" class="read-more">Read More</a>
                                 <button class="rsvp-btn"><i class="fas fa-calendar-check"></i> RSVP</button>
@@ -70,39 +73,88 @@
                         </div>
                     </div>
 
-                    <div class="announcement-card educational" data-category="educational">
-                        <div class="category-tag educational-tag">Educational</div>
+                    <div class="announcement-card" data-category="important">
+                        <div class="announcement-image">
+                            <img src="important1.jpg" alt="Important Announcement">
+                        </div>
                         <div class="card-content">
-                            <h3>New Course Registration</h3>
-                            <p class="post-date">Posted on March 10, 2025</p>
-                            <p class="description">Registration for elective courses for the next semester is now open. Last date to register is March 20th.</p>
+                            <div class="card-header-row">
+                                <h3>System Maintenance</h3>
+                                <span class="category-tag important-tag">Important</span>
+                            </div>
+                            <div class="event-meta-col">
+                                <div class="event-date"><i class="fas fa-calendar-alt"></i> 2024-06-12</div>
+                                <div class="event-time"><i class="fas fa-clock"></i> 09:00</div>
+                                <div class="event-location"><i class="fas fa-map-marker-alt"></i> Online</div>
+                            </div>
+                            <p class="description">The system will be down for maintenance on June 12th from 9:00 AM to 12:00 PM.</p>
                             <div class="card-actions">
-                                <a href="announcement-details.html?id=3" class="read-more">Read More</a>
+                                <a href="announcement-details.html?id=5" class="read-more">Read More</a>
                                 <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="announcement-card event" data-category="event">
-                        <div class="category-tag event-tag">Event</div>
+                    <div class="announcement-card" data-category="educational">
+                        <div class="announcement-image">
+                            <img src="educational1.jpg" alt="Educational Announcement">
+                        </div>
                         <div class="card-content">
-                            <h3>Technology Workshop</h3>
-                            <p class="post-date">Posted on March 5, 2025</p>
+                            <div class="card-header-row">
+                                <h3>New Course Registration</h3>
+                                <span class="category-tag educational-tag">Educational</span>
+                            </div>
+                            <div class="event-meta-col">
+                                <span class="event-date"><i class="fas fa-calendar-alt"></i> 2025-03-20</span>
+                                <span class="event-time"><i class="fas fa-clock"></i> 00:00</span>
+                                <span class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>
+                            </div>
+                            <p class="description">Registration for elective courses for the next semester is now open. Last date to register is March 20th.</p>
+                            <div class="card-actions">
+                                <a href="announcement-educational.html?id=5" class="read-more">Read More</a>
+                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="announcement-card" data-category="event">
+                        <div class="announcement-image">
+                            <img src="event1.jpg" alt="Event 1">
+                        </div>
+                        <div class="card-content">
+                            <div class="card-header-row">
+                                <h3>Technology Workshopr</h3>
+                                <span class="category-tag event-tag">Event</span>
+                            </div>
+                            <div class="event-meta-col">
+                                <span class="event-date"><i class="fas fa-calendar-alt"></i> 2025-03-07</span>
+                                <span class="event-time"><i class="fas fa-clock"></i> 00:00</span>
+                                <span class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>
+                            </div>
                             <p class="description">Join our two-day workshop on emerging technologies featuring industry experts. Limited seats available!</p>
                             <div class="card-actions">
-                                <a href="announcement-details.html?id=4" class="read-more">Read More</a>
+                                <a href="announcement-details.html?id=2" class="read-more">Read More</a>
                                 <button class="rsvp-btn"><i class="fas fa-calendar-check"></i> RSVP</button>
                                 <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="announcement-card important" data-category="important">
-                        <div class="category-tag important-tag">Important</div>
+                    
+                    <div class="announcement-card" data-category="important">
+                        <div class="announcement-image">
+                            <img src="important1.jpg" alt="Important Announcement">
+                        </div>
                         <div class="card-content">
-                            <h3>System Maintenance Notice</h3>
-                            <p class="post-date">Posted on March 1, 2025</p>
-                            <p class="description">The portal will be under maintenance from 10 PM to 2 AM on March 15th. Please plan your activities accordingly.</p>
+                            <div class="card-header-row">
+                                <h3>System Maintenance Notice</h3>
+                                <span class="category-tag important-tag">Important</span>
+                            </div>
+                            <div class="event-meta-col">
+                                <span class="event-date"><i class="fas fa-calendar-alt"></i> 2025-03-15</span>
+                                <span class="event-time"><i class="fas fa-clock"></i> 22:00</span>
+                                <span class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>                            </div>
+                            <p class="description">The portal will be under maintenance from 10 PM to 2 AM on March 15th. Please plan your activities accordingly..</p>
                             <div class="card-actions">
                                 <a href="announcement-details.html?id=5" class="read-more">Read More</a>
                                 <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
@@ -112,25 +164,7 @@
                 </div>
                 
                 <div class="pagination">
-                    <button class="pagination-button active">1</button>
-                    <button class="pagination-button">2</button>
-                    <button class="pagination-button">3</button>
-                    <span class="pagination-ellipsis">...</span>
-                    <button class="pagination-button">10</button>
-                    <button class="pagination-next">Next &raquo;</button>
-                </div>
-            </div>
-        </section>
-        
-        <section class="cta-section">
-            <div class="container">
-                <div class="cta-content">
-                    <h2>Don't Miss Any Updates</h2>
-                    <p>Subscribe to our newsletter to receive the latest announcements directly in your inbox.</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Your email address" required>
-                        <button type="submit" class="btn-primary">Subscribe</button>
-                    </form>
+                    <!-- Pagination will be dynamically generated by JavaScript -->
                 </div>
             </div>
         </section>
@@ -139,47 +173,74 @@
     <!-- Feedback Modal -->
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Provide Feedback</h2>
-            <form id="feedbackForm">
-                <div class="form-group">
-                    <label for="feedbackText">Your Feedback</label>
-                    <textarea id="feedbackText" rows="5" placeholder="Enter your feedback here..." required></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Submit Feedback</button>
-            </form>
+            <div class="modal-header">
+                <h2>Provide Feedback for "<span id="feedbackTitle"></span>"</h2>
+                <button class="close-modal" type="button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="feedbackForm">
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="star-rating">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                            <input type="hidden" name="rating" id="selectedRating" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedbackText">Your Feedback</label>
+                        <textarea id="feedbackText" placeholder="Enter your feedback here..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Submit Feedback</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- RSVP Modal -->
     <div id="rsvpModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>RSVP for this Event</h2>
-            <form id="rsvpForm">
-                <div class="form-group">
-                    <label for="attendancePlan">Will you be attending?</label>
-                    <select id="attendancePlan" required>
-                        <option value="" disabled selected>Choose an option</option>
-                        <option value="yes">Yes, I will attend</option>
-                        <option value="no">No, I cannot attend</option>
-                        <option value="maybe">Maybe, I'm not sure yet</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="additionalComments">Additional Comments</label>
-                    <textarea id="additionalComments" rows="3" placeholder="Any additional information..."></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Submit RSVP</button>
-            </form>
+            <div class="modal-header">
+                <h2>RSVP for Event</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="rsvpForm">
+                    <div class="form-group">
+                        <label for="rsvpStatus">Will you attend?</label>
+                        <div class="rsvp-options">
+                            <button type="button" class="rsvp-option" data-value="yes">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Yes</span>
+                            </button>
+                            <button type="button" class="rsvp-option" data-value="maybe">
+                                <i class="fas fa-question-circle"></i>
+                                <span>Maybe</span>
+                            </button>
+                            <button type="button" class="rsvp-option" data-value="no">
+                                <i class="fas fa-times-circle"></i>
+                                <span>No</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Submit RSVP</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Event Management System</h3>
-                <p>Your one-stop solution for event management and participation.</p>
+                <h3>EventHub</h3>
+                <p>Your one-stop platform for event management and participation.</p>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
@@ -187,17 +248,16 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About Us</a></li>
                     <li><a href="announcements.html">Announcements</a></li>
-                    <li><a href="events.html">Events</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: info@eventsystem.com</p>
+                <p>Email: info@eventhub.com</p>
                 <p>Phone: (123) 456-7890</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 Event Management System. All rights reserved.</p>
+            <p>&copy; 2025 EventHub. All rights reserved.</p>
         </div>
     </footer>
 

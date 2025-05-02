@@ -27,6 +27,9 @@ class Event(models.Model):
     banner = models.ImageField(upload_to='event_banners/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    max_attendees = models.PositiveIntegerField(null=True, blank=True)
+    is_important = models.BooleanField(default=False)
+    require_registration = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.name} on {self.date}"
@@ -38,3 +41,17 @@ class Event(models.Model):
 
     class Meta:
         ordering = ['date', 'start_time']
+
+
+class Feedback(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='feedbacks')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)])
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['event', 'user']  # One feedback per user per event
+
+    def __str__(self):
+        return f"{self.user.username}'s feedback for {self.event.name}"

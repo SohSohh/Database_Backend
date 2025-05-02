@@ -1,12 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in and is a handler
-    const authToken = localStorage.getItem('authToken');
-    const userType = localStorage.getItem('userType');
-    
-    // If not logged in or not a handler, redirect to login
-    if (!authToken || userType !== 'handler') {
-        window.location.href = 'login.html';
-    }
+    // For demo purposes, set test authentication data
+    localStorage.setItem('authToken', 'demo-token');
+    localStorage.setItem('userType', 'handler');
+    localStorage.setItem('userId', 'demo-user');
     
     // Handle form submission
     const createEventForm = document.getElementById('createEventForm');
@@ -17,37 +13,60 @@ document.addEventListener('DOMContentLoaded', function() {
             // Gather form data
             const formData = {
                 title: document.getElementById('eventTitle').value,
-                date: document.getElementById('eventDate').value,
-                time: document.getElementById('eventTime').value,
-                location: document.getElementById('eventLocation').value,
-                category: document.getElementById('eventCategory').value,
-                maxAttendees: document.getElementById('maxAttendees').value || null,
                 description: document.getElementById('eventDescription').value,
-                requireRegistration: document.getElementById('requireRegistration').checked,
-                isImportant: document.getElementById('isImportant').checked,
+                category: document.getElementById('eventCategory').value,
+                type: document.getElementById('eventType').value,
+                startDate: document.getElementById('eventStartDate').value,
+                startTime: document.getElementById('eventStartTime').value,
+                endDate: document.getElementById('eventEndDate').value,
+                endTime: document.getElementById('eventEndTime').value,
+                venue: document.getElementById('eventVenue').value,
+                address: document.getElementById('eventAddress').value,
+                city: document.getElementById('eventCity').value,
+                virtualLink: document.getElementById('eventLink')?.value || null,
+                schedule: document.getElementById('eventSchedule').value,
+                speakers: document.getElementById('eventSpeakers').value,
+                notes: document.getElementById('eventNotes').value,
                 createdBy: localStorage.getItem('userId') || 'unknown',
                 createdAt: new Date().toISOString()
             };
             
-            // Image handling would normally be done with FormData and file upload
-            // This is simplified for demonstration
-            const imageFile = document.getElementById('eventImage').files[0];
-            if (imageFile) {
-                // In a real app, you'd upload this file to your server
-                console.log('Image selected:', imageFile.name);
+            // Handle file uploads
+            const bannerFile = document.getElementById('eventBanner').files[0];
+            const additionalImages = document.getElementById('eventImages').files;
+            
+            if (bannerFile) {
+                console.log('Banner image selected:', bannerFile.name);
             }
             
-            // In a real application, you would send this data to your backend
+            if (additionalImages && additionalImages.length > 0) {
+                console.log('Additional images selected:', additionalImages.length);
+            }
+            
             console.log('Event data to submit:', formData);
             
             // For demonstration, simulate a successful submission
             alert('Event created successfully!');
             
-            // Store in localStorage for demo purposes (In a real app, this would be sent to a backend)
+            // Store in localStorage for demo purposes
             saveEventToLocalStorage(formData);
             
-            // Redirect to the events page or dashboard
+            // Redirect to the events page
             window.location.href = 'handler-dashboard.html';
+        });
+    }
+    
+    // Handle event type change to show/hide virtual link
+    const eventTypeSelect = document.getElementById('eventType');
+    const virtualLinkGroup = document.querySelector('.virtual-link');
+    
+    if (eventTypeSelect && virtualLinkGroup) {
+        eventTypeSelect.addEventListener('change', function() {
+            if (this.value === 'virtual' || this.value === 'hybrid') {
+                virtualLinkGroup.style.display = 'block';
+            } else {
+                virtualLinkGroup.style.display = 'none';
+            }
         });
     }
     
@@ -55,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelEventBtn = document.getElementById('cancelEventBtn');
     if (cancelEventBtn) {
         cancelEventBtn.addEventListener('click', function() {
-            // Redirect back to dashboard
             window.location.href = 'handler-dashboard.html';
         });
     }
@@ -65,28 +83,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Clear auth data
             localStorage.removeItem('authToken');
             localStorage.removeItem('userType');
             localStorage.removeItem('userId');
-            // Redirect to home page
-            window.location.href = 'index.html';
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userRole');
+            sessionStorage.clear();
+            window.location.href = 'login.html';
         });
     }
 });
 
 // Function to save event to localStorage (for demo purposes)
 function saveEventToLocalStorage(eventData) {
-    // Get existing events or initialize empty array
     let events = JSON.parse(localStorage.getItem('events')) || [];
-    
-    // Add an ID to the event
     eventData.id = generateEventId();
-    
-    // Add the new event
     events.push(eventData);
-    
-    // Save back to localStorage
     localStorage.setItem('events', JSON.stringify(events));
 }
 

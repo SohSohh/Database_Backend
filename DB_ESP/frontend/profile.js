@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const strengthText = document.getElementById('strengthText');
     const logoutBtn = document.getElementById('logoutBtn');
     const logoutButton = document.getElementById('logoutButton');
+    const notificationsForm = document.getElementById('notificationsForm');
+    const personalInfoForm = document.getElementById('personalInfoForm');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const avatarUpload = document.getElementById('avatarUpload');
     
     // Check if current user is viewing their own profile or someone else's
     // In a real app, this would be determined from the server
@@ -40,6 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize profile data
     initProfileData();
+    
+    // Load saved preferences and settings
+    loadSavedPreferences();
+    loadSavedSettings();
+    loadSavedAvatar();
     
     // Navigation between profile sections
     profileNavLinks.forEach(link => {
@@ -180,42 +189,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Filter events
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const filter = this.getAttribute('data-filter');
-            const container = this.closest('.profile-section');
+    // Event filtering functionality
+    function filterEvents(filterType) {
+        const currentDate = new Date();
+        const eventCards = document.querySelectorAll('.event-card');
+        
+        eventCards.forEach(card => {
+            const eventDateStr = card.querySelector('.event-date').textContent;
+            const eventDate = new Date(eventDateStr);
             
-            // Update active button
-            container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Filter events
-            const events = container.querySelectorAll('.event-card');
-            events.forEach(event => {
-                const eventType = event.getAttribute('data-event-type');
-                
-                if (filter === 'all' || eventType === filter) {
-                    event.style.display = 'block';
-                } else {
-                    event.style.display = 'none';
-                }
-            });
-            
-            // Show/hide empty state
-            const eventsGrid = container.querySelector('.events-grid');
-            const emptyState = container.querySelector('.empty-state');
-            const visibleEvents = container.querySelectorAll('.event-card[style="display: block"]');
-            
-            if (visibleEvents.length === 0) {
-                if (eventsGrid) eventsGrid.style.display = 'none';
-                if (emptyState) emptyState.style.display = 'block';
-            } else {
-                if (eventsGrid) eventsGrid.style.display = 'grid';
-                if (emptyState) emptyState.style.display = 'none';
+            switch(filterType) {
+                case 'upcoming':
+                    if (eventDate >= currentDate) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                    break;
+                case 'past':
+                    if (eventDate < currentDate) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                    break;
+                case 'all':
+                    card.style.display = 'flex';
+                    break;
             }
         });
+
+        // Check if we need to show empty state
+        const visibleEvents = document.querySelectorAll('.event-card[style="display: flex"]');
+        const eventsGrid = document.getElementById('rsvpEvents');
+        const noEventsMessage = document.getElementById('noRsvpEvents');
+        
+        if (visibleEvents.length === 0 && noEventsMessage) {
+            if (eventsGrid) eventsGrid.style.display = 'none';
+            noEventsMessage.style.display = 'block';
+            noEventsMessage.querySelector('h3').textContent = `No ${filterType} events`;
+            noEventsMessage.querySelector('p').textContent = filterType === 'upcoming' ? 
+                'You have no upcoming events.' : 
+                filterType === 'past' ? 
+                'You have no past events.' : 
+                'No events found.';
+        } else {
+            if (eventsGrid) eventsGrid.style.display = 'grid';
+            if (noEventsMessage) noEventsMessage.style.display = 'none';
+        }
+    }
+    
+    // Add click event listeners to filter buttons
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            // Get filter type and filter events
+            const filterType = this.getAttribute('data-filter');
+            filterEvents(filterType);
+        });
     });
+    
+    // Initially filter for upcoming events
+    filterEvents('upcoming');
+    filterBtns[0].classList.add('active'); // Activate the "Upcoming" button by default
     
     // Password strength checker
     if (passwordInput) {
@@ -295,8 +334,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Form submissions
-    const personalInfoForm = document.getElementById('personalInfoForm');
+    // Handle notifications form submission
+    if (notificationsForm) {
+        notificationsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const notificationPrefs = {
+                emailNotifications: formData.get('emailNotifications') === 'on',
+                rsvpReminders: formData.get('rsvpReminders') === 'on',
+                attendeeNotifications: formData.get('attendeeNotifications') === 'on'
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('notificationPreferences', JSON.stringify(notificationPrefs));
+            
+            // Show success message
+            alert('Notification preferences saved successfully!');
+        });
+    }
+    
+    // Handle personal info form submission
     if (personalInfoForm) {
         personalInfoForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -310,128 +369,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 userData[key] = value;
             }
             
-            // In a real app, send data to server
-            updatePersonalInfo(userData)
-                .then(response => {
-                    // Update UI with new data
-                    document.getElementById('profileUsername').textContent = userData.username;
-                    document.getElementById('usernameValue').textContent = userData.username;
-                    document.getElementById('emailValue').textContent = userData.email;
-                    document.getElementById('currentUser').textContent = userData.username;
-                    
-                    if (userType === 'handler' && userData.societyName) {
-                        document.getElementById('profileUsername').textContent = userData.societyName;
-                        document.getElementById('currentUser').textContent = userData.societyName;
-                    }
-                    
-                    if (userType === 'handler' && userData.societyDescription) {
-                        document.getElementById('handlerDescription').textContent = userData.societyDescription;
-                    }
-                    
-                    alert('Personal information updated successfully!');
-                })
-                .catch(error => {
-                    console.error('Error updating personal info:', error);
-                    alert('Failed to update personal information. Please try again.');
-                });
+            // Save to localStorage
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Update UI
+            updateUIWithUserData(userData);
+            
+            // Show success message
+            alert('Personal information saved successfully!');
         });
     }
     
-    const passwordForm = document.getElementById('passwordForm');
-    if (passwordForm) {
-        passwordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmNewPassword').value;
-            
-            // Validate passwords
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                alert('Please fill all password fields');
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                alert('New passwords do not match');
-                return;
-            }
-            
-            const strength = checkPasswordStrength(newPassword);
-            if (strength.class === 'weak') {
-                alert('Please choose a stronger password');
-                return;
-            }
-            
-            // In a real app, send password update request to server
-            updatePassword(currentPassword, newPassword)
-                .then(response => {
-                    alert('Password updated successfully!');
-                    this.reset();
-                    strengthMeter.className = 'strength-meter';
-                    strengthText.textContent = 'Password strength';
-                })
-                .catch(error => {
-                    console.error('Error updating password:', error);
-                    alert('Failed to update password. Please check your current password and try again.');
-                });
-        });
-    }
-    
-    const notificationsForm = document.getElementById('notificationsForm');
-    if (notificationsForm) {
-        notificationsForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(this);
-            const notificationPrefs = {
-                emailNotifications: formData.get('emailNotifications') === 'on',
-                rsvpReminders: formData.get('rsvpReminders') === 'on',
-                attendeeNotifications: formData.get('attendeeNotifications') === 'on'
-            };
-            
-            // In a real app, send data to server
-            updateNotificationPreferences(notificationPrefs)
-                .then(response => {
-                    alert('Notification preferences updated successfully!');
-                })
-                .catch(error => {
-                    console.error('Error updating notification preferences:', error);
-                    alert('Failed to update notification preferences. Please try again.');
-                });
-        });
-    }
-    
-    // Avatar upload
-    const avatarUpload = document.getElementById('avatarUpload');
+    // Handle avatar upload
     if (avatarUpload) {
         avatarUpload.addEventListener('change', function() {
             const file = this.files[0];
             
             if (file) {
-                // Check file type
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!validTypes.includes(file.type)) {
-                    alert('Please select a valid image file (JPEG, PNG, or GIF)');
-                    return;
-                }
+                // Validate file
+                if (!validateImageFile(file)) return;
                 
-                // Check file size (max 2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size should be less than 2MB');
-                    return;
-                }
-                
-                // Create preview
+                // Create preview and save
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('profileAvatar').src = e.target.result;
+                    const imageData = e.target.result;
+                    // Save to localStorage
+                    localStorage.setItem('profileAvatar', imageData);
+                    // Update UI
+                    profileAvatar.src = imageData;
                 };
                 reader.readAsDataURL(file);
-                
-                // In a real app, upload image to server
-                uploadAvatar(file);
             }
         });
     }
@@ -674,590 +641,476 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-});
 
-/**
- * Check password strength
- * @param {string} password - Password to check
- * @returns {Object} - Strength class and description
- */
-function checkPasswordStrength(password) {
-    if (!password) {
-        return { class: 'empty', text: 'No password' };
-    }
-    
-    // Calculate score based on various criteria
-    let score = 0;
-    
-    // Length check
-    if (password.length < 8) {
-        return { class: 'weak', text: 'Too short' };
-    } else if (password.length >= 12) {
-        score += 2;
-    } else {
-        score += 1;
-    }
-    
-    // Character type checks
-    if (/[A-Z]/.test(password)) score += 1; // Uppercase
-    if (/[a-z]/.test(password)) score += 1; // Lowercase
-    if (/[0-9]/.test(password)) score += 1; // Numbers
-    if (/[^A-Za-z0-9]/.test(password)) score += 1; // Special characters
-    
-    // Common patterns and dictionary words check
-    const commonPatterns = [
-        /^[a-z]+$/i, // All letters
-        /^[0-9]+$/, // All numbers
-        /^[a-z0-9]+$/i, // Only letters and numbers
-        /^[a-z]+[0-9]+$/i, // Letters followed by numbers
-        /^[0-9]+[a-z]+$/i, // Numbers followed by letters
-        /password/i, /123456/, /qwerty/i, /abc123/i // Common passwords
-    ];
-    
-    for (const pattern of commonPatterns) {
-        if (pattern.test(password)) {
-            score -= 1;
-            break;
-        }
-    }
-    
-    // Sequential characters check
-    const sequences = [
-        'abcdefghijklmnopqrstuvwxyz',
-        '0123456789',
-        'qwertyuiop',
-        'asdfghjkl',
-        'zxcvbnm'
-    ];
-    
-    for (const sequence of sequences) {
-        for (let i = 0; i < sequence.length - 2; i++) {
-            const fragment = sequence.substring(i, i + 3);
-            if (password.toLowerCase().includes(fragment)) {
-                score -= 1;
-                break;
+    // Function to load saved preferences
+    function loadSavedPreferences() {
+        const savedPrefs = localStorage.getItem('notificationPreferences');
+        if (savedPrefs && notificationsForm) {
+            const prefs = JSON.parse(savedPrefs);
+            
+            // Set checkbox states
+            document.getElementById('emailNotifications').checked = prefs.emailNotifications;
+            document.getElementById('rsvpReminders').checked = prefs.rsvpReminders;
+            if (document.getElementById('attendeeNotifications')) {
+                document.getElementById('attendeeNotifications').checked = prefs.attendeeNotifications;
             }
         }
     }
-    
-    // Repeated characters check
-    if (/(.)\1{2,}/.test(password)) { // Same character repeated 3+ times
-        score -= 1;
-    }
-    
-    // Determine strength class and text based on score
-    if (score <= 1) {
-        return { class: 'weak', text: 'Weak' };
-    } else if (score <= 3) {
-        return { class: 'medium', text: 'Medium' };
-    } else {
-        return { class: 'strong', text: 'Strong' };
-    }
-}
 
-/**
- * Shows an error message in a modal
- * @param {HTMLElement} modal - Modal element
- * @param {string} message - Error message
- */
-function showModalError(modal, message) {
-    const errorDiv = modal.querySelector('.error-message') || document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
-    
-    const modalBody = modal.querySelector('.modal-body');
-    if (!modal.querySelector('.error-message')) {
-        modalBody.insertBefore(errorDiv, modalBody.firstChild);
-    }
-    
-    // Highlight error field
-    const passwordField = modal.querySelector('input[type="password"]');
-    if (passwordField) {
-        passwordField.classList.add('error');
-        passwordField.addEventListener('input', function() {
-            this.classList.remove('error');
-            errorDiv.style.display = 'none';
-        });
-    }
-}
-
-/**
- * Add a team member to the UI
- * @param {Object} member - Member data
- */
-function addTeamMemberToUI(member) {
-    const teamMembersGrid = document.getElementById('teamMembersGrid');
-    const noTeamMembers = document.getElementById('noTeamMembers');
-    
-    if (!teamMembersGrid) return;
-    
-    // Create new member card
-    const memberCard = document.createElement('div');
-    memberCard.className = 'team-member-card';
-    memberCard.innerHTML = `
-        <div class="team-member-avatar">
-            <img src="${member.avatar || 'https://via.placeholder.com/100'}" alt="Team Member">
-        </div>
-        <div class="team-member-info">
-            <h3>${member.name}</h3>
-            <p class="member-role">${member.role}</p>
-            <p class="member-email">${member.email}</p>
-        </div>
-        <div class="team-member-actions own-profile-only">
-            <button class="btn btn-sm btn-outline edit-member-btn">
-                <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-sm btn-danger remove-member-btn">
-                <i class="fas fa-user-minus"></i>
-            </button>
-        </div>
-    `;
-    
-    // Add event listeners to new buttons
-    const editBtn = memberCard.querySelector('.edit-member-btn');
-    if (editBtn) {
-        editBtn.addEventListener('click', function() {
-            alert(`Edit functionality for ${member.name} not implemented yet`);
-        });
-    }
-    
-    removeBtn.addEventListener('click', function() {
-        const memberCard = this.closest('.team-member-card');
-        const memberName = memberCard.querySelector('h3').textContent;
-        const memberEmail = memberCard.querySelector('.member-email').textContent;
-        
-        if (confirm(`Are you sure you want to remove ${memberName} from your team?`)) {
-            // In a real app, send remove request to server
-            removeTeamMember(memberEmail)
-                .then(() => {
-                    // Remove card with animation
-                    memberCard.style.opacity = '0';
-                    setTimeout(() => {
-                        memberCard.remove();
-                        
-                        // Check if we need to show empty state
-                        if (teamMembersGrid.children.length === 0) {
-                            teamMembersGrid.style.display = 'none';
-                            if (noTeamMembers) noTeamMembers.style.display = 'block';
-                        }
-                    }, 300);
-                })
-                .catch(error => {
-                    console.error('Error removing team member:', error);
-                    alert('Failed to remove team member. Please try again.');
-                });
+    // Function to load saved settings
+    function loadSavedSettings() {
+        const savedData = localStorage.getItem('userData');
+        if (savedData) {
+            const userData = JSON.parse(savedData);
+            updateUIWithUserData(userData);
+            
+            // Fill form fields if they exist
+            if (personalInfoForm) {
+                for (const [key, value] of Object.entries(userData)) {
+                    const input = personalInfoForm.querySelector(`[name="${key}"]`);
+                    if (input) input.value = value;
+                }
+            }
         }
-    });
-}
+    }
 
-// Add the new member card to the grid
-teamMembersGrid.appendChild(memberCard);
+    // Function to load saved avatar
+    function loadSavedAvatar() {
+        const savedAvatar = localStorage.getItem('profileAvatar');
+        if (savedAvatar && profileAvatar) {
+            profileAvatar.src = savedAvatar;
+        }
+    }
 
-// Hide empty state if it was showing
-if (noTeamMembers) {
-    noTeamMembers.style.display = 'none';
-}
-
-// Show grid if it was hidden
-teamMembersGrid.style.display = 'grid';
-
-// Apply visibility classes to new elements
-applyVisibilityClasses();
-
-
-// Mock API calls (in a real app, these would call your backend API)
-
-/**
-* Save bio to server
-* @param {string} bio - User bio
-* @returns {Promise} - API response
-*/
-function saveBioToServer(bio) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Bio saved:', bio);
-        resolve({ success: true });
-    }, 500);
-});
-}
-
-/**
-* Delete user account
-* @param {string} password - User password
-* @returns {Promise} - API response
-*/
-function deleteAccount(password) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Account deleted');
-        // Redirect to login page
-        window.location.href = 'login.html';
-        resolve({ success: true });
-    }, 1000);
-});
-}
-
-/**
-* Add team member
-* @param {string} email - Member email
-* @param {string} role - Member role
-* @param {Array} permissions - Member permissions
-* @returns {Promise} - API response with member data
-*/
-function addTeamMember(email, role, permissions) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        // Generate random name from email
-        const name = email.split('@')[0].split('.').map(part => 
-            part.charAt(0).toUpperCase() + part.slice(1)
-        ).join(' ');
-        
-        const member = {
-            id: 'mem_' + Math.random().toString(36).substr(2, 9),
-            name: name,
-            email: email,
-            role: role,
-            permissions: permissions,
-            avatar: 'https://via.placeholder.com/100'
-        };
-        
-        console.log('Team member added:', member);
-        resolve({ success: true, member: member });
-    }, 800);
-});
-}
-
-/**
-* Remove team member
-* @param {string} email - Member email
-* @returns {Promise} - API response
-*/
-function removeTeamMember(email) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Team member removed:', email);
-        resolve({ success: true });
-    }, 500);
-});
-}
-
-/**
-* Update personal info
-* @param {Object} userData - User data
-* @returns {Promise} - API response
-*/
-function updatePersonalInfo(userData) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Personal info updated:', userData);
-        resolve({ success: true, user: userData });
-    }, 800);
-});
-}
-
-/**
-* Update password
-* @param {string} currentPassword - Current password
-* @param {string} newPassword - New password
-* @returns {Promise} - API response
-*/
-function updatePassword(currentPassword, newPassword) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        // In a real app, you would verify the current password on the server
-        console.log('Password updated');
-        resolve({ success: true });
-    }, 800);
-});
-}
-
-/**
-* Update notification preferences
-* @param {Object} preferences - Notification preferences
-* @returns {Promise} - API response
-*/
-function updateNotificationPreferences(preferences) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Notification preferences updated:', preferences);
-        resolve({ success: true });
-    }, 500);
-});
-}
-
-/**
-* Upload avatar
-* @param {File} file - Image file
-* @returns {Promise} - API response with image URL
-*/
-function uploadAvatar(file) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        // In a real app, you would upload the file to a server
-        console.log('Avatar uploaded:', file.name);
-        resolve({ success: true, url: URL.createObjectURL(file) });
-    }, 1500);
-});
-}
-
-/**
-* Cancel RSVP
-* @param {string} eventId - Event ID
-* @returns {Promise} - API response
-*/
-function cancelRsvp(eventId) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('RSVP cancelled for event:', eventId);
-        resolve({ success: true });
-    }, 500);
-});
-}
-
-/**
-* Delete event
-* @param {string} eventId - Event ID
-* @returns {Promise} - API response
-*/
-function deleteEvent(eventId) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Event deleted:', eventId);
-        resolve({ success: true });
-    }, 800);
-});
-}
-
-/**
-* Logout user
-* Redirects to login page
-*/
-function logout() {
-// Clear user session
-localStorage.removeItem('userType');
-localStorage.removeItem('userId');
-localStorage.removeItem('token');
-
-// Redirect to login page
-window.location.href = 'login.html';
-}
-
-/**
-* View other user profiles
-* @param {string} userId - User ID to view
-*/
-function viewUserProfile(userId) {
-// In a real app, you would fetch the user data from the server
-// and redirect to their profile page
-window.location.href = `profile.html?userId=${userId}`;
-}
-
-/**
-* Handle visiting another user's profile
-* This function would be called on page load to check if we're viewing
-* another user's profile and set up the page accordingly
-*/
-function handleProfileView() {
-// Get userId from URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get('userId');
-
-if (userId) {
-    // We're viewing someone else's profile
-    isOwnProfile = false;
-    document.body.setAttribute('data-profile-owner', 'false');
-    
-    // Fetch user data from server
-    fetchUserProfile(userId)
-        .then(userData => {
-            // Update page with user data
+    // Function to update UI with user data
+    function updateUIWithUserData(userData) {
+        if (userData.username) {
             document.getElementById('profileUsername').textContent = userData.username;
-            document.getElementById('profileType').textContent = userData.type === 'handler' ? 'Handler' : 'Viewer';
-            
-            if (userData.type === 'handler') {
-                document.getElementById('handlerDescription').textContent = userData.bio || 'No description available';
-            }
-            
-            if (bioText) {
-                bioText.textContent = userData.bio || 'No bio available';
-            }
-            
-            // Show appropriate sections based on user type
-            if (userData.type === 'handler') {
-                // For handlers, show their events and team members
-                document.getElementById('eventsSection').classList.add('active');
-                document.querySelector('.profile-nav a[href="#eventsSection"]').classList.add('active');
-            } else {
-                // For viewers, show their RSVPs
-                document.getElementById('eventsSection').classList.add('active');
-                document.querySelector('.profile-nav a[href="#eventsSection"]').classList.add('active');
-            }
-            
-            // Apply visibility classes
-            applyVisibilityClasses();
-        })
-        .catch(error => {
-            console.error('Error fetching user profile:', error);
-            alert('Failed to load user profile. Please try again.');
-        });
-} else {
-    // We're viewing our own profile
-    isOwnProfile = true;
-    document.body.setAttribute('data-profile-owner', 'true');
-}
-}
-
-/**
-* Fetch user profile
-* @param {string} userId - User ID
-* @returns {Promise} - API response with user data
-*/
-function fetchUserProfile(userId) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        // Mock user data
-        const userData = {
-            id: userId,
-            username: userId === 'handler123' ? 'Tech Society' : 'John Doe',
-            email: userId === 'handler123' ? 'techsociety@example.com' : 'john.doe@example.com',
-            type: userId === 'handler123' ? 'handler' : 'viewer',
-            bio: userId === 'handler123' ? 
-                'We are a society dedicated to technology events and workshops.' : 
-                'Tech enthusiast who loves attending campus events.',
-            memberSince: 'January 15, 2023',
-            handlerId: userId === 'handler123' ? 'HND12345' : null,
-            eventsCreated: userId === 'handler123' ? 15 : 0,
-            eventsAttending: userId === 'handler123' ? 0 : 8
-        };
-        
-        resolve(userData);
-    }, 800);
-});
-}
-
-/**
-* Follow/Unfollow handler
-* @param {string} handlerId - Handler ID
-* @param {boolean} isFollowing - Current follow status
-* @returns {Promise} - API response
-*/
-function toggleFollowHandler(handlerId, isFollowing) {
-return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-        console.log(isFollowing ? 'Unfollowed handler:' : 'Followed handler:', handlerId);
-        resolve({ success: true, isFollowing: !isFollowing });
-    }, 500);
-});
-}
-
-// Add event listener for follow/unfollow button
-const followBtn = document.getElementById('followHandlerBtn');
-if (followBtn) {
-followBtn.addEventListener('click', function() {
-    const handlerId = this.getAttribute('data-handler-id');
-    const isFollowing = this.classList.contains('following');
-    
-    toggleFollowHandler(handlerId, isFollowing)
-        .then(response => {
-            if (response.isFollowing) {
-                this.classList.add('following');
-                this.innerHTML = '<i class="fas fa-user-check"></i> Following';
-            } else {
-                this.classList.remove('following');
-                this.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
-            }
-        })
-        .catch(error => {
-            console.error('Error toggling follow status:', error);
-            alert('Failed to update follow status. Please try again.');
-        });
-});
-}
-
-// Initialize user type switch for testing
-const userTypeSwitch = document.getElementById('userTypeSwitch');
-if (userTypeSwitch) {
-userTypeSwitch.addEventListener('change', function() {
-    const newUserType = this.checked ? 'handler' : 'viewer';
-    localStorage.setItem('userType', newUserType);
-    window.location.reload();
-});
-
-// Set initial state
-if (userType === 'handler') {
-    userTypeSwitch.checked = true;
-}
-}
-
-// Call handleProfileView on page load
-window.addEventListener('DOMContentLoaded', function() {
-handleProfileView();
-});
-
-// Reuse createEvent function for viewing event details
-// In a real app, you would navigate to an event details page
-function viewEventDetails(eventId) {
-window.location.href = `event-details.html?eventId=${eventId}`;
-}
-
-// Add click event to event cards for viewing details
-const eventCards = document.querySelectorAll('.event-card');
-eventCards.forEach(card => {
-card.addEventListener('click', function(e) {
-    // Don't trigger if clicking on a button inside the card
-    if (!e.target.closest('button')) {
-        const eventId = this.getAttribute('data-event-id');
-        viewEventDetails(eventId);
+            document.getElementById('usernameValue').textContent = userData.username;
+        }
+        if (userData.email) {
+            document.getElementById('emailValue').textContent = userData.email;
+        }
+        if (userData.societyName) {
+            document.getElementById('profileUsername').textContent = userData.societyName;
+        }
+        if (userData.societyDescription) {
+            document.getElementById('handlerDescription').textContent = userData.societyDescription;
+        }
     }
-});
-});
 
-// Handle profile visibility for public profiles
-function setupPublicProfileView() {
-// Get userId from URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get('userId');
-
-if (userId) {
-    // Show public profile tabs
-    const publicTabs = ['aboutSection', 'eventsSection'];
-    
-    // Hide private profile tabs
-    const privateTabs = ['settingsSection', 'securitySection', 'teamSection'];
-    
-    // Update navigation links
-    const navLinks = document.querySelectorAll('.profile-nav a');
-    navLinks.forEach(link => {
-        const targetId = link.getAttribute('href').substring(1);
+    // Function to validate image file
+    function validateImageFile(file) {
+        // Check file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, or GIF)');
+            return false;
+        }
         
-        if (privateTabs.includes(targetId)) {
-            link.style.display = 'none';
+        // Check file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Image size should be less than 2MB');
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Mock API calls (in a real app, these would call your backend API)
+
+    /**
+    * Save bio to server
+    * @param {string} bio - User bio
+    * @returns {Promise} - API response
+    */
+    function saveBioToServer(bio) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('Bio saved:', bio);
+            resolve({ success: true });
+        }, 500);
+    });
+    }
+
+    /**
+    * Delete user account
+    * @param {string} password - User password
+    * @returns {Promise} - API response
+    */
+    function deleteAccount(password) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('Account deleted');
+            // Redirect to login page
+            window.location.href = 'login.html';
+            resolve({ success: true });
+        }, 1000);
+    });
+    }
+
+    /**
+    * Add team member
+    * @param {string} email - Member email
+    * @param {string} role - Member role
+    * @param {Array} permissions - Member permissions
+    * @returns {Promise} - API response with member data
+    */
+    function addTeamMember(email, role, permissions) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            // Generate random name from email
+            const name = email.split('@')[0].split('.').map(part => 
+                part.charAt(0).toUpperCase() + part.slice(1)
+            ).join(' ');
+            
+            const member = {
+                id: 'mem_' + Math.random().toString(36).substr(2, 9),
+                name: name,
+                email: email,
+                role: role,
+                permissions: permissions,
+                avatar: 'https://via.placeholder.com/100'
+            };
+            
+            console.log('Team member added:', member);
+            resolve({ success: true, member: member });
+        }, 800);
+    });
+    }
+
+    /**
+    * Remove team member
+    * @param {string} email - Member email
+    * @returns {Promise} - API response
+    */
+    function removeTeamMember(email) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('Team member removed:', email);
+            resolve({ success: true });
+        }, 500);
+    });
+    }
+
+    /**
+    * Update personal info
+    * @param {Object} userData - User data
+    * @returns {Promise} - API response
+    */
+    function updatePersonalInfo(userData) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('Personal info updated:', userData);
+            resolve({ success: true, user: userData });
+        }, 800);
+    });
+    }
+
+    /**
+    * Update password
+    * @param {string} currentPassword - Current password
+    * @param {string} newPassword - New password
+    * @returns {Promise} - API response
+    */
+    function updatePassword(currentPassword, newPassword) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            // In a real app, you would verify the current password on the server
+            console.log('Password updated');
+            resolve({ success: true });
+        }, 800);
+    });
+    }
+
+    /**
+    * Update notification preferences
+    * @param {Object} preferences - Notification preferences
+    * @returns {Promise} - API response
+    */
+    function updateNotificationPreferences(preferences) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('Notification preferences updated:', preferences);
+            resolve({ success: true });
+        }, 500);
+    });
+    }
+
+    /**
+    * Upload avatar
+    * @param {File} file - Image file
+    * @returns {Promise} - API response with image URL
+    */
+    function uploadAvatar(file) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            // In a real app, you would upload the file to a server
+            console.log('Avatar uploaded:', file.name);
+            resolve({ success: true, url: URL.createObjectURL(file) });
+        }, 1500);
+    });
+    }
+
+    /**
+    * Cancel RSVP
+    * @param {string} eventId - Event ID
+    * @returns {Promise} - API response
+    */
+    function cancelRsvp(eventId) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('RSVP cancelled for event:', eventId);
+            resolve({ success: true });
+        }, 500);
+    });
+    }
+
+    /**
+    * Delete event
+    * @param {string} eventId - Event ID
+    * @returns {Promise} - API response
+    */
+    function deleteEvent(eventId) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log('Event deleted:', eventId);
+            resolve({ success: true });
+        }, 800);
+    });
+    }
+
+    /**
+    * Logout user
+    * Redirects to login page
+    */
+    function logout() {
+    // Clear user session
+    localStorage.removeItem('userType');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token');
+
+    // Redirect to login page
+    window.location.href = 'login.html';
+    }
+
+    /**
+    * View other user profiles
+    * @param {string} userId - User ID to view
+    */
+    function viewUserProfile(userId) {
+    // In a real app, you would fetch the user data from the server
+    // and redirect to their profile page
+    window.location.href = `profile.html?userId=${userId}`;
+    }
+
+    /**
+    * Handle visiting another user's profile
+    * This function would be called on page load to check if we're viewing
+    * another user's profile and set up the page accordingly
+    */
+    function handleProfileView() {
+    // Get userId from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+
+    if (userId) {
+        // We're viewing someone else's profile
+        isOwnProfile = false;
+        document.body.setAttribute('data-profile-owner', 'false');
+        
+        // Fetch user data from server
+        fetchUserProfile(userId)
+            .then(userData => {
+                // Update page with user data
+                document.getElementById('profileUsername').textContent = userData.username;
+                document.getElementById('profileType').textContent = userData.type === 'handler' ? 'Handler' : 'Viewer';
+                
+                if (userData.type === 'handler') {
+                    document.getElementById('handlerDescription').textContent = userData.bio || 'No description available';
+                }
+                
+                if (bioText) {
+                    bioText.textContent = userData.bio || 'No bio available';
+                }
+                
+                // Show appropriate sections based on user type
+                if (userData.type === 'handler') {
+                    // For handlers, show their events and team members
+                    document.getElementById('eventsSection').classList.add('active');
+                    document.querySelector('.profile-nav a[href="#eventsSection"]').classList.add('active');
+                } else {
+                    // For viewers, show their RSVPs
+                    document.getElementById('eventsSection').classList.add('active');
+                    document.querySelector('.profile-nav a[href="#eventsSection"]').classList.add('active');
+                }
+                
+                // Apply visibility classes
+                applyVisibilityClasses();
+            })
+            .catch(error => {
+                console.error('Error fetching user profile:', error);
+                alert('Failed to load user profile. Please try again.');
+            });
+    } else {
+        // We're viewing our own profile
+        isOwnProfile = true;
+        document.body.setAttribute('data-profile-owner', 'true');
+    }
+    }
+
+    /**
+    * Fetch user profile
+    * @param {string} userId - User ID
+    * @returns {Promise} - API response with user data
+    */
+    function fetchUserProfile(userId) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            // Mock user data
+            const userData = {
+                id: userId,
+                username: userId === 'handler123' ? 'Tech Society' : 'John Doe',
+                email: userId === 'handler123' ? 'techsociety@example.com' : 'john.doe@example.com',
+                type: userId === 'handler123' ? 'handler' : 'viewer',
+                bio: userId === 'handler123' ? 
+                    'We are a society dedicated to technology events and workshops.' : 
+                    'Tech enthusiast who loves attending campus events.',
+                memberSince: 'January 15, 2023',
+                handlerId: userId === 'handler123' ? 'HND12345' : null,
+                eventsCreated: userId === 'handler123' ? 15 : 0,
+                eventsAttending: userId === 'handler123' ? 0 : 8
+            };
+            
+            resolve(userData);
+        }, 800);
+    });
+    }
+
+    /**
+    * Follow/Unfollow handler
+    * @param {string} handlerId - Handler ID
+    * @param {boolean} isFollowing - Current follow status
+    * @returns {Promise} - API response
+    */
+    function toggleFollowHandler(handlerId, isFollowing) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call
+        setTimeout(() => {
+            console.log(isFollowing ? 'Unfollowed handler:' : 'Followed handler:', handlerId);
+            resolve({ success: true, isFollowing: !isFollowing });
+        }, 500);
+    });
+    }
+
+    // Add event listener for follow/unfollow button
+    const followBtn = document.getElementById('followHandlerBtn');
+    if (followBtn) {
+    followBtn.addEventListener('click', function() {
+        const handlerId = this.getAttribute('data-handler-id');
+        const isFollowing = this.classList.contains('following');
+        
+        toggleFollowHandler(handlerId, isFollowing)
+            .then(response => {
+                if (response.isFollowing) {
+                    this.classList.add('following');
+                    this.innerHTML = '<i class="fas fa-user-check"></i> Following';
+                } else {
+                    this.classList.remove('following');
+                    this.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling follow status:', error);
+                alert('Failed to update follow status. Please try again.');
+            });
+    });
+    }
+
+    // Initialize user type switch for testing
+    const userTypeSwitch = document.getElementById('userTypeSwitch');
+    if (userTypeSwitch) {
+    userTypeSwitch.addEventListener('change', function() {
+        const newUserType = this.checked ? 'handler' : 'viewer';
+        localStorage.setItem('userType', newUserType);
+        window.location.reload();
+    });
+
+    // Set initial state
+    if (userType === 'handler') {
+        userTypeSwitch.checked = true;
+    }
+    }
+
+    // Call handleProfileView on page load
+    window.addEventListener('DOMContentLoaded', function() {
+    handleProfileView();
+    });
+
+    // Reuse createEvent function for viewing event details
+    // In a real app, you would navigate to an event details page
+    function viewEventDetails(eventId) {
+    window.location.href = `event-details.html?eventId=${eventId}`;
+    }
+
+    // Add click event to event cards for viewing details
+    const eventCards = document.querySelectorAll('.event-card');
+    eventCards.forEach(card => {
+    card.addEventListener('click', function(e) {
+        // Don't trigger if clicking on a button inside the card
+        if (!e.target.closest('button')) {
+            const eventId = this.getAttribute('data-event-id');
+            viewEventDetails(eventId);
         }
     });
-    
-    // Set events section as default active section for public profiles
-    document.getElementById('eventsSection').classList.add('active');
-    const eventsNavLink = document.querySelector('.profile-nav a[href="#eventsSection"]');
-    if (eventsNavLink) {
-        eventsNavLink.classList.add('active');
-    }
-}
-}
+    });
 
-// Call setupPublicProfileView after handleProfileView
-window.addEventListener('DOMContentLoaded', function() {
-handleProfileView();
-setupPublicProfileView();
+    // Handle profile visibility for public profiles
+    function setupPublicProfileView() {
+    // Get userId from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+
+    if (userId) {
+        // Show public profile tabs
+        const publicTabs = ['aboutSection', 'eventsSection'];
+        
+        // Hide private profile tabs
+        const privateTabs = ['settingsSection', 'securitySection', 'teamSection'];
+        
+        // Update navigation links
+        const navLinks = document.querySelectorAll('.profile-nav a');
+        navLinks.forEach(link => {
+            const targetId = link.getAttribute('href').substring(1);
+            
+            if (privateTabs.includes(targetId)) {
+                link.style.display = 'none';
+            }
+        });
+        
+        // Set events section as default active section for public profiles
+        document.getElementById('eventsSection').classList.add('active');
+        const eventsNavLink = document.querySelector('.profile-nav a[href="#eventsSection"]');
+        if (eventsNavLink) {
+            eventsNavLink.classList.add('active');
+        }
+    }
+    }
+
+    // Call setupPublicProfileView after handleProfileView
+    window.addEventListener('DOMContentLoaded', function() {
+    handleProfileView();
+    setupPublicProfileView();
+    });
 });
