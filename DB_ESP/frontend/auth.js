@@ -163,3 +163,63 @@ document.addEventListener('DOMContentLoaded', function() {
     initMobileMenu();
     initDropdowns();
 });
+
+// Add this to your auth.js file or where you handle authentication
+document.addEventListener('DOMContentLoaded', function() {
+    const profileLink = document.getElementById('profileLink');
+    
+    // Check if user is logged in (you'll need to implement this check based on your auth system)
+    function isUserLoggedIn() {
+        // Return true if user is logged in, false otherwise
+        // Example: return localStorage.getItem('userToken') !== null;
+    }
+    
+    // Update profile link based on login status
+    function updateProfileLink() {
+        if (isUserLoggedIn()) {
+            profileLink.href = 'profile.html';
+        } else {
+            profileLink.href = 'register.html';
+        }
+    }
+    
+    // Initial check
+    updateProfileLink();
+    
+    // You might want to call updateProfileLink() whenever the login status changes
+});
+
+// Auth utilities
+const auth = {
+    // Clear all auth-related storage
+    clearAuthData: function() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userRole');
+        sessionStorage.clear();
+    },
+
+    // Handle logout
+    logout: function() {
+        this.clearAuthData();
+        window.location.href = 'login.html';
+    },
+
+    // Initialize logout button
+    initLogoutButton: function() {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.logout();
+            });
+        }
+    }
+};
+
+// Initialize logout functionality when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    auth.initLogoutButton();
+});

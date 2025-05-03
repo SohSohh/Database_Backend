@@ -1,0 +1,10 @@
+@import url('announcement-details.css');
+
+/* You can add overrides or customizations here if needed. */
+
+/* Example: If you want to hide RSVP counts just in case */
+.rsvp-counts {
+  display: none !important;
+}
+
+/* No RSVP button, so nothing to override here. */

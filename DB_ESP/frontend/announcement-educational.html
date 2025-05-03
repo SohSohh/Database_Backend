@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcement Details - Event Management System</title>
+    <title>New Course Registration - Announcement Details</title>
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="footer.css">
@@ -28,54 +28,52 @@
             </a>
           </div>
         </nav>
-      </header>
+    </header>
 
     <main>
         <article class="announcement-details-container">
             <div class="announcement-details-header">
                 <div class="header-top">
                     <div class="header-main">
-                        <div class="category-badge" id="category-badge">Category</div>
-                        <h1 id="announcement-title">Announcement Title</h1>
+                        <div class="category-badge" id="category-badge">Educational</div>
+                        <h1 id="announcement-title">New Course Registration</h1>
                         <div class="meta-info">
                             <div class="meta-main">
-                                <span class="post-date" id="post-date">Posted on April 5, 2025</span>
-                                <span class="author" id="author">by Community Events Team</span>
+                                <span class="post-date" id="post-date">Posted on May 10, 2025</span>
+                                <span class="author" id="author">by Academic Affairs</span>
                             </div>
-                            <span class="rsvp-counts" id="rsvp-counts" style="display: flex;">
-                                <span class="rsvp-group">
-                                    <i class="fas fa-user-friends"></i>
-                                    <span id="attending-count">3</span> Attending
-                                </span>
-                                <span class="rsvp-sep">|</span>
-                                <span class="rsvp-group">
-                                    <span id="pending-count">2</span> Pending
-                                </span>
-                                <span class="rsvp-sep">|</span>
-                                <span class="rsvp-group">
-                                    <span id="not-attending-count">1</span> Not Attending
-                                </span>
-                            </span>
                         </div>
                     </div>
                     <div class="action-buttons">
-                        <button id="rsvp-button" class="rsvp-btn"><i class="fas fa-calendar-check"></i> RSVP</button>
                         <button id="share-button" class="share-btn"><i class="fas fa-share-alt"></i> Share</button>
                     </div>
                 </div>
             </div>
 
             <div class="announcement-details-content" id="announcement-content">
-                <!-- Content will be populated by JavaScript -->
+                <p>
+                    We are excited to announce that registration for the new semester courses is now open! Students are encouraged to review the course catalog and register for their preferred classes as soon as possible.
+                </p>
+                <h2>Registration Details</h2>
+                <ul>
+                    <li>Registration opens: May 15, 2025</li>
+                    <li>Registration closes: June 5, 2025</li>
+                    <li>Visit the student portal to complete your registration.</li>
+                </ul>
+                <h2>Need Help?</h2>
+                <p>
+                    If you have any questions or need assistance, please contact the Academic Affairs office or email <a href="mailto:academics@eventhub.com">academics@eventhub.com</a>.
+                </p>
             </div>
 
+            <!-- Feedback Section -->
             <div class="feedback-section">
                 <div class="section-header">
-                    <h3>Event Feedback</h3>
+                    <h3>Feedback</h3>
                     <div class="overall-rating">
                         <span class="rating-text">Overall Rating:</span>
-                        <div class="stars">★★★★★</div>
-                        <span class="rating-count">(3 reviews)</span>
+                        <div class="stars" id="overall-stars">★★★★★</div>
+                        <span class="rating-count" id="rating-count">(0 reviews)</span>
                     </div>
                 </div>
                 <div class="feedbacks-list" id="comments-list">
@@ -101,13 +99,14 @@
                     </form>
                 </div>
             </div>
-
+            
             <aside class="related-announcements">
                 <h3>Related Announcements</h3>
                 <div class="related-announcements-container" id="related-announcements">
                     <!-- Related announcements will be populated by JavaScript -->
                 </div>
             </aside>
+            
         </article>
     </main>
 
@@ -147,40 +146,6 @@
         </div>
     </div>
 
-    <!-- RSVP Modal -->
-    <div id="rsvpModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>RSVP for Event</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="rsvpForm">
-                    <div class="form-group">
-                        <label for="rsvpStatus">Will you attend?</label>
-                        <div class="rsvp-options">
-                            <button type="button" class="rsvp-option" data-value="yes">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Yes</span>
-                            </button>
-                            <button type="button" class="rsvp-option" data-value="maybe">
-                                <i class="fas fa-question-circle"></i>
-                                <span>Maybe</span>
-                            </button>
-                            <button type="button" class="rsvp-option" data-value="no">
-                                <i class="fas fa-times-circle"></i>
-                                <span>No</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Submit RSVP</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -205,7 +170,6 @@
             <p>&copy; 2025 EventHub. All rights reserved.</p>
         </div>
     </footer>
-
-    <script src="announcement-details.js"></script>
+    <script src="announcement-educational.js"></script>
 </body>
 </html>

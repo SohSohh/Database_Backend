@@ -1,8 +1,9 @@
 from rest_framework import generics, filters, permissions, status
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Event
-from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, AttendeeSerializer
+from .models import Event, Category, Comment
+from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, AttendeeSerializer, CategorySerializer, CommentSerializer
 from .permissions import IsHandlerOrReadOnly, IsEventHost
+
 from rest_framework.response import Response
 
 
@@ -131,11 +132,6 @@ class UserAttendingEventsView(generics.ListAPIView):
     def get_queryset(self):
         """Get only events the current user is attending"""
         return self.request.user.attending_events.all()
-
-
-# Add to your views.py
-from .models import Category, Comment
-from .serializers import CategorySerializer, CommentSerializer
 
 
 class CategoryListView(generics.ListAPIView):

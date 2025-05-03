@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Societies - EventHub</title>
+    <link rel="stylesheet" href="handler-dashboard.css">
+    <link rel="stylesheet" href="my-societies.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="brand-link">
+                <h1>EventHub</h1>
+            </a>
+            <h2>Event Viewer</h2>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li class="nav-item">
+                    <a href="viewer-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        My Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-societies.html" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        My Societies
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-registrations.html" class="nav-link">
+                        <i class="fas fa-ticket-alt"></i>
+                        My Registrations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-feedback.html" class="nav-link">
+                        <i class="fas fa-comment"></i>
+                        My Feedback
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logout-btn" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> My Societies</h2>
+                    <button class="btn btn-primary" id="joinSocietyBtn">
+                        <i class="fas fa-plus"></i> Join New Society
+                    </button>
+                </div>
+                <div class="societies-grid" id="mySocieties">
+                    <!-- Societies will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="joinSocietyModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join a Society</h2>
+                <button class="close-modal" id="closeJoinSocietyModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="joinSocietyForm">
+                    <div class="form-group">
+                        <label for="selectSociety">Select Society</label>
+                        <select id="selectSociety" required>
+                            <!-- Societies will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="referralCode">Referral Code</label>
+                        <input type="text" id="referralCode" required placeholder="Enter referral code">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Join Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="my-societies.js"></script>
+</body>
+</html>
