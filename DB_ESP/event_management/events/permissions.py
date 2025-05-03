@@ -2,19 +2,13 @@ from rest_framework import permissions
 
 
 class IsHandlerOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission:
-    - Allow read-only access for any authenticated user
-    - Allow write access only for handlers
-    """
-
     def has_permission(self, request, view):
         # Allow read-only access for any authenticated user
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
 
-        # Allow write access only for handlers
-        return request.user.is_authenticated and request.user.is_handler()
+        # Update this line to use user_type attribute instead of is_handler() method
+        return request.user.is_authenticated and request.user.user_type == 'handler'
 
 
 class IsEventHost(permissions.BasePermission):

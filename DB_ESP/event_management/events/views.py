@@ -1,11 +1,18 @@
 from rest_framework import generics, filters, permissions, status
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Event, Category, Comment
-from .serializers import EventSerializer, EventDetailSerializer, EventUpdateSerializer, AttendeeSerializer, CategorySerializer, CommentSerializer
-from .permissions import IsHandlerOrReadOnly, IsEventHost
-
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
+from .models import Event, Category, Comment
+from .serializers import (
+    EventSerializer,
+    EventDetailSerializer,
+    EventUpdateSerializer,
+    AttendeeSerializer,
+    CategorySerializer,
+    CommentSerializer
+)
+from .permissions import IsHandlerOrReadOnly, IsEventHost
 
 
 class EventListView(generics.ListCreateAPIView):
@@ -18,13 +25,13 @@ class EventListView(generics.ListCreateAPIView):
     serializer_class = EventSerializer
     permission_classes = [IsHandlerOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['date', 'location', 'host', 'category']  # Added category
+    filterset_fields = ['date', 'location', 'host', 'category']
     search_fields = ['name', 'description', 'location']
     ordering_fields = ['date', 'start_time', 'name']
 
-    def get_queryset(self):
-        """Get all events"""
-        return Event.objects.all()
+    def perform_create(self, serializer):
+        """Set host as the current user"""
+        serializer.save(host=self.request.user)
 
 
 class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -34,8 +41,13 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     - PUT/PATCH/DELETE: Only the host of the event can modify/delete it
     """
     queryset = Event.objects.all()
-    serializer_class = EventDetailSerializer
     permission_classes = [permissions.IsAuthenticated, IsEventHost]
+
+    def get_serializer_class(self):
+        """Select appropriate serializer based on the request method"""
+        if self.request.method in ['PUT', 'PATCH']:
+            return EventUpdateSerializer
+        return EventDetailSerializer
 
     def get_serializer(self, *args, **kwargs):
         """Get serializer with dynamic field filtering for GET requests"""
@@ -43,11 +55,6 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
             fields = self.request.query_params.get('fields')
             if fields:
                 kwargs['fields'] = fields.split(',')
-            return super().get_serializer(*args, **kwargs)
-        elif self.request.method in ['PUT', 'PATCH']:
-            # Use the update serializer for PUT/PATCH
-            kwargs['partial'] = True
-            return EventUpdateSerializer(*args, **kwargs)
         return super().get_serializer(*args, **kwargs)
 
 
@@ -73,6 +80,7 @@ class HandlerEventListView(generics.ListAPIView):
         # Otherwise, show current user's events
         return Event.objects.filter(host=self.request.user)
 
+
 class EventAttendanceView(generics.GenericAPIView):
     """
     Manage event attendance.
@@ -90,6 +98,13 @@ class EventAttendanceView(generics.GenericAPIView):
         if serializer.is_valid():
             action = serializer.validated_data['action']
             user = request.user
+
+            # Check if user is a viewer (consistent with user model)
+            if user.user_type != 'viewer':
+                return Response(
+                    {"error": "Only viewers can attend events"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             if action == 'attend':
                 # Add user to attendees if not already attending

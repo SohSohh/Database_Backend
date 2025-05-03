@@ -3,7 +3,21 @@ from rest_framework import serializers
 from .models import Event, Category, Comment
 
 
-class EventSerializer(serializers.ModelSerializer):
+class BaseEventSerializer(serializers.ModelSerializer):
+    """Base serializer with dynamic field filtering"""
+
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('fields', None)
+        super(BaseEventSerializer, self).__init__(*args, **kwargs)
+
+        if fields:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+
+class EventSerializer(BaseEventSerializer):
     host_username = serializers.CharField(source='host.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
@@ -32,7 +46,7 @@ class EventSerializer(serializers.ModelSerializer):
         return False
 
 
-class EventDetailSerializer(serializers.ModelSerializer):
+class EventDetailSerializer(BaseEventSerializer):
     """Event serializer with dynamic fields"""
     host_username = serializers.CharField(source='host.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)

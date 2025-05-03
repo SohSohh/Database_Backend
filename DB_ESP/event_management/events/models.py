@@ -11,12 +11,14 @@ class Event(models.Model):
     host = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='hosted_events'
+        related_name='hosted_events',
+        limit_choices_to={'user_type': 'handler'}  # Add this to ensure only handlers can host
     )
     # Add many-to-many relationship for attendees
     attendees = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='attending_events',
+        limit_choices_to={'user_type': 'viewer'},  # Add this to ensure only viewers can attend
         blank=True
     )
     start_time = models.TimeField()
