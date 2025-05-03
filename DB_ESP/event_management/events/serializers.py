@@ -22,6 +22,7 @@ class EventSerializer(BaseEventSerializer):
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
+    average_rating = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Event
@@ -29,9 +30,9 @@ class EventSerializer(BaseEventSerializer):
             'id', 'name', 'host', 'host_username', 'start_time',
             'end_time', 'date', 'location', 'description',
             'banner', 'created_at', 'updated_at', 'attendee_count',
-            'is_attending', 'category', 'category_name'
+            'is_attending', 'category', 'category_name', 'average_rating'
         )
-        read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count')
+        read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count', 'average_rating')
 
     def create(self, validated_data):
         """Set host as the current user when creating an event"""
@@ -51,6 +52,7 @@ class EventDetailSerializer(BaseEventSerializer):
     host_username = serializers.CharField(source='host.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
+    average_rating = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Event
@@ -58,9 +60,9 @@ class EventDetailSerializer(BaseEventSerializer):
             'id', 'name', 'host', 'host_username', 'start_time',
             'end_time', 'date', 'location', 'description',
             'banner', 'created_at', 'updated_at', 'attendee_count',
-            'is_attending'
+            'is_attending', 'average_rating'
         )
-        read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count')
+        read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count', 'average_rating')
 
     def __init__(self, *args, **kwargs):
         # Get fields from request query params
@@ -118,9 +120,35 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'event', 'user', 'user_username', 'content', 'created_at', 'updated_at')
+        fields = ('id', 'event', 'user', 'user_username', 'content', 'rating', 'created_at', 'updated_at')
         read_only_fields = ('event', 'user', 'created_at', 'updated_at')
 
+    def validate_rating(self, value):
+        """Validate rating is between 1 and 5"""
+        if value < 1 or value > 5:
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+
+    def validate(self, data):
+        """Validate that the event has ended before allowing a comment"""
+        # In create operations, event_id comes from URL and is added later
+        # So we need to check the event from the context
+        request = self.context.get('request')
+        view = self.context.get('view')
+
+        if request and request.method == 'POST' and view:
+            event_id = view.kwargs.get('pk')
+            try:
+                event = Event.objects.get(pk=event_id)
+                if not event.has_ended():
+                    raise serializers.ValidationError(
+                        {"event": "Comments can only be added after the event has ended."}
+                    )
+            except Event.DoesNotExist:
+                # Let the view handle this error
+                pass
+
+        return data
 
     def create(self, validated_data):
         """Set user as the current user when creating a comment"""

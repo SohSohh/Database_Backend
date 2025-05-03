@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,8 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Count
 from rest_framework.decorators import action
 from django.db.models import Subquery, OuterRef, Count
-
-from .models import CustomUser, Handler, Viewer
+from django.db import models
+from .models import CustomUser, Handler, Viewer, Membership
 from .serializers import (
     HandlerSerializer,
     ViewerSerializer,
@@ -15,7 +16,7 @@ from .serializers import (
     ViewerRegistrationSerializer,
     HandlerRegistrationSerializer,
     SocietyMembershipSerializer,
-    JoinCodeSerializer
+    JoinCodeSerializer, MemberWithRoleSerializer
 )
 from .permissions import IsHandler, IsViewer
 
@@ -62,11 +63,16 @@ class MembershipView(APIView):
         serializer = SocietyMembershipSerializer(data=request.data)
         if serializer.is_valid():
             handler = serializer.validated_data['handler']
-            handler.memberships.add(request.user)
-            return Response(
-                {"detail": f"You have joined {handler.society_name}"},
-                status=status.HTTP_200_OK
+            role = serializer.validated_data.get('role', Membership.OTHER)
+
+            # Create or update membership
+            membership, created = Membership.objects.update_or_create(
+                viewer=request.user,
+                handler=handler,
+                defaults={'role': role}
             )
+
+            return Response({"message": "Successfully joined society"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -74,23 +80,102 @@ class SocietyMembersViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ViewerSerializer
     permission_classes = (permissions.IsAuthenticated, IsHandler)
 
+    def get_serializer_class(self):
+        return MemberWithRoleSerializer
+
     def get_queryset(self):
-        return self.request.user.memberships
+        handler = self.request.user
+        # Get all viewers who are members of this handler with their roles
+        return Viewer.objects.filter(society_memberships__handler=handler).annotate(
+            society_memberships__role=models.F('society_memberships__role'),
+            society_memberships__get_role_display=models.Case(
+                *[models.When(society_memberships__role=choice[0], then=models.Value(choice[1]))
+                  for choice in Membership.ROLE_CHOICES],
+                default=models.Value('Unknown'),
+                output_field=models.CharField(),
+            )
+        )
+
+    def add_member(self, request, pk=None):
+        try:
+            member = Viewer.objects.get(pk=pk)
+            handler = request.user
+            role = request.data.get('role', Membership.OTHER)
+
+            # Validate role
+            valid_roles = [choice[0] for choice in Membership.ROLE_CHOICES]
+            if role not in valid_roles:
+                return Response({"error": f"Invalid role. Must be one of: {', '.join(valid_roles)}"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # Create or update membership
+            membership, created = Membership.objects.update_or_create(
+                viewer=member,
+                handler=handler,
+                defaults={'role': role}
+            )
+
+            action = "added to" if created else "updated in"
+            return Response(
+                {"detail": f"Member {member.username} {action} society with role {membership.get_role_display()}"},
+                status=status.HTTP_200_OK
+            )
+        except Viewer.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=['delete'])
     def remove_member(self, request, pk=None):
         try:
             member = Viewer.objects.get(pk=pk)
-            if member in request.user.memberships.all():
-                request.user.memberships.remove(member)
+            handler = request.user
+
+            try:
+                membership = Membership.objects.get(viewer=member, handler=handler)
+                membership.delete()
                 return Response(
                     {"detail": f"Member {member.username} removed from society"},
                     status=status.HTTP_200_OK
                 )
+            except Membership.DoesNotExist:
+                return Response(
+                    {"error": "This user is not a member of your society"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except Viewer.DoesNotExist:
             return Response(
-                {"error": "This user is not a member of your society"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
             )
+
+    @action(detail=True, methods=['patch'])
+    def update_role(self, request, pk=None):
+        try:
+            member = Viewer.objects.get(pk=pk)
+            handler = request.user
+            role = request.data.get('role')
+
+            if not role:
+                return Response({"error": "Role is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Validate role
+            valid_roles = [choice[0] for choice in Membership.ROLE_CHOICES]
+            if role not in valid_roles:
+                return Response({"error": f"Invalid role. Must be one of: {', '.join(valid_roles)}"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                membership = Membership.objects.get(viewer=member, handler=handler)
+                membership.role = role
+                membership.save()
+                return Response(
+                    {"detail": f"Role updated to {membership.get_role_display()} for {member.username}"},
+                    status=status.HTTP_200_OK
+                )
+            except Membership.DoesNotExist:
+                return Response(
+                    {"error": "This user is not a member of your society"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         except Viewer.DoesNotExist:
             return Response(
                 {"error": "User not found"},

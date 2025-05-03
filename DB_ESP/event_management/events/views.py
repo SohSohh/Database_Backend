@@ -1,7 +1,8 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, filters, permissions, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 
 from .models import Event, Category, Comment
 from .serializers import (
@@ -156,9 +157,25 @@ class CategoryListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class EventRatingView(generics.RetrieveAPIView):
+    """Get the average rating for a specific event"""
+    queryset = Event.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        event = self.get_object()
+        return Response({
+            'event_id': event.id,
+            'event_name': event.name,
+            'average_rating': event.average_rating,
+            'rating_count': event.comments.count()
+        }, status=status.HTTP_200_OK)
+
+
 class EventCommentsView(generics.ListCreateAPIView):
     """
-    List all comments for a specific event or create a new comment
+    List all comments for a specific event or create a new comment.
+    Comments can only be created after the event has ended.
     """
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -171,4 +188,10 @@ class EventCommentsView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         """Set event from URL and user from request"""
         event_id = self.kwargs.get('pk')
+        event = get_object_or_404(Event, pk=event_id)
+
+        # Check if event has ended
+        if not event.has_ended():
+            raise ValidationError({'error': 'Comments can only be added after the event has ended.'})
+
         serializer.save(user=self.request.user, event_id=event_id)

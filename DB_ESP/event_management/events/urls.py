@@ -6,7 +6,8 @@ from .views import (
     EventAttendanceView,
     UserAttendingEventsView,
     CategoryListView,
-    EventCommentsView
+    EventCommentsView,
+    EventRatingView
 )
 
 # Consistent URL pattern organization - similar to user URLs
@@ -18,6 +19,7 @@ urlpatterns = [
     # Event relation endpoints
     path('<int:pk>/attendance/', EventAttendanceView.as_view(), name='event_attendance'),  # POST to attend/unattend
     path('<int:pk>/comments/', EventCommentsView.as_view(), name='event_comments'),  # Event comments
+    path('<int:pk>/rating/', EventRatingView.as_view(), name='event_rating'),  # GET average event rating
 
     # User-specific event endpoints
     path('handler/', HandlerEventListView.as_view(), name='handler_events'),  # GET events created by handler

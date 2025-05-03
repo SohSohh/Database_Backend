@@ -32,11 +32,16 @@ urlpatterns = [
     path('societies/', SocietyListView.as_view(), name='society_list'),
     path('membership/', MembershipView.as_view(), name='join_society'),
 
-    # ViewSet URLs without using router
-    path('society/members/', SocietyMembersViewSet.as_view({'get': 'list'}), name='society_members'),
-    path('society/members/<int:pk>/', SocietyMembersViewSet.as_view({'get': 'retrieve'}), name='society_member_detail'),
-    path('society/members/<int:pk>/remove_member/', SocietyMembersViewSet.as_view({'delete': 'remove_member'}),
-         name='remove_society_member'),
+    path('society/members/', SocietyMembersViewSet.as_view({
+        'get': 'list',
+    }), name='society_members'),
+
+    path('society/members/<int:pk>/', SocietyMembersViewSet.as_view({
+        'get': 'retrieve',
+        'patch': 'update_role',
+        'delete': 'remove_member',
+        'post': 'add_member',
+    }), name='society_member_detail'),
 
     path('society/join-code/', RegenerateJoinCodeView.as_view(), name='regenerate_join_code'),
 ]

@@ -10,13 +10,6 @@ class CustomUser(AbstractUser):
     society_name = models.CharField(max_length=255, blank=True, null=True)
     join_code = models.CharField(max_length=5, blank=True, null=True)
 
-    memberships = models.ManyToManyField(
-        'self',
-        symmetrical=False,
-        limit_choices_to={'user_type': 'handler'},
-        blank=True
-    )
-
     # Define user types
     VIEWER = 'viewer'
     HANDLER = 'handler'
@@ -53,7 +46,6 @@ class CustomUser(AbstractUser):
             return self.society_name or self.username
         return f"{self.first_name} {self.last_name}" if self.first_name else self.username
 
-
 class Handler(CustomUser):
     class Meta:
         proxy = True
@@ -66,7 +58,7 @@ class Handler(CustomUser):
     @property
     def members(self):
         """Get all viewers who are members of this handler"""
-        return Viewer.objects.filter(memberships=self)
+        return Viewer.objects.filter(society_memberships__handler=self)
 
 
 class Viewer(CustomUser):
@@ -81,4 +73,30 @@ class Viewer(CustomUser):
     @property
     def societies(self):
         """Get all handlers this viewer is a member of"""
-        return Handler.objects.filter(pk__in=self.memberships.values_list('id', flat=True))
+        return Handler.objects.filter(viewer_memberships__viewer=self)
+
+
+class Membership(models.Model):
+    """Intermediate model to track society memberships with roles"""
+    EXECUTIVE = 'executive'
+    DEPUTY_DIRECTOR = 'deputy_director'
+    DIRECTOR = 'director'
+    VICE_PRESIDENT = 'vice_president'
+    PRESIDENT = 'president'
+    OTHER = 'other'
+
+    ROLE_CHOICES = [
+        (EXECUTIVE, 'Executive'),
+        (DEPUTY_DIRECTOR, 'Deputy Director'),
+        (DIRECTOR, 'Director'),
+        (VICE_PRESIDENT, 'Vice President'),
+        (PRESIDENT, 'President'),
+        (OTHER, 'Other'),
+    ]
+
+    viewer = models.ForeignKey('Viewer', related_name='society_memberships', on_delete=models.CASCADE)
+    handler = models.ForeignKey('Handler', related_name='viewer_memberships', on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=OTHER)
+
+    class Meta:
+        unique_together = ('viewer', 'handler')

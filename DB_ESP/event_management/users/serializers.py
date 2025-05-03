@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Handler, Viewer
+from .models import Handler, Viewer, Membership
 
 User = get_user_model()
 
@@ -89,19 +89,49 @@ class HandlerRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
+class MembershipSerializer(serializers.ModelSerializer):
+    viewer_name = serializers.SerializerMethodField()
+    role_display = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Membership
+        fields = ('id', 'viewer', 'handler', 'role', 'role_display', 'viewer_name')
+
+    def get_viewer_name(self, obj):
+        return str(obj.viewer)
+
+    def get_role_display(self, obj):
+        return obj.get_role_display()
+
+class MemberWithRoleSerializer(ViewerSerializer):
+    role = serializers.CharField(source='society_memberships__role', read_only=True)
+    role_display = serializers.CharField(source='society_memberships__get_role_display', read_only=True)
+
+    class Meta(ViewerSerializer.Meta):
+        fields = ViewerSerializer.Meta.fields + ('role', 'role_display')
+
 class SocietyMembershipSerializer(serializers.Serializer):
     handler_id = serializers.IntegerField(required=True)
     join_code = serializers.CharField(required=True, max_length=5)
+    role = serializers.CharField(required=False, default=Membership.OTHER)
 
     def validate(self, attrs):
         try:
             handler = Handler.objects.get(id=attrs['handler_id'])
             if handler.join_code != attrs['join_code']:
                 raise serializers.ValidationError({"join_code": "Invalid join code for this society."})
+
+            # Validate role
+            role = attrs.get('role', Membership.OTHER)
+            valid_roles = [choice[0] for choice in Membership.ROLE_CHOICES]
+            if role not in valid_roles:
+                raise serializers.ValidationError({"role": f"Invalid role. Must be one of: {', '.join(valid_roles)}"})
+
             attrs['handler'] = handler
         except Handler.DoesNotExist:
             raise serializers.ValidationError({"handler_id": "No society found with this ID."})
         return attrs
+
 
 
 class JoinCodeSerializer(serializers.Serializer):
