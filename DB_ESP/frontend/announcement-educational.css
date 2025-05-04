@@ -8,3 +8,10 @@
 }
 
 /* No RSVP button, so nothing to override here. */
+
+header {
+  width: 100%;
+  background: #800000;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
