@@ -80,58 +80,139 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('.rsvp-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const eventId = this.getAttribute('data-event-id');
-            const isRSVPed = this.classList.contains('rsvp-active');
+            const eventTitle = this.closest('.card-content').querySelector('h3').textContent;
             
-            if (!isRSVPed) {
-                // TODO: In a real app, this would make an API call to your backend
-                // Example: fetch(`/api/events/${eventId}/rsvp`, { method: 'POST' })
-                
-                // Update UI
-                this.classList.add('rsvp-active');
-                this.innerHTML = '<i class="fas fa-check-circle"></i> RSVP\'d';
-                
-                // Show success message
-                showRSVPSuccessMessage('Successfully RSVP\'d to event!');
-            } else {
-                // TODO: In a real app, this would make an API call to your backend
-                // Example: fetch(`/api/events/${eventId}/rsvp`, { method: 'DELETE' })
-                
-                // Update UI
-                this.classList.remove('rsvp-active');
-                this.innerHTML = '<i class="fas fa-check-circle"></i> RSVP';
-                
-                // Show success message
-                showRSVPSuccessMessage('RSVP cancelled');
-            }
+            // Update modal title with event name
+            document.querySelector('#rsvpModal h2').textContent = `RSVP for ${eventTitle}`;
+            
+            // Show modal
+            document.getElementById('rsvpModal').style.display = 'block';
+            
+            // Reset form
+            document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('selected'));
         });
     });
   
-    // Show success message for RSVP
-    function showRSVPSuccessMessage(message) {
-        const successMessage = document.getElementById('rsvpToast');
-        successMessage.textContent = message;
-        successMessage.classList.add('show');
+    // RSVP Form Submission
+    document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Remove after 3 seconds
-        setTimeout(() => {
-            successMessage.classList.remove('show');
-        }, 3000);
-    }
+        const selectedOption = document.querySelector('.rsvp-option.selected');
+        if (!selectedOption) {
+            alert('Please select your attendance status');
+            return;
+        }
+        
+        const eventId = document.querySelector('.rsvp-btn').getAttribute('data-event-id');
+        const attendance = selectedOption.getAttribute('data-value');
+        
+        // Make API call to submit RSVP
+        fetch(`/api/events/${eventId}/rsvp/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                attendance: attendance
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to submit RSVP');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            const rsvpBtn = document.querySelector(`.rsvp-btn[data-event-id="${eventId}"]`);
+            rsvpBtn.classList.add('rsvp-active');
+            rsvpBtn.innerHTML = '<i class="fas fa-check-circle"></i> RSVP\'d';
+            
+            // Show success message
+            showSuccessMessage('Successfully RSVP\'d to event!');
+            
+            // Close modal
+            document.getElementById('rsvpModal').style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error submitting RSVP:', error);
+            alert('Failed to submit RSVP. Please try again.');
+        });
+    });
   
-    // Close modal on close button
-    document.getElementById('closeRsvpModal').onclick = function() {
+    // RSVP Option Selection
+    document.querySelectorAll('.rsvp-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+  
+    // Close Modal Handlers
+    document.querySelector('.close-modal').addEventListener('click', function() {
         document.getElementById('rsvpModal').style.display = 'none';
-        document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-    };
+    });
   
-    // Close modal when clicking outside
     window.addEventListener('click', function(event) {
-        const modal = document.getElementById('rsvpModal');
-        if (event.target === modal) {
-            modal.style.display = 'none';
-            document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+        if (event.target === document.getElementById('rsvpModal')) {
+            document.getElementById('rsvpModal').style.display = 'none';
         }
     });
+  
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+  
+    // Show success message
+    function showSuccessMessage(message) {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = message;
+        successMessage.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color, #800000);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        `;
+  
+        document.body.appendChild(successMessage);
+  
+        // Animate in
+        setTimeout(() => {
+            successMessage.style.opacity = '1';
+            successMessage.style.transform = 'translateY(0)';
+        }, 100);
+  
+        // Remove after 3 seconds
+        setTimeout(() => {
+            successMessage.style.opacity = '0';
+            successMessage.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                if (successMessage.parentNode) {
+                    document.body.removeChild(successMessage);
+                }
+            }, 300);
+        }, 3000);
+    }
   })
   
   function updateNavigation(isLoggedIn, userType) {
@@ -354,11 +435,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
   
+  // --- RSVP/Attending State ---
+  // This object tracks which events the user is attending.
+  // The keys are event IDs, and the values are true (attending) or false (not attending).
+  // In a real app, this would be loaded from/saved to the backend.
+  let attendingStatus = JSON.parse(localStorage.getItem('attendingStatus') || '{}');
+
+  // --- Render Featured Events ---
+  // This function renders the event cards and sets the RSVP button state
   function renderFeaturedEvents(events) {
     const container = document.querySelector('.events-row');
     if (!container) return;
     container.innerHTML = '';
     events.forEach(event => {
+      const isAttending = attendingStatus[event.id];
       const card = document.createElement('div');
       card.className = 'event-card';
       card.innerHTML = `
@@ -378,7 +468,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>${event.description}</p>
           <div class="card-actions">
             <button class="btn-outline">Details</button>
-            <button class="rsvp-btn" data-event-id="${event.id}"><i class="fas fa-check-circle"></i> RSVP</button>
+            <button class="rsvp-btn${isAttending ? ' rsvp-active' : ''}" data-event-id="${event.id}">
+              <i class="fas fa-check-circle"></i> ${isAttending ? "Attending" : "RSVP"}
+            </button>
           </div>
         </div>
       `;
@@ -412,8 +504,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   
+  // --- RSVP Button Logic ---
+  // This function attaches click handlers to RSVP buttons.
+  // When clicked, it toggles the attending state for the event and updates the UI and localStorage.
+  function setupRSVPButtons() {
+    document.querySelectorAll('.rsvp-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const eventId = this.getAttribute('data-event-id');
+        if (attendingStatus[eventId]) {
+          attendingStatus[eventId] = false;
+          this.classList.remove('rsvp-active');
+          this.innerHTML = '<i class="fas fa-check-circle"></i> RSVP';
+          showSuccessMessage('You are no longer attending this event.');
+        } else {
+          attendingStatus[eventId] = true;
+          this.classList.add('rsvp-active');
+          this.innerHTML = '<i class="fas fa-check-circle"></i> Attending';
+          showSuccessMessage('You are now attending this event!');
+        }
+        localStorage.setItem('attendingStatus', JSON.stringify(attendingStatus));
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     renderFeaturedEvents(demoFeaturedEvents);
+    setupRSVPButtons();
     renderLatestAnnouncements(demoAnnouncements);
   });
   

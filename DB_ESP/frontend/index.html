@@ -166,6 +166,35 @@
     <!-- Success Message -->
     <div id="rsvpToast" class="success-message"></div>
 
+    <!-- RSVP Modal -->
+    <div id="rsvpModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>RSVP for Event</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        <form id="rsvpForm">
+          <div class="form-group">
+            <label>Select your attendance:</label>
+            <div class="rsvp-options">
+              <div class="rsvp-option" data-value="yes">
+                <i class="fas fa-check"></i> Yes
+              </div>
+              <div class="rsvp-option" data-value="maybe">
+                <i class="fas fa-question"></i> Maybe
+              </div>
+              <div class="rsvp-option" data-value="no">
+                <i class="fas fa-times"></i> No
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Submit RSVP</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const hamburger = document.getElementById('hamburger-menu');
@@ -198,6 +227,68 @@
           });
         });
       });
+    </script>
+
+    <script>
+      function showSuccessMessage(message) {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = message;
+        successMessage.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: var(--primary-color, #800000);
+          color: white;
+          padding: 15px 25px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          opacity: 0;
+          transform: translateY(-10px);
+          transition: all 0.3s ease;
+          z-index: 1000;
+        `;
+
+        document.body.appendChild(successMessage);
+
+        setTimeout(() => {
+          successMessage.style.opacity = '1';
+          successMessage.style.transform = 'translateY(0)';
+        }, 100);
+
+        setTimeout(() => {
+          successMessage.style.opacity = '0';
+          successMessage.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            if (successMessage.parentNode) {
+              document.body.removeChild(successMessage);
+            }
+          }, 300);
+        }, 3000);
+      }
+    </script>
+
+    <script>
+      const rsvpStatus = {};
+
+      function setupRSVPButtons() {
+        document.querySelectorAll('.rsvp-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const eventId = this.getAttribute('data-event-id');
+            if (rsvpStatus[eventId]) {
+              rsvpStatus[eventId] = false;
+              this.classList.remove('rsvp-active');
+              this.innerHTML = '<i class="fas fa-check-circle"></i> RSVP';
+              showSuccessMessage('Your RSVP has been cancelled.');
+            } else {
+              rsvpStatus[eventId] = true;
+              this.classList.add('rsvp-active');
+              this.innerHTML = '<i class="fas fa-check-circle"></i> RSVP\'d';
+              showSuccessMessage('Successfully RSVP\'d to event!');
+            }
+          });
+        });
+      }
     </script>
 </body>
 </html>
