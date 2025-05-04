@@ -38,27 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
     }
   
-    // Newsletter form submission
-    const newsletterForm = document.getElementById("newsletterForm")
-    if (newsletterForm) {
-      newsletterForm.addEventListener("submit", (e) => {
-        e.preventDefault()
-  
-        // Get form data
-        const name = document.getElementById("name").value
-        const email = document.getElementById("email").value
-        const interests = document.getElementById("interests").value
-  
-        // In a real app, you would send this data to your backend
-        console.log("Newsletter signup:", { name, email, interests })
-  
-        // Show success message
-        alert("Thank you for subscribing to our newsletter!")
-  
-        // Reset form
-        newsletterForm.reset()
-      })
-    }
   
     // Profile icon functionality
     const profileIcon = document.querySelector(".profile-icon")
@@ -69,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
         if (isLoggedIn) {
           // If logged in, go to profile page
-          window.location.href = "profile.html"
+          window.location.href = "viewer-dashboard.html"
         } else {
           // If not logged in, go to login page
           window.location.href = "login.html"
@@ -97,90 +76,142 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedRsvp = null;
     let currentEventId = null;
   
-    // Open modal on RSVP button click
+    // RSVP Button Click Handler
     document.querySelectorAll('.rsvp-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            currentEventId = this.getAttribute('data-event-id');
+            const eventId = this.getAttribute('data-event-id');
+            const eventTitle = this.closest('.card-content').querySelector('h3').textContent;
+            
+            // Update modal title with event name
+            document.querySelector('#rsvpModal h2').textContent = `RSVP for ${eventTitle}`;
+            
+            // Show modal
             document.getElementById('rsvpModal').style.display = 'block';
+            
+            // Reset form
             document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('selected'));
-            selectedRsvp = null;
         });
     });
   
-    // RSVP option selection
-    document.querySelectorAll('.rsvp-option').forEach(opt => {
-        opt.addEventListener('click', function() {
-            document.querySelectorAll('.rsvp-option').forEach(o => o.classList.remove('selected'));
-            this.classList.add('selected');
-            selectedRsvp = this.getAttribute('data-value');
-        });
-    });
-  
-    // RSVP form submission
+    // RSVP Form Submission
     document.getElementById('rsvpForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        
         const selectedOption = document.querySelector('.rsvp-option.selected');
         if (!selectedOption) {
             alert('Please select your attendance status');
             return;
         }
-        // In a real app, send RSVP to backend here
-        showRSVPSuccessMessage();
-        document.getElementById('rsvpModal').style.display = 'none';
-        document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+        
+        const eventId = document.querySelector('.rsvp-btn').getAttribute('data-event-id');
+        const attendance = selectedOption.getAttribute('data-value');
+        
+        // Make API call to submit RSVP
+        fetch(`/api/events/${eventId}/rsvp/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                attendance: attendance
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to submit RSVP');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            const rsvpBtn = document.querySelector(`.rsvp-btn[data-event-id="${eventId}"]`);
+            rsvpBtn.classList.add('rsvp-active');
+            rsvpBtn.innerHTML = '<i class="fas fa-check-circle"></i> RSVP\'d';
+            
+            // Show success message
+            showSuccessMessage('Successfully RSVP\'d to event!');
+            
+            // Close modal
+            document.getElementById('rsvpModal').style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error submitting RSVP:', error);
+            alert('Failed to submit RSVP. Please try again.');
+        });
     });
   
-    // Close modal on close button
-    document.getElementById('closeRsvpModal').onclick = function() {
-        document.getElementById('rsvpModal').style.display = 'none';
-        document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-    };
+    // RSVP Option Selection
+    document.querySelectorAll('.rsvp-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
   
-    // Close modal when clicking outside
+    // Close Modal Handlers
+    document.querySelector('.close-modal').addEventListener('click', function() {
+        document.getElementById('rsvpModal').style.display = 'none';
+    });
+  
     window.addEventListener('click', function(event) {
-        const modal = document.getElementById('rsvpModal');
-        if (event.target === modal) {
-            modal.style.display = 'none';
-            document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+        if (event.target === document.getElementById('rsvpModal')) {
+            document.getElementById('rsvpModal').style.display = 'none';
         }
     });
   
-      // Show success message for RSVP
-  function showRSVPSuccessMessage() {
-    const successMessage = document.createElement('div');
-    successMessage.className = 'success-message';
-    successMessage.textContent = 'Thank you for your RSVP!';
-    successMessage.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--primary-color);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        z-index: 1000;
-    `;
-
-    document.body.appendChild(successMessage);
-
-    // Animate in
-    setTimeout(() => {
-        successMessage.style.opacity = '1';
-        successMessage.style.transform = 'translateY(0)';
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        successMessage.style.opacity = '0';
-        successMessage.style.transform = 'translateY(-10px)';
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+  
+    // Show success message
+    function showSuccessMessage(message) {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = message;
+        successMessage.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color, #800000);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        `;
+  
+        document.body.appendChild(successMessage);
+  
+        // Animate in
         setTimeout(() => {
-            document.body.removeChild(successMessage);
-        }, 300);
-    }, 3000);
+            successMessage.style.opacity = '1';
+            successMessage.style.transform = 'translateY(0)';
+        }, 100);
+  
+        // Remove after 3 seconds
+        setTimeout(() => {
+            successMessage.style.opacity = '0';
+            successMessage.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                if (successMessage.parentNode) {
+                    document.body.removeChild(successMessage);
+                }
+            }, 300);
+        }, 3000);
     }
   })
   
@@ -236,14 +267,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   
       // Update profile icon to indicate logged in state
-      if (profileIcon) {
-        profileIcon.className = "fas fa-user" // Solid user icon for logged in users
-      }
+      // if (profileIcon) {
+      //   profileIcon.className = "fas fa-user" // Solid user icon for logged in users
+      // }
     } else {
       // Ensure profile icon shows not logged in state
-      if (profileIcon) {
-        profileIcon.className = "fas fa-user-circle" // Outline user icon for guests
-      }
+      // if (profileIcon) {
+      //   profileIcon.className = "fas fa-user-circle" // Outline user icon for guests
+      // }
     }
   }
   
@@ -331,4 +362,174 @@ document.addEventListener("DOMContentLoaded", () => {
       return new Date(dateString).toLocaleDateString(undefined, options);
   }
   */
+  
+  // FAQ Accordion
+  window.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const btn = item.querySelector('.faq-question');
+      btn.addEventListener('click', function() {
+        // Close other open items
+        faqItems.forEach(i => { if(i !== item) i.classList.remove('open'); });
+        // Toggle this one
+        item.classList.toggle('open');
+      });
+    });
+  });
+  
+  // DEMO DATA FOR FEATURED EVENTS
+  const demoFeaturedEvents = [
+    {
+      title: "Annual Tech Conference",
+      imageUrl: "images/tech-conference.jpg",
+      category: "Workshop",
+      date: "APR 25",
+      location: "Convention Center",
+      time: "9:00 AM",
+      description: "Join industry leaders and innovators for a day of tech talks and networking.",
+      id: 1
+    },
+    {
+      title: "Spring Music Festival",
+      imageUrl: "images/music-festival.jpg",
+      category: "Event",
+      date: "MAY 10",
+      location: "City Park",
+      time: "All Day",
+      description: "Three days of amazing performances from top artists and local talents.",
+      id: 2
+    },
+    {
+      title: "Charity Marathon",
+      imageUrl: "images/charity-run.jpg",
+      category: "Community",
+      date: "MAY 18",
+      location: "Riverside Park",
+      time: "7:00 AM",
+      description: "Run for a cause! Join us for our annual charity marathon.",
+      id: 3
+    }
+  ];
+  
+  const demoAnnouncements = [
+    {
+      title: "Annual Tech Conference",
+      imageUrl: "images/tech-conference.jpg",
+      category: "Workshop",
+      description: "Join industry leaders and innovators for a day of tech talks and networking.",
+      id: 101
+    },
+    {
+      title: "Charity Marathon",
+      imageUrl: "images/charity-run.jpg",
+      category: "Event",
+      description: "Run for a cause! Join us for our annual charity marathon.",
+      id: 102
+    },
+    {
+      title: "Spring Music Festival",
+      imageUrl: "images/music-festival.jpg",
+      category: "Community",
+      description: "Three days of amazing performances from top artists and local talents.",
+      id: 103
+    }
+  ];
+  
+  // --- RSVP/Attending State ---
+  // This object tracks which events the user is attending.
+  // The keys are event IDs, and the values are true (attending) or false (not attending).
+  // In a real app, this would be loaded from/saved to the backend.
+  let attendingStatus = JSON.parse(localStorage.getItem('attendingStatus') || '{}');
+
+  // --- Render Featured Events ---
+  // This function renders the event cards and sets the RSVP button state
+  function renderFeaturedEvents(events) {
+    const container = document.querySelector('.events-row');
+    if (!container) return;
+    container.innerHTML = '';
+    events.forEach(event => {
+      const isAttending = attendingStatus[event.id];
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.innerHTML = `
+        <div class="event-image">
+          <img src="${event.imageUrl}" alt="${event.title}">
+        </div>
+        <div class="card-content">
+          <div class="headline-row">
+            <h3>${event.title}</h3>
+            <span class="category-badge event">${event.category}</span>
+          </div>
+          <div class="event-meta-col">
+            <div class="event-date"><i class="fas fa-calendar-alt"></i> ${event.date}</div>
+            <div class="event-location"><i class="fas fa-map-marker-alt"></i> ${event.location}</div>
+            <div class="event-time"><i class="fas fa-clock"></i> ${event.time}</div>
+          </div>
+          <p>${event.description}</p>
+          <div class="card-actions">
+            <button class="btn-outline">Details</button>
+            <button class="rsvp-btn${isAttending ? ' rsvp-active' : ''}" data-event-id="${event.id}">
+              <i class="fas fa-check-circle"></i> ${isAttending ? "Attending" : "RSVP"}
+            </button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+  
+  function renderLatestAnnouncements(announcements) {
+    const container = document.querySelector('.announcements-row');
+    if (!container) return;
+    container.innerHTML = '';
+    announcements.forEach(announcement => {
+      const card = document.createElement('div');
+      card.className = 'announcement-card';
+      card.innerHTML = `
+        <div class="announcement-image">
+          <img src="${announcement.imageUrl}" alt="..." />
+        </div>
+        <div class="card-content">
+          <div class="headline-row">
+            <h3>${announcement.title}</h3>
+            <span class="category-badge event">${announcement.category}</span>
+          </div>
+          <p>${announcement.description}</p>
+          <div class="card-actions">
+            <button class="btn-outline">Details</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+  
+  // --- RSVP Button Logic ---
+  // This function attaches click handlers to RSVP buttons.
+  // When clicked, it toggles the attending state for the event and updates the UI and localStorage.
+  function setupRSVPButtons() {
+    document.querySelectorAll('.rsvp-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const eventId = this.getAttribute('data-event-id');
+        if (attendingStatus[eventId]) {
+          attendingStatus[eventId] = false;
+          this.classList.remove('rsvp-active');
+          this.innerHTML = '<i class="fas fa-check-circle"></i> RSVP';
+          showSuccessMessage('You are no longer attending this event.');
+        } else {
+          attendingStatus[eventId] = true;
+          this.classList.add('rsvp-active');
+          this.innerHTML = '<i class="fas fa-check-circle"></i> Attending';
+          showSuccessMessage('You are now attending this event!');
+        }
+        localStorage.setItem('attendingStatus', JSON.stringify(attendingStatus));
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    renderFeaturedEvents(demoFeaturedEvents);
+    setupRSVPButtons();
+    renderLatestAnnouncements(demoAnnouncements);
+  });
   
