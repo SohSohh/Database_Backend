@@ -5,31 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EventHub - Your Event Management Platform</title>
     <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="footer.css">
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="page-wrapper">
-        <header>
-            <nav class="main-nav">
-              <div class="logo">
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
                 <a href="index.html">EventHub</a>
-              </div>
-              <ul class="nav-links">
+            </div>
+            <ul class="nav-links">
                 <li><a href="about.html">About Us</a></li>
                 <li><a href="announcements.html">Explore</a></li>
                 <li><a href="viewer-dashboard.html">Viewer Dashboard</a></li>
                 <li><a href="handler-dashboard.html">Handler Dashboard</a></li>
-              </ul>
-              <div class="profile-icon">
+            </ul>
+            <div class="profile-icon">
                 <a href="register.html" title="Profile">
-                  <i class="fas fa-user-circle"></i>
+                    <i class="fas fa-user-circle" style="font-size:2rem;color:#fff;vertical-align:middle;"></i>
                 </a>
-              </div>
-            </nav>
-          </header>
+            </div>
+        </nav>
+    </header>
 
     <section class="hero-section minimalist-hero">
         <div class="hero-flex">
@@ -41,164 +40,10 @@
                     <a href="register-handler.html" class="btn-outline">Register as a Society</a>
                 </div>
             </div>
-            <div class="hero-image">
-                <img src="/img" alt="cover image" />
-            </div>
         </div>
     </section>
 
     <main>
-        <!-- EVENTS SECTION -->
-        <section class="section-alt">
-            <div class="dashboard-container">
-                <div class="section-header">
-                    <h2>Featured Events</h2>
-                    <a href="announcements.html" class="view-all">View All</a>
-                </div>
-                <div class="events-row">
-                    <!-- 
-                        API PLACEHOLDER: Featured Events
-                        Replace the static event-card blocks below with a loop rendering events from the backend.
-                        Each event should have: image, title, category, date, location, description, and actions.
-                        Example API: GET /api/events/featured
-                    -->
-                    <div class="event-card">
-                        <div class="event-image">
-                            <img src="images/tech-conference.jpg" alt="Tech Conference">
-                        </div>
-                        <div class="event-content">
-                            <h3>
-                                <span class="featured-title">Annual Tech Conference</span>
-                                <span class="category-label category-tech">Tech</span>
-                            </h3>
-                            <div class="event-meta-col">
-                                <div class="event-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    APR 25
-                                </div>
-                                <div class="event-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Convention Center
-                                </div>
-                                <div class="event-time">
-                                    <i class="fas fa-clock"></i>
-                                    9:00 AM
-                                </div>
-                            </div>
-                            <p class="event-description">Join industry leaders and innovators for a day of tech talks and networking.</p>
-                            <div class="event-actions">
-                                <button class="btn-details">Details</button>
-                                <button class="rsvp-btn" data-event-id="1">
-                                    <i class="fas fa-check-circle"></i> RSVP
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <div class="event-image">
-                            <img src="images/music-festival.jpg" alt="Music Festival">
-                        </div>
-                        <div class="event-content">
-                            <h3>
-                                <span class="featured-title">Spring Music Festival</span>
-                                <span class="category-label category-entertainment">Event</span>
-                            </h3>
-                            <div class="event-meta-col">
-                                <div class="event-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    MAY 10
-                                </div>
-                                <div class="event-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    City Park
-                                </div>
-                                <div class="event-time">
-                                    <i class="fas fa-clock"></i>
-                                    All Day
-                                </div>
-                            </div>
-                            <p class="event-description">Three days of amazing performances from top artists and local talents.</p>
-                            <div class="event-actions">
-                                <button class="btn-details">Details</button>
-                                <button class="rsvp-btn" data-event-id="2">
-                                    <i class="fas fa-check-circle"></i> RSVP
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <div class="event-image">
-                            <img src="images/charity-run.jpg" alt="Charity Run">
-                        </div>
-                        <div class="event-content">
-                            <h3>
-                                <span class="featured-title">Charity Marathon</span>
-                                <span class="category-label category-community">Community</span>
-                            </h3>
-                            <div class="event-meta-col">
-                                <div class="event-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    MAY 18
-                                </div>
-                                <div class="event-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Riverside Park
-                                </div>
-                                <div class="event-time">
-                                    <i class="fas fa-clock"></i>
-                                    7:00 AM
-                                </div>
-                            </div>
-                            <p class="event-description">Run for a cause! Join us for our annual charity marathon.</p>
-                            <div class="event-actions">
-                                <button class="btn-details">Details</button>
-                                <button class="rsvp-btn" data-event-id="3">
-                                    <i class="fas fa-check-circle"></i> RSVP
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ANNOUNCEMENTS SECTION -->
-        <section class="section-light">
-            <div class="dashboard-container">
-                <div class="section-header">
-                    <h2>Latest Announcements</h2>
-                    <a href="announcements.html" class="view-all">View All</a>
-                </div>
-                <div class="announcements-row">
-                    <!-- 
-                        API PLACEHOLDER: Announcements
-                        Replace the static announcement-card blocks below with a loop rendering announcements from the backend.
-                        Each announcement should have: category, title, description, and link.
-                        Example API: GET /api/announcements/latest
-                    -->
-                    <div class="announcement-card">
-                        <h4>Important</h4> <!-- API: announcement.category -->
-                        <h3>New Features Released</h3> <!-- API: announcement.title -->
-                        <p>We're excited to announce several new features...</p> <!-- API: announcement.description -->
-                        <a href="announcement-details.html?id=1" class="btn-outline">Read More</a> <!-- API: announcement.id -->
-                    </div>
-                    
-                    <div class="announcement-card">
-                        <h4>Event</h4>
-                        <h3>Summer Events Series Announced</h3>
-                        <p>Get ready for an exciting summer with our new summer events series! We're partnering with top organizers...</p>
-                        <a href="announcement-details.html?id=2" class="btn-outline">Read More</a>
-                    </div>
-                    
-                    <div class="announcement-card">
-                        <h4>Educational</h4>
-                        <h3>Workshop Registration Open</h3>
-                        <p>Registration is now open for our upcoming series of educational workshops. Limited spots available!</p>
-                        <a href="announcement-details.html?id=3" class="btn-outline">Read More</a>
-                    </div>
-                </div>
-            </div>
-        </section>
         <!-- PARTNER/FEATURES SECTION -->
         <section class="section-light">
             <div class="dashboard-container">
@@ -234,61 +79,62 @@
                 </div>
             </div>
         </section>
-        <!-- Contact Form Section -->
-        <section class="contact-section">
+        <!-- EVENTS SECTION -->
+        <section class="section-alt">
             <div class="dashboard-container">
-                <div class="early-access-card">
-                    <div class="early-access-info">
-                        <h2>Get Early Access</h2>
-                        <p>Be the first to know about upcoming events and exclusive offers.<br>Sign up for our newsletter today!</p>
-                        <div class="contact-details">
-                            <div class="contact-item">
-                                <i class="fas fa-envelope"></i>
-                                <span>info@eventhub.com</span>
-                            </div>
-                            <div class="contact-item">
-                                <i class="fas fa-phone"></i>
-                                <span>(123) 456-7890</span>
-                            </div>
-                            <div class="contact-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>123 Event Street, City</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="early-access-divider"></div>
-                    <div class="early-access-form">
-                        <!-- 
-                            API PLACEHOLDER: Newsletter Signup
-                            On submit, POST form data to backend endpoint (e.g., POST /api/newsletter/subscribe)
-                        -->
-                        <form id="newsletterForm">
-                            <div class="form-group">
-                                <label for="name">Your Name</label>
-                                <input type="text" id="name" name="name" placeholder="Enter your name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email Address</label>
-                                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="interests">Interests</label>
-                                <select id="interests" name="interests">
-                                    <option value="">Select your interests</option>
-                                    <option value="corporate">Corporate Events</option>
-                                    <option value="social">Social Gatherings</option>
-                                    <option value="educational">Educational Workshops</option>
-                                    <option value="all">All Events</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn-primary">Get Updates</button>
-                        </form>
-                    </div>
+                <div class="section-header">
+                    <h2>Featured Events</h2>
+                    <a href="announcements.html" class="view-all">View All</a>
                 </div>
+                <div class="events-row"></div>
+            </div>
+        </section>
+
+        <!-- ANNOUNCEMENTS SECTION -->
+        <section class="section-light">
+            <div class="dashboard-container">
+                <div class="section-header">
+                    <h2>Latest Announcements</h2>
+                    <a href="announcements.html" class="view-all">View All</a>
+                </div>
+                <div class="announcements-row"></div>
             </div>
         </section>
     </main>
 
+    <section class="faq-section">
+      <div class="dashboard-container faq-split">
+        <div class="faq-left">
+          <h2 class="faq-title">Any questions?<br>We got you.</h2>
+          <p class="faq-desc">Explore our Frequently Asked Questions to find clear, concise answers to common inquiries about our services, processes, and support.</p>
+        </div>
+        <div class="faq-right">
+          <ul class="faq-list">
+            <li class="faq-item open">
+              <button class="faq-question">What is EventHub?</button>
+              <div class="faq-answer">EventHub is a platform that centralizes all campus events and announcements, making it easy to stay informed and participate.</div>
+            </li>
+            <li class="faq-item">
+              <button class="faq-question">Are there any additional fee?</button>
+              <div class="faq-answer">No, there are no additional fees. Everything is included in your EventHub experience.</div>
+            </li>
+            <li class="faq-item">
+              <button class="faq-question">How do I RSVP for an event?</button>
+              <div class="faq-answer">Simply click the RSVP button on any event card and select your attendance status. You'll receive a confirmation instantly.</div>
+            </li>
+            <li class="faq-item">
+              <button class="faq-question">Can I create my own events?</button>
+              <div class="faq-answer">If you're a society handler, you can register and create events for your organization. Viewers can only RSVP and follow events.</div>
+            </li>
+            <li class="faq-item">
+                <button class="faq-question">Is EventHub free to use?</button>
+                <div class="faq-answer">Yes! EventHub is free for all students and societies to use</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
     <footer>
         <div class="footer-content">
           <div class="footer-section">
@@ -317,41 +163,41 @@
     <script src="js/auth.js"></script>
     <script src="index.js"></script>
 
-    <!-- RSVP Modal -->
-    <div id="rsvpModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>RSVP for Event</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="rsvpForm">
-                    <div class="form-group">
-                        <label for="rsvpStatus">Will you attend?</label>
-                        <div class="rsvp-options">
-                            <button type="button" class="rsvp-option" data-value="yes">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Yes</span>
-                            </button>
-                            <button type="button" class="rsvp-option" data-value="maybe">
-                                <i class="fas fa-question-circle"></i>
-                                <span>Maybe</span>
-                            </button>
-                            <button type="button" class="rsvp-option" data-value="no">
-                                <i class="fas fa-times-circle"></i>
-                                <span>No</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Submit RSVP</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Success Message -->
+    <div id="rsvpToast" class="success-message"></div>
 
-    <!-- RSVP Toast Notification -->
-    <div id="rsvpToast" class="rsvp-toast"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.getElementById('hamburger-menu');
+        const navLinks = document.querySelector('.nav-links');
+        function checkMobile() {
+          if (window.innerWidth <= 600) {
+            hamburger.style.display = 'flex';
+            navLinks.classList.remove('nav-active');
+            hamburger.setAttribute('aria-expanded', 'false');
+          } else {
+            hamburger.style.display = 'none';
+            navLinks.classList.remove('nav-active');
+            hamburger.setAttribute('aria-expanded', 'false');
+          }
+        }
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        hamburger.addEventListener('click', function() {
+          navLinks.classList.toggle('nav-active');
+          const expanded = navLinks.classList.contains('nav-active');
+          hamburger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        });
+        // Optional: close menu when a link is clicked (for better UX)
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', function() {
+            if (window.innerWidth <= 600) {
+              navLinks.classList.remove('nav-active');
+              hamburger.setAttribute('aria-expanded', 'false');
+            }
+          });
+        });
+      });
+    </script>
 </body>
 </html>

@@ -244,13 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // Set the correct icon based on login state
-    const iconElement = document.querySelector(".profile-icon i");
-    const isLoggedIn = localStorage.getItem("authToken") !== null;
-    if (iconElement) {
-        iconElement.className = isLoggedIn ? "fas fa-user" : "fas fa-user-circle";
-    }
 });
 
 function updateNavigation(isLoggedIn, userType) {
@@ -300,16 +293,6 @@ function updateNavigation(isLoggedIn, userType) {
             });
             logoutLi.appendChild(logoutLink);
             navLinks.appendChild(logoutLi);
-        }
-
-        // Update profile icon to indicate logged in state
-        if (profileIcon) {
-            profileIcon.className = 'fas fa-user'; // Solid user icon for logged in users
-        }
-    } else {
-        // Ensure profile icon shows not logged in state
-        if (profileIcon) {
-            profileIcon.className = 'fas fa-user-circle'; // Outline user icon for guests
         }
     }
 }

@@ -820,7 +820,7 @@ footer {
 
 header {
   width: 100%;
-  background: #430b0b;
+  background: #800000;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
@@ -888,6 +888,7 @@ header {
 
 @media (max-width: 900px) {
   .main-nav {
+    background: #800000;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
