@@ -1,14 +1,31 @@
 // auth.js - Common authentication functions
+import api from './api.js';
 
-// Store user data in localStorage
-function storeUserData(userData) {
-    localStorage.setItem('eventHubUser', JSON.stringify(userData));
+// Store user data and tokens in localStorage
+function storeUserData(userData, tokens) {
+    const data = {
+        ...userData,
+        tokens: tokens
+    };
+    localStorage.setItem('eventHubUser', JSON.stringify(data));
 }
 
 // Get user data from localStorage
 function getUserData() {
     const userData = localStorage.getItem('eventHubUser');
     return userData ? JSON.parse(userData) : null;
+}
+
+// Get access token
+function getAccessToken() {
+    const userData = getUserData();
+    return userData?.tokens?.access || null;
+}
+
+// Get refresh token
+function getRefreshToken() {
+    const userData = getUserData();
+    return userData?.tokens?.refresh || null;
 }
 
 // Check if user is logged in
@@ -23,13 +40,22 @@ function getUserType() {
 }
 
 // Log out the user
-function logoutUser() {
-    localStorage.removeItem('eventHubUser');
-    window.location.href = 'index.html';
+async function logoutUser() {
+    try {
+        const refreshToken = getRefreshToken();
+        if (refreshToken) {
+            await api.auth.logout(refreshToken);
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+    } finally {
+        localStorage.removeItem('eventHubUser');
+        window.location.href = 'index.html';
+    }
 }
 
 // Check authentication and redirect if necessary
-function checkAuth() {
+async function checkAuth() {
     const user = getUserData();
     
     // Get current page path
@@ -193,18 +219,13 @@ document.addEventListener('DOMContentLoaded', function() {
 const auth = {
     // Clear all auth-related storage
     clearAuthData: function() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userType');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userRole');
+        localStorage.removeItem('eventHubUser');
         sessionStorage.clear();
     },
 
     // Handle logout
-    logout: function() {
-        this.clearAuthData();
-        window.location.href = 'login.html';
+    logout: async function() {
+        await logoutUser();
     },
 
     // Initialize logout button
@@ -216,10 +237,19 @@ const auth = {
                 this.logout();
             });
         }
+    },
+
+    // Get current user data
+    getCurrentUser: async function() {
+        try {
+            const userData = await api.auth.getCurrentUser();
+            return userData;
+        } catch (error) {
+            console.error('Error fetching current user:', error);
+            return null;
+        }
     }
 };
 
-// Initialize logout functionality when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    auth.initLogoutButton();
-});
+// Export auth utilities
+export { auth, storeUserData, getUserData, getAccessToken, getRefreshToken, isLoggedIn, getUserType, logoutUser, checkAuth, showError };

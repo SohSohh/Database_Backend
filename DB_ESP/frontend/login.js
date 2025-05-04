@@ -1,62 +1,43 @@
+import { auth, storeUserData, showError } from './auth.js';
+import api from './api.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     
-    loginForm.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Collect login data
-        const formData = {
-            email: document.getElementById('email').value,
-            password: document.getElementById('password').value
-        };
+        // Show loading state
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Logging in...';
         
-        // In a real application, you would send this data to your Python backend
-        console.log('Login attempt:', formData);
-        
-        // Example AJAX request to your backend (uncomment and modify as needed)
-        /*
-        fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Store auth token if your backend returns one
-                if (data.token) {
-                    localStorage.setItem('authToken', data.token);
-                }
+        try {
+            // Collect login data
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            // Call login API
+            const response = await api.auth.login(formData);
+            
+            // Store user data and tokens
+            storeUserData(response.user, response.tokens);
+            
+            // Redirect based on user type
+            window.location.href = response.user.userType === 'handler' 
+                ? 'handler-dashboard.html' 
+                : 'viewer-dashboard.html';
                 
-                // Redirect based on user type
-                window.location.href = data.userType === 'handler' 
-                    ? 'handler-dashboard.html' 
-                    : 'viewer-dashboard.html';
-            } else {
-                alert(data.message || 'Login failed. Please check your credentials.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred during login. Please try again.');
-        });
-        */
-        
-        // For demonstration purposes, simulate successful login
-        // In a real application, this would be determined by your backend response
-        const demoEmail = 'admin@example.com';
-        const demoPassword = 'password';
-        
-        if (formData.email === demoEmail && formData.password === demoPassword) {
-            alert('Login successful! Redirecting to dashboard...');
-            // Simulate admin login
-            window.location.href = 'handler-dashboard.html';
-        } else {
-            // Simulate regular user login for any other credentials
-            alert('Login successful! Redirecting to viewer dashboard...');
-            window.location.href = 'viewer-dashboard.html';
+        } catch (error) {
+            console.error('Login error:', error);
+            showError(loginForm, error.message || 'Login failed. Please check your credentials.');
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
         }
     });
 });
