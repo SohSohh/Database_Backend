@@ -1,3 +1,8 @@
+// Add this at the top of the file
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+let currentAttendanceStatus = false;
+
 // Sample announcement data
 const demoAnnouncement = {
     id: 123,
@@ -80,53 +85,31 @@ function formatCurrentDate() {
 }
 
 // Add new feedback
-function addNewFeedback(rating, text) {
-    const newFeedback = {
-        id: demoAnnouncement.feedbacks.length + 1,
-        author: "Current User", // In a real app, this would be the logged-in user's name
-        date: formatCurrentDate(),
-        rating: parseInt(rating),
-        text: text
-    };
+async function addNewFeedback(rating, text) {
+    const eventId = new URLSearchParams(window.location.search).get('id');
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/events/${eventId}/comments/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            },
+            body: JSON.stringify({
+                content: text,
+                rating: parseInt(rating)
+            })
+        });
 
-    // Add to the feedbacks array
-    demoAnnouncement.feedbacks.unshift(newFeedback); // Add to the beginning
+        if (!response.ok) throw new Error('Failed to add comment');
 
-    // Create and add the new feedback element
-    const feedbackElement = document.createElement('div');
-    feedbackElement.className = 'comment-item';
-    feedbackElement.innerHTML = `
-        <div class="comment-header">
-            <div class="comment-author">${newFeedback.author}</div>
-            <div class="comment-date">${newFeedback.date}</div>
-        </div>
-        <div class="comment-rating">
-            ${formatRatingStars(newFeedback.rating)}
-        </div>
-        <div class="comment-text">${newFeedback.text}</div>
-    `;
+        // Reload comments to show the new one
+        await loadFeedbacks(eventId);
+        showSuccessMessage('Thank you for your feedback!');
 
-    // Add animation class
-    feedbackElement.style.opacity = '0';
-    feedbackElement.style.transform = 'translateY(20px)';
-
-    // Insert at the beginning of the list
-    elements.feedbacksList.insertBefore(feedbackElement, elements.feedbacksList.firstChild);
-
-    // Trigger animation
-    setTimeout(() => {
-        feedbackElement.style.transition = 'all 0.5s ease';
-        feedbackElement.style.opacity = '1';
-        feedbackElement.style.transform = 'translateY(0)';
-    }, 50);
-
-    // Update overall rating
-    const averageRating = calculateAverageRating(demoAnnouncement.feedbacks);
-    elements.overallRating.textContent = formatRatingStars(averageRating);
-    elements.ratingCount.textContent = `(${demoAnnouncement.feedbacks.length} reviews)`;
-
-    // Show success message
-    showSuccessMessage();
+    } catch (error) {
+        showError('Failed to add feedback');
+    }
 }
 
 // Show success message
@@ -265,74 +248,175 @@ function initPage() {
 }
 
 // Load announcement details
-function loadAnnouncementDetails() {
-    // Update announcement details
-    elements.title.textContent = demoAnnouncement.title;
-    elements.category.textContent = demoAnnouncement.category;
-    elements.postDate.textContent = `Posted on ${demoAnnouncement.date}`;
-    elements.author.textContent = `by ${demoAnnouncement.author}`;
-    elements.content.innerHTML = demoAnnouncement.content;
+async function loadAnnouncementDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('id');
     
-    // Update overall rating
-    const averageRating = calculateAverageRating(demoAnnouncement.feedbacks);
-    elements.overallRating.textContent = formatRatingStars(averageRating);
-    elements.ratingCount.textContent = `(${demoAnnouncement.feedbacks.length} reviews)`;
-    
-    // Load feedbacks
-    loadFeedbacks();
-    
-    // Set share link
-    elements.shareLink.value = window.location.href;
+    if (!eventId) {
+        showError('Event ID not found');
+        return;
+    }
 
-    if (demoAnnouncement.category.toLowerCase() === 'event') {
-        document.getElementById('rsvp-counts').style.display = 'inline-flex';
-        document.getElementById('attending-count').textContent = demoAnnouncement.rsvp.attending;
-        document.getElementById('pending-count').textContent = demoAnnouncement.rsvp.pending;
-        document.getElementById('not-attending-count').textContent = demoAnnouncement.rsvp.notAttending;
-        elements.rsvpButton.textContent = 'RSVP for this Event';
-    } else {
-        document.getElementById('rsvp-counts').style.display = 'none';
-        elements.rsvpButton.textContent = 'RSVP / Express Interest';
+    try {
+        const response = await fetch(`${API_BASE_URL}/events/${eventId}/`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch event details');
+        const event = await response.json();
+
+        // Update UI with event details
+        elements.title.textContent = event.name;
+        elements.category.textContent = event.category_name;
+        elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;
+        elements.author.textContent = `by ${event.host_username}`;
+        elements.content.innerHTML = event.description;
+
+        // Update attendance status
+        updateAttendanceButton(event.is_attending);
+        updateAttendeeCount(event.attendee_count);
+
+        // Load comments
+        await loadFeedbacks(eventId);
+        
+    } catch (error) {
+        showError('Failed to load event details');
+        console.error(error);
     }
 }
 
-// Load feedbacks
-function loadFeedbacks() {
-    elements.feedbacksList.innerHTML = '';
+// Load feedbacks (comments)
+async function loadFeedbacks(eventId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/events/${eventId}/comments/`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch comments');
+        const comments = await response.json();
+
+        elements.feedbacksList.innerHTML = '';
+        comments.forEach(comment => {
+            const feedbackElement = document.createElement('div');
+            feedbackElement.className = 'comment-item';
+            feedbackElement.innerHTML = `
+                <div class="comment-header">
+                    <div class="comment-author">${comment.user_username}</div>
+                    <div class="comment-date">${new Date(comment.created_at).toLocaleDateString()}</div>
+                </div>
+                <div class="comment-rating">
+                    ${formatRatingStars(comment.rating)}
+                </div>
+                <div class="comment-text">${comment.content}</div>
+            `;
+            elements.feedbacksList.appendChild(feedbackElement);
+        });
+
+        // Update overall rating
+        const ratingResponse = await fetch(`${API_BASE_URL}/events/${eventId}/rating/`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (ratingResponse.ok) {
+            const ratingData = await ratingResponse.json();
+            elements.overallRating.textContent = formatRatingStars(ratingData.average_rating);
+            elements.ratingCount.textContent = `(${ratingData.rating_count} reviews)`;
+        }
+
+    } catch (error) {
+        showError('Failed to load comments');
+    }
+}
+
+// Handle attendance
+async function handleAttendance(action) {
+    const eventId = new URLSearchParams(window.location.search).get('id');
     
-    demoAnnouncement.feedbacks.forEach(feedback => {
-        const feedbackElement = document.createElement('div');
-        feedbackElement.className = 'comment-item';
-        feedbackElement.innerHTML = `
-            <div class="comment-header">
-                <div class="comment-author">${feedback.author}</div>
-                <div class="comment-date">${feedback.date}</div>
-            </div>
-            <div class="comment-rating">
-                ${formatRatingStars(feedback.rating)}
-            </div>
-            <div class="comment-text">${feedback.text}</div>
-        `;
-        elements.feedbacksList.appendChild(feedbackElement);
-    });
+    try {
+        const response = await fetch(`${API_BASE_URL}/events/${eventId}/attendance/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            },
+            body: JSON.stringify({ action })
+        });
+        
+        if (!response.ok) throw new Error('Failed to update attendance');
+        
+        const result = await response.json();
+        updateAttendanceButton(action === 'attend');
+        updateAttendeeCount(result.attendee_count);
+        showRSVPSuccessMessage();
+        
+    } catch (error) {
+        showError('Failed to update attendance');
+    }
 }
 
 // Load related announcements
-function loadRelatedAnnouncements() {
-    elements.relatedAnnouncements.innerHTML = '';
-    
-    relatedAnnouncements.forEach(announcement => {
-        const announcementElement = document.createElement('div');
-        announcementElement.className = 'related-announcement-card';
-        announcementElement.innerHTML = `
-            <div class="card-category">${announcement.category}</div>
-            <h4><a href="announcement-details.html?id=${announcement.id}">${announcement.title}</a></h4>
-            <p class="card-date">${announcement.date}</p>
-            <p class="card-excerpt">${announcement.excerpt}</p>
-            <a href="announcement-details.html?id=${announcement.id}" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
-        `;
-        elements.relatedAnnouncements.appendChild(announcementElement);
-    });
+async function loadRelatedAnnouncements() {
+    try {
+        const currentEventId = new URLSearchParams(window.location.search).get('id');
+        const response = await fetch(`${API_BASE_URL}/events/?ordering=date`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch related events');
+        
+        const events = await response.json();
+        const relatedEvents = events
+            .filter(event => event.id !== parseInt(currentEventId))
+            .slice(0, 3);
+
+        elements.relatedAnnouncements.innerHTML = '';
+        relatedEvents.forEach(event => {
+            const announcementElement = document.createElement('div');
+            announcementElement.className = 'related-announcement-card';
+            announcementElement.innerHTML = `
+                <div class="card-category">${event.category_name}</div>
+                <h4><a href="announcement-details.html?id=${event.id}">${event.name}</a></h4>
+                <p class="card-date">${new Date(event.date).toLocaleDateString()}</p>
+                <p class="card-excerpt">${event.description.substring(0, 100)}...</p>
+                <a href="announcement-details.html?id=${event.id}" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+            `;
+            elements.relatedAnnouncements.appendChild(announcementElement);
+        });
+    } catch (error) {
+        showError('Failed to load related events');
+    }
+}
+
+// Show error message
+function showError(message) {
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'error-message';
+    errorMessage.textContent = message;
+    errorMessage.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--error-color, #ff4444);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1000;
+    `;
+    document.body.appendChild(errorMessage);
+    setTimeout(() => errorMessage.remove(), 3000);
 }
 
 // Setup event listeners
@@ -358,25 +442,30 @@ function setupEventListeners() {
     });
 
     // RSVP form submission
-    elements.rsvpForm.addEventListener('submit', function(e) {
+    elements.rsvpForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const selectedOption = document.querySelector('.rsvp-option.selected');
         if (!selectedOption) {
             alert('Please select your attendance status');
             return;
         }
+
         const value = selectedOption.dataset.value;
-        if (value === 'yes') {
-            demoAnnouncement.rsvp.attending += 1;
-        } else if (value === 'maybe') {
-            demoAnnouncement.rsvp.pending += 1;
-        } else if (value === 'no') {
-            demoAnnouncement.rsvp.notAttending += 1;
+        try {
+            // Only send attendance request if user selects "yes"
+            if (value === 'yes') {
+                await handleAttendance('attend');
+            } else if (currentAttendanceStatus) {
+                // If user was attending and now selects "no" or "maybe", unattend
+                await handleAttendance('unattend');
+            }
+            
+            elements.rsvpModal.style.display = 'none';
+            document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+            showRSVPSuccessMessage();
+        } catch (error) {
+            showError('Failed to update attendance status');
         }
-        updateRSVPCounters();
-        showRSVPSuccessMessage();
-        elements.rsvpModal.style.display = 'none';
-        document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
     });
 
     // Feedback form submission
@@ -488,3 +577,19 @@ function updateRSVPCounters() {
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', initPage);
+
+function updateAttendanceButton(isAttending) {
+    currentAttendanceStatus = isAttending;
+    const rsvpButton = elements.rsvpButton;
+    if (isAttending) {
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> Attending';
+        rsvpButton.classList.add('attending');
+    } else {
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> RSVP';
+        rsvpButton.classList.remove('attending');
+    }
+}
+
+function updateAttendeeCount(count) {
+    document.getElementById('attending-count').textContent = count;
+}

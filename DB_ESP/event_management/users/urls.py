@@ -12,6 +12,7 @@ from .views import (
     MembershipView,
     SocietyMembersViewSet,
     RegenerateJoinCodeView,
+    UserSocietiesView
 )
 
 urlpatterns = [
@@ -30,6 +31,8 @@ urlpatterns = [
 
     # Society and membership endpoints
     path('societies/', SocietyListView.as_view(), name='society_list'),
+# Add to urlpatterns in users/urls.py
+path('my-societies/', UserSocietiesView.as_view(), name='my_societies'),
     path('membership/', MembershipView.as_view(), name='join_society'),
 
     path('society/members/', SocietyMembersViewSet.as_view({

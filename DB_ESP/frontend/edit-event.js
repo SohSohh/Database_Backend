@@ -1,4 +1,6 @@
 // Get event ID from URL
+
+const token = localStorage.getItem('access_token');
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get('id');
 
@@ -14,7 +16,7 @@ const API_CONFIG = {
         // Default headers for API requests
         "Content-Type": "application/json",
         // You may need to include auth headers here, for example:
-        "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODk5OTA2NDAxLCJpYXQiOjE3NDYzMDY0MDEsImp0aSI6ImNjZmEzZTFiMmU2YTRjZmU4YzU4M2FiYjAwYmNmMjcwIiwidXNlcl9pZCI6OX0.uolpG4ckeSk3iwSWG_GmxJShZ6tU5Eufgc1sEqmwe9c`
+        "Authorization": `Bearer ${token}`,
     }
 };
 
@@ -90,6 +92,7 @@ const api = {
             );
         },
         
+        
         // Upload event banner image
         async uploadBanner(eventId, formData) {
             return await api.request(
@@ -112,9 +115,8 @@ function populateEventForm(event) {
     document.getElementById('eventTime').value = event.start_time || '';
     document.getElementById('eventEndTime').value = event.end_time || '';
     
-    // Location and capacity
+    // Location
     document.getElementById('eventLocation').value = event.location || '';
-    document.getElementById('eventCapacity').value = event.attendees || '';
     
     // Set image if available
     const imagePreview = document.getElementById('currentEventImage');
@@ -147,58 +149,46 @@ async function fetchEventData() {
 // Function to handle form submission
 async function handleSubmit(event) {
     event.preventDefault();
-    
-    // Show loading indicator
+
     showLoadingIndicator(true);
     clearStatusMessages();
 
     try {
-        // Create the form data object for the API request
-        const formData = {
-            name: document.getElementById('eventName').value,
-            description: document.getElementById('eventDescription').value,
-            date: document.getElementById('eventDate').value,
-            start_time: document.getElementById('eventTime').value,
-            end_time: document.getElementById('eventEndTime').value || null,
-            location: document.getElementById('eventLocation').value,
-            capacity: parseInt(document.getElementById('eventCapacity').value)
-        };
+        // Use FormData for PATCH if image is present
+        const formData = new FormData();
+        formData.append('name', document.getElementById('eventName').value);
+        formData.append('description', document.getElementById('eventDescription').value);
+        formData.append('date', document.getElementById('eventDate').value);
+        formData.append('start_time', document.getElementById('eventTime').value);
+        formData.append('end_time', document.getElementById('eventEndTime').value || '');
+        formData.append('location', document.getElementById('eventLocation').value);
 
-        // Handle file upload if a new image is selected
+        // Add image if selected
         const imageFile = document.getElementById('eventImage').files[0];
         if (imageFile) {
-            // Create FormData for file upload
-            const fileFormData = new FormData();
-            fileFormData.append('banner', imageFile);
-            
-            // Upload the image first
-            try {
-                const uploadResponse = await api.events.uploadBanner(eventId, fileFormData);
-                if (uploadResponse.banner) {
-                    formData.banner = uploadResponse.banner;
-                }
-            } catch (uploadError) {
-                throw new Error(`Image upload failed: ${uploadError.message}`);
-            }
+            formData.append('banner', imageFile);
         }
 
-        // Save the updated event data
-        await api.events.updateEvent(eventId, formData);
-        
-        // Show success message
+        // Send PATCH request with FormData
+        await api.request(
+            API_CONFIG.endpoints.eventDetails(eventId),
+            'PATCH',
+            formData,
+            {} // No need to set Content-Type, browser will set it
+        );
+
         showSuccessMessage('Event updated successfully!');
-        
-        // Redirect after a short delay
         setTimeout(() => {
             window.location.href = 'manage-events.html';
         }, 1500);
-        
+
     } catch (error) {
         showErrorMessage(`Error updating event: ${error.message || 'Unknown error'}`);
     } finally {
         showLoadingIndicator(false);
     }
 }
+
 
 // Helper functions for UI feedback
 function showLoadingIndicator(show) {

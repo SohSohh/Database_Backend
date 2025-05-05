@@ -1,38 +1,3 @@
-<style>
-    .join-requests-table table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 1.5rem;
-    }
-    .join-requests-table th, .join-requests-table td {
-        padding: 10px 8px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
-    }
-    .join-requests-table th {
-        background: #f8f9fa;
-        font-weight: 600;
-    }
-    .btn-sm {
-      padding: 2px 10px !important;
-      font-size: 0.85rem !important;
-      border-radius: 4px !important;
-      min-width: 0 !important;
-      line-height: 1.1 !important;
-      height: 28px !important;
-      margin-right: 6px;
-      margin-bottom: 0;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    .join-requests-table td {
-      vertical-align: middle;
-    }
-    .join-requests-table .btn {
-      margin-bottom: 0 !important;
-    }
-
-</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,6 +7,69 @@
     <link rel="stylesheet" href="handler-dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .join-requests-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .join-requests-table th, .join-requests-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .join-requests-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .btn-sm {
+            padding: 2px 10px !important;
+            font-size: 0.85rem !important;
+            border-radius: 4px !important;
+            min-width: 0 !important;
+            line-height: 1.1 !important;
+            height: 28px !important;
+            margin-right: 6px;
+            margin-bottom: 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .join-requests-table td {
+            vertical-align: middle;
+        }
+        .join-requests-table .btn {
+            margin-bottom: 0 !important;
+        }
+        /* Join code styles */
+        .join-code-display {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .code-box {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: #e9ecef;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 10px 0;
+            letter-spacing: 5px;
+        }
+        .code-note {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .role-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
     <!-- Mobile Menu Toggle -->
@@ -109,43 +137,14 @@
             <!-- Header Section -->
             <div class="content-section">
                 <div class="section-header">
-                    <h2><i class="fas fa-users"></i> Members</h2>
-                    <button class="btn btn-primary" onclick="showAddMemberForm()">
-                        <i class="fas fa-plus"></i> Add Member
+                    <h2><i class="fas fa-users"></i> Society Members</h2>
+                    <button class="btn btn-primary" id="generateCodeBtn">
+                        <i class="fas fa-key"></i> Generate Join Code
                     </button>
                 </div>
             </div>
 
-            <!-- Add Member Form (Hidden by default) -->
-            <div class="content-section" id="addMemberForm" style="display: none;">
-                <div class="section-header">
-                    <h3>Add New Member</h3>
-                </div>
-                <form id="memberForm" class="form-section">
-                    <div class="form-group">
-                        <label for="memberName">Full Name</label>
-                        <input type="text" id="memberName" name="memberName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="memberEmail">Email</label>
-                        <input type="email" id="memberEmail" name="memberEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="memberRole">Role</label>
-                        <select id="memberRole" name="memberRole" required>
-                            <option value="member">Member</option>
-                            <option value="coordinator">Coordinator</option>
-                            <option value="executive">Executive</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="hideAddMemberForm()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Member</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Add this above the Members List section -->
+            <!-- Join Requests Section -->
             <div class="content-section" id="joinRequestsSection">
                 <div class="section-header">
                     <h3><i class="fas fa-user-plus"></i> Pending Join Requests</h3>
@@ -156,8 +155,6 @@
                             <tr>
                                 <th>Viewer Name</th>
                                 <th>Email</th>
-                                <th>Society</th>
-                                <th>Referral Code</th>
                                 <th>Requested At</th>
                                 <th>Actions</th>
                             </tr>
@@ -171,6 +168,9 @@
 
             <!-- Members List -->
             <div class="content-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-friends"></i> Current Members</h3>
+                </div>
                 <div class="members-table">
                     <table>
                         <thead>
@@ -179,7 +179,6 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Join Date</th>
-                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -192,6 +191,44 @@
         </div>
     </div>
 
+    <!-- Debug Console (Hidden by default) -->
+    <div id="debugConsole" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 200px; background: #333; color: #fff; overflow: auto; padding: 10px; font-family: monospace; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <h3>Debug Console</h3>
+            <button onclick="document.getElementById('debugConsole').style.display='none'" style="background: none; border: none; color: #fff; cursor: pointer;">Close</button>
+        </div>
+        <div id="debugLogs"></div>
+    </div>
+
+    <script>
+        // Debug console functions
+        window.showDebugConsole = function() {
+            document.getElementById('debugConsole').style.display = 'block';
+        };
+        
+        window.debugLog = function(title, data) {
+            const logsContainer = document.getElementById('debugLogs');
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `
+                <strong>${title}</strong> [${new Date().toLocaleTimeString()}]
+                <pre style="background: #222; padding: 5px; overflow: auto;">${
+                    typeof data === 'object' ? JSON.stringify(data, null, 2) : data
+                }</pre>
+            `;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        };
+        
+        // Add keyboard shortcut for debug console (Ctrl+Shift+D)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                const debugConsole = document.getElementById('debugConsole');
+                debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    </script>
+    
     <script src="society-members.js"></script>
 </body>
-</html> 
+</html>

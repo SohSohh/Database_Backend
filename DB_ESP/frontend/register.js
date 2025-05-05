@@ -1,36 +1,13 @@
+import { API_BASE_URL } from './config.js';
+
 document.addEventListener("DOMContentLoaded", function () {
-  // Get DOM elements
   const registerForm = document.getElementById("registerForm");
-  const typeToggleBtns = document.querySelectorAll(".auth-type-btn");
-  const handlerFields = document.querySelector(".handler-fields");
-  const userTypeInput = document.getElementById("userType");
   const passwordInput = document.getElementById("password");
   const strengthMeter = document.getElementById("strengthMeter");
   const strengthText = document.getElementById("strengthText");
-
-  // Toggle between viewer and handler registration
-  typeToggleBtns.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      // Remove active class from all buttons
-      typeToggleBtns.forEach((b) => b.classList.remove("active"));
-
-      // Add active class to clicked button
-      this.classList.add("active");
-
-      // Get user type from data attribute
-      const userType = this.getAttribute("data-type");
-
-      // Update hidden input
-      userTypeInput.value = userType;
-
-      // Show/hide handler fields
-      if (userType === "handler") {
-        handlerFields.style.display = "block";
-      } else {
-        handlerFields.style.display = "none";
-      }
-    });
-  });
+  const submitButton = document.getElementById("submitBtn");
+  const buttonText = submitButton.querySelector('.button-text');
+  const loadingSpinner = submitButton.querySelector('.loading-spinner');
 
   // Password strength checker
   if (passwordInput) {
@@ -46,115 +23,131 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Form submission
   if (registerForm) {
-    registerForm.addEventListener("submit", function (e) {
+    registerForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      // Get form data
-      const formData = new FormData(this);
-      const userData = {};
+      // Show loading state
+      submitButton.disabled = true;
+      buttonText.style.display = 'none';
+      loadingSpinner.style.display = 'inline-block';
 
-      // Convert FormData to object
-      for (const [key, value] of formData.entries()) {
-        userData[key] = value;
-      }
+      const formData = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        password2: document.getElementById('password2').value,
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value
+      };
+
+      // For debugging - log what we're about to send
+      console.log("Form data to be sent:", formData);
 
       // Basic validation
-      if (userData.password !== userData.confirmPassword) {
+      if (formData.password !== formData.password2) {
         showError(registerForm, "Passwords don't match");
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
         return;
       }
 
       // Check password strength
-      const strength = checkPasswordStrength(userData.password);
+      const strength = checkPasswordStrength(formData.password);
       if (strength.class === "weak") {
         showError(registerForm, "Please choose a stronger password");
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
         return;
-      }
-
-      // Check handler auth key if registering as handler
-      if (userData.userType === "handler") {
-        // Mock handler authentication key validation
-        // In a real app, this would be verified with the backend
-        const validHandlerKeys = ["HANDLER123", "ORGANIZER456", "EVENT789"];
-
-        if (!validHandlerKeys.includes(userData.handlerAuthKey)) {
-          showError(registerForm, "Invalid handler authentication key");
-          return;
-        }
       }
 
       // Email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(userData.email)) {
+      if (!emailRegex.test(formData.email)) {
         showError(registerForm, "Please enter a valid email address");
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
         return;
       }
 
       // Username validation
-      if (userData.username.length < 4) {
+      if (formData.username.length < 4) {
         showError(registerForm, "Username must be at least 4 characters");
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
         return;
       }
 
       // Check for special characters in username
       const usernameRegex = /^[a-zA-Z0-9_-]+$/;
-      if (!usernameRegex.test(userData.username)) {
+      if (!usernameRegex.test(formData.username)) {
         showError(
           registerForm,
           "Username can only contain letters, numbers, underscores and hyphens"
         );
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
         return;
       }
 
-      // If all validations pass, send registration data to server
-      registerUser(userData)
-        .then((response) => {
-          if (response.success) {
-            // Show success message
-            showSuccess(
-              registerForm,
-              "Registration successful! Redirecting to login..."
-            );
+      // Check if terms are agreed to
+      if (!document.getElementById("agreeTerms").checked) {
+        showError(registerForm, "You must agree to the Terms & Conditions");
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
+        return;
+      }
 
-            // Redirect to login page after 2 seconds
-            setTimeout(() => {
-              window.location.href = "/login.html";
-            }, 2000);
-          } else {
-            // Show error from server
-            showError(
-              registerForm,
-              response.message || "Registration failed. Please try again."
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Registration error:", error);
-          showError(registerForm, "An error occurred. Please try again later.");
+      try {
+        console.log('Sending registration request:', {
+          url: `${API_BASE_URL}/api/users/register/viewer/`,
+          method: 'POST',
+          body: { ...formData, password: '[HIDDEN]', password2: '[HIDDEN]' }
         });
+
+        const response = await fetch(`${API_BASE_URL}/api/users/register/viewer/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        console.log('Response status:', response.status);
+        console.log('Response data:', data);
+
+        if (response.ok) {
+          // Store the tokens
+          localStorage.setItem('access_token', data.access);
+          localStorage.setItem('refresh_token', data.refresh);
+          localStorage.setItem('user_type', 'viewer');
+          localStorage.setItem('user_id', data.user_id);
+
+          // Show success message and redirect
+          showSuccess(registerForm, "Registration successful! Redirecting to dashboard...");
+          setTimeout(() => {
+            window.location.href = 'viewer-dashboard.html';
+          }, 2000);
+        } else {
+          const errorMessage = getErrorMessage(data);
+          showError(registerForm, errorMessage);
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        showError(registerForm, "Registration failed. Please try again.");
+      } finally {
+        // Reset button state
+        submitButton.disabled = false;
+        buttonText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
+      }
     });
-  }
-
-  /**
-   * Send registration data to the server
-   * @param {Object} userData - User registration data
-   * @returns {Promise} - Response from server
-   */
-  function registerUser(userData) {
-    // API endpoint
-    const endpoint = "/api/register";
-
-    // Remove confirm password field as it's not needed on the server
-    const { confirmPassword, ...dataToSend } = userData;
-
-    // In a real application, this would be an actual API call
-    return fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataToSend),
-    }).then((response) => response.json());
   }
 
   /**
@@ -243,6 +236,24 @@ document.addEventListener("DOMContentLoaded", function () {
     return messageElement;
   }
 
-  // Initialize the form with default user type
-  document.querySelector('.auth-type-btn[data-type="viewer"]').click();
+  function getErrorMessage(errorData) {
+    if (!errorData) return "Unknown error occurred";
+    
+    console.log('Full error data:', errorData);
+
+    if (typeof errorData === 'string') return errorData;
+
+    // Check for specific field errors
+    const fields = ['email', 'username', 'password', 'first_name', 'last_name'];
+    for (const field of fields) {
+      if (errorData[field]) {
+        return `${field.charAt(0).toUpperCase() + field.slice(1)} error: ${
+          Array.isArray(errorData[field]) ? errorData[field][0] : errorData[field]
+        }`;
+      }
+    }
+
+    // Fallback to detail or generic message
+    return errorData.detail || "Registration failed. Please try again.";
+  }
 });

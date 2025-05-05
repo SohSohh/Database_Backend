@@ -1,100 +1,109 @@
-// Demo data for registrations
-const demoRegistrations = [
-    {
-        eventId: 1,
-        eventName: "Tech Workshop 2024",
-        eventDate: "2024-03-15",
-        eventTime: "09:00",
-        eventLocation: "Main Auditorium",
-        eventDescription: "Learn about the latest technologies and development practices.",
-        eventImage: "https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-        societyName: "Computer Science Society",
-        registrationStatus: "registered",
-        registrationDate: "2024-02-15"
-    },
-    {
-        eventId: 2,
-        eventName: "Cultural Festival",
-        eventDate: "2024-04-20",
-        eventTime: "14:00",
-        eventLocation: "University Grounds",
-        eventDescription: "Experience diverse cultures through food, music, and performances.",
-        eventImage: "https://images.unsplash.com/photo-1511795409834-432f31197ce6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-        societyName: "Cultural Society",
-        registrationStatus: "pending",
-        registrationDate: "2024-02-16"
-    }
-];
+// Base URL for API calls
+const API_BASE_URL = 'http://localhost:8000/api';
+
+// Function to get auth token from localStorage
+function getAuthToken() {
+    return localStorage.getItem('access_token');
+}
 
 // Function to populate registrations
-function populateRegistrations() {
+async function populateRegistrations() {
     const registrationsGrid = document.getElementById('myRegistrations');
-    registrationsGrid.innerHTML = '';
+    registrationsGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading events...</div>';
 
-    if (demoRegistrations.length === 0) {
-        registrationsGrid.innerHTML = `
-            <div class="no-registrations">
-                <i class="fas fa-calendar-plus"></i>
-                <p>No registrations found</p>
-                <button class="btn btn-primary" onclick="window.location.href='browse-events.html'">
-                    <i class="fas fa-plus"></i> Register for an Event
-                </button>
-            </div>
-        `;
-        return;
-    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/events/attending/`, {
+            headers: {
+                'Authorization': `Bearer ${getAuthToken()}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-    demoRegistrations.forEach(registration => {
-        const registrationCard = document.createElement('div');
-        registrationCard.className = 'event-card';
-        registrationCard.innerHTML = `
-            <div class="event-image">
-                <img src="${registration.eventImage}" alt="${registration.eventName}">
-            </div>
-            <div class="event-details">
-                <h3>${registration.eventName}</h3>
-                <p class="event-date">
-                    <i class="fas fa-calendar"></i> ${new Date(registration.eventDate).toLocaleDateString()}
-                    <i class="fas fa-clock"></i> ${registration.eventTime}
-                </p>
-                <p class="event-location">
-                    <i class="fas fa-map-marker-alt"></i> ${registration.eventLocation}
-                </p>
-                <p class="society-name">
-                    <i class="fas fa-users"></i> ${registration.societyName}
-                </p>
-                <p class="event-description">${registration.eventDescription}</p>
-                <div class="event-actions">
-                    <span class="registration-status ${registration.registrationStatus}">
-                        <i class="fas fa-${registration.registrationStatus === 'registered' ? 'check-circle' : 'clock'}"></i>
-                        ${registration.registrationStatus.charAt(0).toUpperCase() + registration.registrationStatus.slice(1)}
-                    </span>
-                    <span class="registration-date">
-                        <i class="fas fa-calendar-check"></i>
-                        Registered on ${new Date(registration.registrationDate).toLocaleDateString()}
-                    </span>
-                    <button class="btn btn-primary" onclick="viewEventDetails(${registration.eventId})">
-                        <i class="fas fa-info-circle"></i> View Details
+        if (!response.ok) {
+            throw new Error('Failed to fetch events');
+        }
+
+        const events = await response.json();
+
+        if (events.length === 0) {
+            registrationsGrid.innerHTML = `
+                <div class="no-registrations">
+                    <i class="fas fa-calendar-plus"></i>
+                    <p>No events registered</p>
+                    <button class="btn btn-primary" onclick="window.location.href='browse-events.html'">
+                        <i class="fas fa-plus"></i> Register for an Event
                     </button>
                 </div>
+            `;
+            return;
+        }
+
+        registrationsGrid.innerHTML = '';
+        events.forEach(event => {
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.innerHTML = `
+                <div class="event-image">
+                    <img src="${event.banner || '/static/images/placeholder.png'}" 
+                         alt="${event.name}"
+                         onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
+                </div>
+                <div class="event-details">
+                    <h3>${event.name}</h3>
+                    <p class="event-date">
+                        <i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}
+                        <i class="fas fa-clock"></i> ${event.start_time}
+                    </p>
+                    <p class="event-location">
+                        <i class="fas fa-map-marker-alt"></i> ${event.location}
+                    </p>
+                    <p class="society-name">
+                        <i class="fas fa-users"></i> ${event.host_username}
+                    </p>
+                    <p class="event-description">${event.description}</p>
+                    <div class="event-actions">
+                        <span class="attendee-count">
+                            <i class="fas fa-users"></i> ${event.attendee_count} attending
+                        </span>
+                        <span class="event-rating">
+                            <i class="fas fa-star"></i> Rating: ${event.average_rating || 'N/A'}
+                        </span>
+                        <button class="btn btn-primary" onclick="viewEventDetails(${event.id})">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                    </div>
+                </div>
+            `;
+            registrationsGrid.appendChild(eventCard);
+        });
+    } catch (error) {
+        registrationsGrid.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                ${error.message}
             </div>
         `;
-        registrationsGrid.appendChild(registrationCard);
-    });
+    }
 }
 
 // Navigation functions
 function viewEventDetails(eventId) {
-    window.location.href = `event-details.html?id=${eventId}`;
+    window.location.href = `announcement-details.html?id=${eventId}`;
 }
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for auth token
+    if (!getAuthToken()) {
+        window.location.href = 'login.html';
+        return;
+    }
+
     populateRegistrations();
 
     // Add logout handler
     document.getElementById('logout-btn').addEventListener('click', () => {
-        sessionStorage.clear();
+        localStorage.removeItem('access_token');
         window.location.href = 'login.html';
     });
-}); 
+});

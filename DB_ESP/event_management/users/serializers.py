@@ -11,7 +11,30 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Custom token serializer to use email for authentication"""
     username_field = User.EMAIL_FIELD
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Add user_type to response
+        data['user_type'] = self.user.user_type
+        return data
 
+class ViewerProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Viewer
+        fields = ('username', 'first_name', 'last_name')
+        extra_kwargs = {
+            'username': {'required': False},
+            'first_name': {'required': False},
+            'last_name': {'required': False}
+        }
+
+class HandlerProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Handler
+        fields = ('username', 'society_name')
+        extra_kwargs = {
+            'username': {'required': False},
+            'society_name': {'required': False}
+        }
 class BaseUserSerializer(serializers.ModelSerializer):
     """Base serializer with dynamic field filtering"""
 

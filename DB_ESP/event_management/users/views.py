@@ -16,7 +16,7 @@ from .serializers import (
     ViewerRegistrationSerializer,
     HandlerRegistrationSerializer,
     SocietyMembershipSerializer,
-    JoinCodeSerializer, MemberWithRoleSerializer
+    JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer
 )
 from .permissions import IsHandler, IsViewer
 
@@ -44,7 +44,7 @@ class SocietyListView(generics.ListAPIView):
     def get_queryset(self):
         # Use a subquery to correctly count how many viewers have this handler in their memberships
         subquery = CustomUser.objects.filter(
-            memberships=OuterRef('pk'),
+            society_memberships=OuterRef('pk'),
             user_type='viewer'
         ).values('id')
 
@@ -228,22 +228,39 @@ class UserListView(generics.ListAPIView):
         return HandlerSerializer if isinstance(self.request.user, Handler) else ViewerSerializer
 
 
-class UserDetailView(generics.RetrieveAPIView):
+# Update in users/views.py
+
+class UserDetailView(generics.RetrieveUpdateAPIView):  # Changed to include UpdateAPIView
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         pk = self.kwargs.get('pk') or self.kwargs.get('user_id') or None
         if pk is None or str(pk).lower() == 'me':
             return self.request.user
+        # Only allow users to edit their own profile
+        if pk != self.request.user.pk:
+            raise permissions.exceptions.PermissionDenied("You can only edit your own profile")
         return CustomUser.objects.get(pk=pk)
 
     def get_serializer_class(self):
-        user = self.get_object()
-        return HandlerSerializer if isinstance(user,
-                                               Handler) or user.user_type == CustomUser.HANDLER else ViewerSerializer
+        if self.request.method in ['PUT', 'PATCH']:
+            return HandlerProfileUpdateSerializer if isinstance(self.request.user, Handler) else ViewerProfileUpdateSerializer
+        return HandlerSerializer if isinstance(self.get_object(), Handler) else ViewerSerializer
 
     def get_serializer(self, *args, **kwargs):
         fields = self.request.query_params.get('fields')
-        if fields:
+        if fields and self.request.method == 'GET':
             kwargs['fields'] = fields.split(',')
         return super().get_serializer(*args, **kwargs)
+
+class UserSocietiesView(generics.ListAPIView):
+    """List all societies (handlers) that the current user is a member of"""
+    permission_classes = (permissions.IsAuthenticated, IsViewer)
+    serializer_class = HandlerSerializer
+
+    def get_queryset(self):
+        return Handler.objects.filter(
+            viewer_memberships__viewer=self.request.user
+        ).annotate(
+            member_count=Count('viewer_memberships')
+        )

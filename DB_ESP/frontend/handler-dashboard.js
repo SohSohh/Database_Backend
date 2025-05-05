@@ -1,9 +1,6 @@
 // Global variables
 window.baseUrl = "http://localhost:8000";
-
-
-
-// Demo data for events
+const token = localStorage.getItem('access_token');
 
 // Demo data for tasks
 const demoTasks = [
@@ -62,53 +59,54 @@ function populateRecentEvent() {
     eventsGrid.innerHTML = '';
 
     // Get the most recent event
-
     fetch(`${window.baseUrl}/api/events/handler?ordering=date/`,
         {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODk5OTA2NDAxLCJpYXQiOjE3NDYzMDY0MDEsImp0aSI6ImNjZmEzZTFiMmU2YTRjZmU4YzU4M2FiYjAwYmNmMjcwIiwidXNlcl9pZCI6OX0.uolpG4ckeSk3iwSWG_GmxJShZ6tU5Eufgc1sEqmwe9c',
+                'Authorization': `Bearer ${token}`,
             }
         }
     ).then(response => response.json()).then(data => {
-        const recentEvent = data[0]; // For demo, using first event. In real app, sort by date
+        const recentEvent = data[0];
         const eventCard = document.createElement('div');
-        eventCard.className = 'event-card';
-        eventCard.innerHTML = `
-            <div class="event-image">
-                <img src="${recentEvent.banner || '/static/images/placeholder.png'}" 
-                alt="${recentEvent.name}" 
-                onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
-
-            </div>
-            <div class="event-details">
-                <h3>${recentEvent.name}</h3>
-                <p class="event-date">
-                    <i class="fas fa-calendar"></i> ${new Date(recentEvent.date).toLocaleDateString()}
-                    <i class="fas fa-clock"></i> ${recentEvent.start_time}
-                </p>
-                <p class="event-location">
-                    <i class="fas fa-map-marker-alt"></i> ${recentEvent.location}
-                </p>
-                <p class="event-description">${recentEvent.description}</p>
-                <div class="event-stats">
-                    <span class="event-capacity">
-                        <i class="fas fa-users"></i> ${recentEvent.attendee_count} attendees
-                    </span>
-                </div>
-                <div class="event-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='edit-event.html?id=${recentEvent.id}'">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                </div>
-            </div>
-        `;
-        eventsGrid.appendChild(eventCard);
+            eventCard.className = 'event-card';
+            // Make the entire card clickable
+            eventCard.style.cursor = 'pointer';
+            eventCard.addEventListener('click', () => {
+                window.location.href = `event-details.html?id=${recentEvent.id}`;
+            });
             
-        })
-    
-    
+            eventCard.innerHTML = `
+                <div class="event-image">
+                    <img src="${recentEvent.banner || '/static/images/placeholder.png'}" 
+                        alt="${recentEvent.name}" 
+                        onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
+                </div>
+                <div class="event-details">
+                    <h3>${recentEvent.name}</h3>
+                    <p class="event-date">
+                        <i class="fas fa-calendar"></i> ${new Date(recentEvent.date).toLocaleDateString()}
+                        <i class="fas fa-clock"></i> ${recentEvent.start_time}
+                    </p>
+                    <p class="event-location">
+                        <i class="fas fa-map-marker-alt"></i> ${recentEvent.location}
+                    </p>
+                    <p class="event-description">${recentEvent.description}</p>
+                    <div class="event-stats">
+                        <span class="event-capacity">
+                            <i class="fas fa-users"></i> ${recentEvent.attendee_count} attendees
+                        </span>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn btn-primary event-manage-btn" data-event-id="${recentEvent.id}">
+                            <i class="fas fa-edit"></i> Manage
+                        </button>
+                    </div>
+                </div>
+            `;
+            eventsGrid.appendChild(eventCard);
+    });
 }
 
 // Function to populate all events
@@ -121,42 +119,48 @@ function populateAllEvents() {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODk5OTA2NDAxLCJpYXQiOjE3NDYzMDY0MDEsImp0aSI6ImNjZmEzZTFiMmU2YTRjZmU4YzU4M2FiYjAwYmNmMjcwIiwidXNlcl9pZCI6OX0.uolpG4ckeSk3iwSWG_GmxJShZ6tU5Eufgc1sEqmwe9c',
+                'Authorization': `Bearer ${token}`,
             }
         }
     ).then(response => response.json()).then(data => {
     data.forEach(event => {
         const eventCard = document.createElement('div');
-        eventCard.className = 'event-card';
-        eventCard.innerHTML = `
-            <div class="event-image">
-                 <img src="${event.banner || '/static/images/placeholder.png'}" 
-                alt="${event.name}" 
-                onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
-            </div>
-            <div class="event-details">
-                <h3>${event.name}</h3>
-                <p class="event-date">
-                    <i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}
-                    <i class="fas fa-clock"></i> ${event.start_time}
-                </p>
-                <p class="event-location">
-                    <i class="fas fa-map-marker-alt"></i> ${event.location}
-                </p>
-                <p class="event-description">${event.description}</p>
-                <div class="event-stats">
-                    <span class="event-capacity">
-                        <i class="fas fa-users"></i> ${event.attendee_count} attendees
-                    </span>
+            eventCard.className = 'event-card';
+            // Make the entire card clickable
+            eventCard.style.cursor = 'pointer';
+            eventCard.addEventListener('click', () => {
+                window.location.href = `event-details.html?id=${event.id}`;
+            });
+            
+            eventCard.innerHTML = `
+                <div class="event-image">
+                    <img src="${event.banner || '/static/images/placeholder.png'}" 
+                        alt="${event.name}" 
+                        onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
                 </div>
-                <div class="event-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='manage-events.html?id=${event.id}'">
-                        <i class="fas fa-edit"></i> Manage
-                    </button>
+                <div class="event-details">
+                    <h3>${event.name}</h3>
+                    <p class="event-date">
+                        <i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}
+                        <i class="fas fa-clock"></i> ${event.start_time}
+                    </p>
+                    <p class="event-location">
+                        <i class="fas fa-map-marker-alt"></i> ${event.location}
+                    </p>
+                    <p class="event-description">${event.description}</p>
+                    <div class="event-stats">
+                        <span class="event-capacity">
+                            <i class="fas fa-users"></i> ${event.attendee_count} attendees
+                        </span>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn btn-primary event-manage-btn" data-event-id="${event.id}">
+                            <i class="fas fa-edit"></i> Manage
+                        </button>
+                    </div>
                 </div>
-            </div>
-        `;
-        eventsGrid.appendChild(eventCard);
+            `;
+            eventsGrid.appendChild(eventCard);
     });
 })
 }
@@ -175,29 +179,31 @@ function toggleAllEvents() {
 // Function to populate upcoming tasks
 function populateUpcomingTasks() {
     const tasksList = document.getElementById('upcomingTasks');
-    tasksList.innerHTML = '';
+    if (tasksList) {
+        tasksList.innerHTML = '';
 
-    demoTasks.forEach(task => {
-        const taskItem = document.createElement('div');
-        taskItem.className = 'task-item';
-        taskItem.innerHTML = `
-            <div class="task-info">
-                <h3>${task.taskName}</h3>
-                <p class="task-due-date">
-                    <i class="fas fa-calendar"></i> Due: ${new Date(task.taskDueDate).toLocaleDateString()}
-                </p>
-            </div>
-            <div class="task-meta">
-                <span class="task-priority ${task.taskPriority}">
-                    <i class="fas fa-flag"></i> ${task.taskPriority}
-                </span>
-                <span class="task-status ${task.taskStatus}">
-                    <i class="fas fa-circle"></i> ${task.taskStatus}
-                </span>
-            </div>
-        `;
-        tasksList.appendChild(taskItem);
-    });
+        demoTasks.forEach(task => {
+            const taskItem = document.createElement('div');
+            taskItem.className = 'task-item';
+            taskItem.innerHTML = `
+                <div class="task-info">
+                    <h3>${task.taskName}</h3>
+                    <p class="task-due-date">
+                        <i class="fas fa-calendar"></i> Due: ${new Date(task.taskDueDate).toLocaleDateString()}
+                    </p>
+                </div>
+                <div class="task-meta">
+                    <span class="task-priority ${task.taskPriority}">
+                        <i class="fas fa-flag"></i> ${task.taskPriority}
+                    </span>
+                    <span class="task-status ${task.taskStatus}">
+                        <i class="fas fa-circle"></i> ${task.taskStatus}
+                    </span>
+                </div>
+            `;
+            tasksList.appendChild(taskItem);
+        });
+    }
 }
 
 // Function to populate recent feedback
@@ -244,53 +250,25 @@ function generateStarRating(rating) {
 }
 
 // Function to populate society events
-function populateSocietyEvents() {
+async function populateSocietyEvents() {
     const eventsGrid = document.getElementById('societyEvents');
-    eventsGrid.innerHTML = '';
+    eventsGrid.innerHTML = '<p>Loading events...</p>';
 
-    fetch(`${window.baseUrl}/api/events/handler?ordering=date/`,
-        {
-            method: "GET",
+    try {
+        const response = await fetch(`${window.baseUrl}/api/events/handler/`, {
             headers: {
-                'Content-Type': 'application/json', 
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODk5OTA2NDAxLCJpYXQiOjE3NDYzMDY0MDEsImp0aSI6ImNjZmEzZTFiMmU2YTRjZmU4YzU4M2FiYjAwYmNmMjcwIiwidXNlcl9pZCI6OX0.uolpG4ckeSk3iwSWG_GmxJShZ6tU5Eufgc1sEqmwe9c',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
-        }
-    ).then(response => response.json()).then(data => {
-    data.forEach(event => {
-        const eventCard = document.createElement('div');
-        eventCard.className = 'event-card';
-        eventCard.innerHTML = `
-            <div class="event-image">
-                 <img src="${event.banner || '/static/images/placeholder.png'}" 
-                alt="${event.name}" 
-                onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
-            </div>
-            <div class="event-details">
-                <h3>${event.name}</h3>
-                <p class="event-date">
-                    <i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}
-                    <i class="fas fa-clock"></i> ${event.start_time}
-                </p>
-                <p class="event-location">
-                    <i class="fas fa-map-marker-alt"></i> ${event.location}
-                </p>
-                <p class="event-description">${event.description}</p>
-                <div class="event-stats">
-                    <span class="event-capacity">
-                        <i class="fas fa-users"></i> ${event.attendee_count} attendees
-                    </span>
-                </div>
-                <div class="event-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='manage-events.html?id=${event.id}'">
-                        <i class="fas fa-edit"></i> Manage
-                    </button>
-                </div>
-            </div>
-        `;
-        eventsGrid.appendChild(eventCard);
-    });
-})
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch events');
+        
+        const events = await response.json();
+        renderEvents(events, eventsGrid);
+        
+    } catch (error) {
+        eventsGrid.innerHTML = '<p class="error">Failed to load events</p>';
+    }
 }
 
 // Function to show society events section
@@ -311,7 +289,7 @@ function initializeDashboard() {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODk5OTA2NDAxLCJpYXQiOjE3NDYzMDY0MDEsImp0aSI6ImNjZmEzZTFiMmU2YTRjZmU4YzU4M2FiYjAwYmNmMjcwIiwidXNlcl9pZCI6OX0.uolpG4ckeSk3iwSWG_GmxJShZ6tU5Eufgc1sEqmwe9c',
+                'Authorization': `Bearer ${token}`,
             }
         }
     ).then(response => response.json()).then(data => {
@@ -320,76 +298,27 @@ function initializeDashboard() {
 }
 
 // Function to fetch and update dashboard stats
-function updateDashboardStats() {
-    // Get references to stat number elements
-    const activeEventsElement = document.querySelector('.stat-card:nth-child(1) .stat-number');
-    const totalAttendeesElement = document.querySelector('.stat-card:nth-child(2) .stat-number');
-    const averageRatingElement = document.querySelector('.stat-card:nth-child(3) .stat-number');
-    
-    // Fetch events data to calculate stats
-    fetch(`${window.baseUrl}/api/events/handler?ordering=date/`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json', 
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODk5OTA2NDAxLCJpYXQiOjE3NDYzMDY0MDEsImp0aSI6ImNjZmEzZTFiMmU2YTRjZmU4YzU4M2FiYjAwYmNmMjcwIiwidXNlcl9pZCI6OX0.uolpG4ckeSk3iwSWG_GmxJShZ6tU5Eufgc1sEqmwe9c',
-        }
-    })
-    .then(response => response.json())
-    .then(events => {
-        // Calculate active events (events with dates >= today)
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const activeEvents = events.filter(event => new Date(event.date) >= today);
-        activeEventsElement.textContent = activeEvents.length;
+async function updateDashboardStats() {
+    try {
+        const response = await fetch(`${window.baseUrl}/api/events/handler/events/`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
         
-        // Calculate total attendees across all events
-        const totalAttendees = events.reduce((sum, event) => sum + (event.attendee_count || 0), 0);
-        totalAttendeesElement.textContent = totalAttendees;
-
-        averageRatingElement.textContent = events[0].average_rating;
-    })
-    .catch(error => {
-        console.error('Error fetching events data:', error);
-        activeEventsElement.textContent = "Error";
-        totalAttendeesElement.textContent = "Error";
-        averageRatingElement.textContent = "Error";
-    });
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        
+        const events = await response.json();
+        updateStats({
+            activeEvents: events.length,
+            totalAttendees: events.reduce((sum, e) => sum + e.attendee_count, 0),
+            averageRating: calculateAverageRating(events)
+        });
+        
+    } catch (error) {
+        console.error('Failed to update stats:', error);
+    }
 }
-
-
-/*
-Backend Integration Steps:
-1. Replace societyData with an API call:
-   
-   async function fetchSocietyData() {
-       try {
-           const response = await fetch('/api/society/current', {
-               headers: {
-                   'Authorization': `Bearer ${getAuthToken()}`
-               }
-           });
-           const data = await response.json();
-           return data;
-       } catch (error) {
-           console.error('Error fetching society data:', error);
-           return null;
-       }
-   }
-
-2. Update the initialization:
-
-   async function initializeDashboard() {
-       const society = await fetchSocietyData();
-       if (society) {
-           document.getElementById('handlerName').textContent = society.name;
-       }
-   }
-
-3. Add error handling for failed API calls:
-   - Show appropriate error messages
-   - Implement retry logic if needed
-   - Handle session expiration
-*/
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -401,9 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     populateUpcomingTasks();
     populateRecentFeedback();
     updateDashboardStats();
-    
-    // Add this line to populate society events by default
-
 
     // Add logout handler
     document.getElementById('logout-btn').addEventListener('click', () => {

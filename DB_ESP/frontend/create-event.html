@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Event - EventHub</title>
     <link rel="stylesheet" href="handler-dashboard.css">
+    <link rel="stylesheet" href="create-event.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -17,9 +18,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="brand-link">
-                <h1>EventHub</h1>
-            </a>
+            <h1>EventHub</h1>
             <h2>Event Handler</h2>
         </div>
         <nav class="nav-menu">
@@ -32,31 +31,25 @@
                 </li>
                 <li class="nav-item">
                     <a href="manage-events.html" class="nav-link">
-                        <i class="fas fa-calendar-alt"></i>
+                        <i class="fas fa-calendar"></i>
                         Manage Events
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a href="create-event.html" class="nav-link active">
                         <i class="fas fa-plus-circle"></i>
                         Create Event
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="event-analytics.html" class="nav-link">
-                        <i class="fas fa-chart-bar"></i>
-                        Analytics
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="society-members.html" class="nav-link">
+                    <a href="attendees.html" class="nav-link">
                         <i class="fas fa-users"></i>
-                        Members
+                        Attendees
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="event-feedback.html" class="nav-link">
-                        <i class="fas fa-comment-alt"></i>
+                        <i class="fas fa-comment"></i>
                         Feedback
                     </a>
                 </li>
@@ -72,154 +65,93 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="create-event-container">
-            <div class="create-event-header">
-                <h1>Create Your Event</h1>
-                <p>Fill in the details below to create your event. All fields marked with * are required.</p>
+        <div class="dashboard-container">
+            <!-- Status Messages -->
+            <div id="status-container">
+                <div id="success-message" class="status-message success-message" style="display: none;"></div>
+                <div id="error-message" class="status-message error-message" style="display: none;"></div>
+                <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i> Processing...
+                </div>
             </div>
 
-            <form id="createEventForm" class="create-event-form">
-                <!-- Basic Information -->
-                <div class="form-section">
-                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
-                    <div class="form-group">
-                        <label for="eventTitle">Event Title*</label>
-                        <input type="text" id="eventTitle" name="title" required 
-                            placeholder="Enter a clear and descriptive title">
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDescription">Event Description*</label>
-                        <textarea id="eventDescription" name="description" rows="4" required 
-                            placeholder="Provide a detailed description of your event"></textarea>
-                    </div>
-                    <div class="form-row">
+            <!-- Create Event Form -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-plus-circle"></i> Create Event</h2>
+                </div>
+                <form id="createEventForm" class="event-form">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3>Basic Information</h3>
                         <div class="form-group">
-                            <label for="eventCategory">Category*</label>
-                            <select id="eventCategory" name="category" required>
+                            <label for="eventTitle">Event Name <span class="required">*</span></label>
+                            <input type="text" id="eventTitle" name="eventTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventDescription">Event Description <span class="required">*</span></label>
+                            <textarea id="eventDescription" name="eventDescription" rows="4" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div class="form-section">
+                        <h3>Date and Time</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventDate">Event Date <span class="required">*</span></label>
+                                <input type="date" id="eventDate" name="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventStartTime">Start Time <span class="required">*</span></label>
+                                <input type="time" id="eventStartTime" name="eventStartTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventEndTime">End Time <span class="required">*</span></label>
+                                <input type="time" id="eventEndTime" name="eventEndTime" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-section">
+                        <h3>Location</h3>
+                        <div class="form-group">
+                            <label for="eventLocation">Event Location <span class="required">*</span></label>
+                            <input type="text" id="eventLocation" name="eventLocation" required>
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-section">
+                        <h3>Category</h3>
+                        <div class="form-group">
+                            <label for="eventCategory">Event Category <span class="required">*</span></label>
+                            <select id="eventCategory" name="eventCategory" required>
                                 <option value="">Select a category</option>
-                                <option value="tech">Technology</option>
-                                <option value="business">Business</option>
-                                <option value="education">Education</option>
-                                <option value="social">Social</option>
-                                <option value="cultural">Cultural</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="eventType">Event Type*</label>
-                            <select id="eventType" name="type" required>
-                                <option value="">Select type</option>
-                                <option value="in-person">In-Person</option>
-                                <option value="virtual">Virtual</option>
-                                <option value="hybrid">Hybrid</option>
+                                <!-- Categories will be populated here by JavaScript -->
                             </select>
                         </div>
                     </div>
-                </div>
 
-                <!-- Date and Time -->
-                <div class="form-section">
-                    <h3><i class="fas fa-clock"></i> Date and Time</h3>
-                    <div class="form-row">
+                    <!-- Banner Upload (Optional) -->
+                    <div class="form-section">
+                        <h3>Event Banner (Optional)</h3>
                         <div class="form-group">
-                            <label for="eventStartDate">Start Date*</label>
-                            <input type="date" id="eventStartDate" name="startDate" required>
+                            <label for="eventBanner">Upload Banner Image</label>
+                            <input type="file" id="eventBanner" name="eventBanner" accept="image/*">
+                            <p class="form-help">Recommended size: 1200x600 pixels, Max size: 5MB</p>
                         </div>
-                        <div class="form-group">
-                            <label for="eventStartTime">Start Time*</label>
-                            <input type="time" id="eventStartTime" name="startTime" required>
-                        </div>
+                        <div id="bannerPreview" class="image-preview"></div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="eventEndDate">End Date*</label>
-                            <input type="date" id="eventEndDate" name="endDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eventEndTime">End Time*</label>
-                            <input type="time" id="eventEndTime" name="endTime" required>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Location -->
-                <div class="form-section">
-                    <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
-                    <div class="form-group">
-                        <label for="eventVenue">Venue Name*</label>
-                        <input type="text" id="eventVenue" name="venue" required 
-                            placeholder="Enter the venue name">
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelEventBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="submitEventBtn">Create Event</button>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="eventAddress">Address</label>
-                            <input type="text" id="eventAddress" name="address" 
-                                placeholder="Street address">
-                        </div>
-                        <div class="form-group">
-                            <label for="eventCity">City*</label>
-                            <input type="text" id="eventCity" name="city" required>
-                        </div>
-                    </div>
-                    <div class="form-group virtual-link">
-                        <label for="eventLink">Virtual Event Link</label>
-                        <input type="url" id="eventLink" name="virtualLink" 
-                            placeholder="Enter the virtual meeting link">
-                    </div>
-                </div>
-
-                <!-- Media Upload -->
-                <div class="form-section">
-                    <h3><i class="fas fa-image"></i> Media</h3>
-                    <div class="file-upload">
-                        <label class="file-upload-label" for="eventBanner">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Upload Event Banner*</span>
-                            <small>Recommended size: 1200x600px. Max size: 5MB</small>
-                        </label>
-                        <input type="file" id="eventBanner" name="banner" accept="image/*" required>
-                    </div>
-                    <div class="file-upload">
-                        <label class="file-upload-label" for="eventImages">
-                            <i class="fas fa-images"></i>
-                            <span>Additional Images</span>
-                            <small>Up to 5 images. Max size: 2MB each</small>
-                        </label>
-                        <input type="file" id="eventImages" name="images" accept="image/*" multiple>
-                    </div>
-                </div>
-
-                <!-- Additional Information -->
-                <div class="form-section">
-                    <h3><i class="fas fa-plus-circle"></i> Additional Information</h3>
-                    <div class="form-group">
-                        <label for="eventSchedule">Event Schedule</label>
-                        <textarea id="eventSchedule" name="schedule" rows="4" 
-                            placeholder="Add a detailed schedule for your event"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventSpeakers">Speakers/Presenters</label>
-                        <textarea id="eventSpeakers" name="speakers" rows="4" 
-                            placeholder="List the speakers or presenters for your event"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventNotes">Additional Notes</label>
-                        <textarea id="eventNotes" name="notes" rows="4" 
-                            placeholder="Add any additional information about your event"></textarea>
-                    </div>
-                </div>
-
-                <!-- Form Actions -->
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" id="cancelEventBtn">
-                        <i class="fas fa-times"></i>
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check"></i>
-                        Create Event
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 

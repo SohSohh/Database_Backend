@@ -287,6 +287,30 @@
   line-height: 1.5;
 }
 
+/* Loading and Error States */
+.loading-state {
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.error-message {
+    color: var(--error-color, #dc3545);
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--error-bg, #f8d7da);
+    margin-bottom: 20px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+/* Hide Empty Fields */
+.detail-item.hidden {
+    display: none;
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .profile-header {
@@ -322,4 +346,4 @@
   .profile-content {
     padding: 20px;
   }
-} 
+}

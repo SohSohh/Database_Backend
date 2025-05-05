@@ -1,38 +1,17 @@
-// Demo data for society members
-let members = [
-    {
-        memberId: 1,
-        name: "John Smith",
-        email: "john.smith@email.com",
-        role: "coordinator",
-        joinDate: "2024-01-15",
-        status: "active"
-    },
-    {
-        memberId: 2,
-        name: "Emma Wilson",
-        email: "emma.w@email.com",
-        role: "member",
-        joinDate: "2024-02-01",
-        status: "active"
-    },
-    {
-        memberId: 3,
-        name: "Michael Brown",
-        email: "michael.b@email.com",
-        role: "executive",
-        joinDate: "2024-01-10",
-        status: "active"
-    }
-];
+// API configuration
+const token = localStorage.getItem('access_token');
 
-// Load join requests from localStorage
-function getJoinRequests() {
-    return JSON.parse(localStorage.getItem('societyJoinRequests') || '[]');
-}
-function setJoinRequests(requests) {
-    localStorage.setItem('societyJoinRequests', JSON.stringify(requests));
-}
+const API_CONFIG = {
+    baseUrl: 'http://localhost:8000/api',
+    headers: {
+        'Content-Type': 'application/json',
+        // In a real app, you'd get this from local storage or auth service
+        'Authorization': `Bearer ${token}`
+    }
+};
+
+// Store for the current join code
+let currentJoinCode = null;
 
 // Function to show notification
 function showNotification(message, type = 'success') {
@@ -48,17 +27,109 @@ function showNotification(message, type = 'success') {
     setTimeout(() => notification.remove(), 3000);
 }
 
-// Function to populate members list
-function populateMembersList() {
+// Function to make API calls
+async function apiCall(endpoint, method = 'GET', body = null) {
+    try {
+        const options = {
+            method,
+            headers: API_CONFIG.headers,
+        };
+
+        if (body && (method === 'POST' || method === 'PATCH' || method === 'PUT')) {
+            options.body = JSON.stringify(body);
+        }
+
+        console.log(`${method} ${API_CONFIG.baseUrl}${endpoint}`, options);
+        
+        const response = await fetch(`${API_CONFIG.baseUrl}${endpoint}`, options);
+        
+        // Handle non-JSON responses
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            console.log('Response:', data);
+            
+            if (!response.ok) {
+                throw new Error(data.detail || `API call failed with status ${response.status}`);
+            }
+            
+            return data;
+        } else {
+            // Handle non-JSON response (like HTML error pages)
+            const text = await response.text();
+            console.log('Non-JSON Response:', text.substring(0, 100) + '...');
+            
+            if (!response.ok) {
+                throw new Error(`API call failed with status ${response.status}`);
+            }
+            
+            return { message: text };
+        }
+    } catch (error) {
+        console.error('API Error:', error);
+        showNotification(error.message, 'error');
+        throw error;
+    }
+}
+
+// Generate join code
+async function generateJoinCode() {
+    try {
+        const data = await apiCall('/users/society/join-code/', 'POST');
+        currentJoinCode = data.join_code;
+        
+        // Display the join code
+        const codeDisplay = document.getElementById('joinCodeDisplay');
+        if (!codeDisplay) {
+            const container = document.createElement('div');
+            container.className = 'content-section';
+            container.id = 'joinCodeContainer';
+            container.innerHTML = `
+                <div class="section-header">
+                    <h3><i class="fas fa-key"></i> Society Join Code</h3>
+                </div>
+                <div class="join-code-display">
+                    <p>Share this code with viewers who want to join your society:</p>
+                    <div class="code-box" id="joinCodeDisplay">${currentJoinCode}</div>
+                    <p class="code-note">This code will expire after use or when a new code is generated.</p>
+                </div>
+            `;
+            
+            // Insert after the join requests section
+            const joinRequestsSection = document.getElementById('joinRequestsSection');
+            joinRequestsSection.parentNode.insertBefore(container, joinRequestsSection);
+        } else {
+            document.getElementById('joinCodeDisplay').textContent = currentJoinCode;
+            document.getElementById('joinCodeContainer').style.display = 'block';
+        }
+        
+        showNotification('New join code generated successfully!');
+    } catch (error) {
+        showNotification('Failed to generate join code', 'error');
+    }
+}
+
+// Fetch all society members
+async function fetchMembers() {
+    try {
+        const members = await apiCall('/users/society/members/');
+        populateMembersList(members);
+    } catch (error) {
+        showNotification('Failed to fetch society members', 'error');
+    }
+}
+
+// Populate members list
+function populateMembersList(members) {
     const membersList = document.getElementById('membersList');
     membersList.innerHTML = '';
 
-    if (members.length === 0) {
+    if (!members || members.length === 0) {
         membersList.innerHTML = `
             <tr>
-                <td colspan="6" class="no-members">
+                <td colspan="5" class="no-members">
                     <i class="fas fa-users"></i>
-                    <p>No members found. Add your first member!</p>
+                    <p>No members found. Generate a join code to invite members!</p>
                 </td>
             </tr>
         `;
@@ -67,25 +138,26 @@ function populateMembersList() {
 
     members.forEach(member => {
         const row = document.createElement('tr');
+        
+        // Make sure we have a valid member ID
+        const memberId = member.id || member.user_id || member._id;
+        
         row.innerHTML = `
-            <td>${member.name}</td>
-            <td>${member.email}</td>
+            <td>${member.name || member.user_id || 'N/A'}</td>
+            <td>${member.email || 'N/A'}</td>
             <td>
-                <span class="role-badge ${member.role}">
-                    ${member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                </span>
+                <select class="role-select" data-member-id="${memberId}" onchange="updateMemberRole('${memberId}', this.value)">
+                    <option value="Other" ${member.role === 'other' ? 'selected' : ''}>Other</option>
+                    <option value="deputy_director" ${member.role === 'deputy_director' ? 'selected' : ''}>Deputy Director</option>
+                    <option value="executive" ${member.role === 'executive' ? 'selected' : ''}>Executive</option>
+                    <option value="director" ${member.role === 'director' ? 'selected' : ''}>Director</option>
+                    <option value="vice_president" ${member.role === 'vice_president' ? 'selected' : ''}>Vice President</option>
+                    <option value="president" ${member.role === 'president' ? 'selected' : ''}>President</option>
+                </select>
             </td>
-            <td>${new Date(member.joinDate).toLocaleDateString()}</td>
-            <td>
-                <span class="status-badge ${member.status}">
-                    ${member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-                </span>
-            </td>
+            <td>${new Date(member.join_date || Date.now()).toLocaleDateString()}</td>
             <td class="actions-cell">
-                <button class="btn btn-icon edit-btn" onclick="editMember(${member.memberId})" title="Edit">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-icon delete-btn" onclick="removeMember(${member.memberId})" title="Remove">
+                <button class="btn btn-icon delete-btn" onclick="removeMember('${memberId}')" title="Remove">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
@@ -94,84 +166,69 @@ function populateMembersList() {
     });
 }
 
-// Function to show add member form
-function showAddMemberForm() {
-    document.getElementById('addMemberForm').style.display = 'block';
-    document.getElementById('memberForm').reset();
-}
-
-// Function to hide add member form
-function hideAddMemberForm() {
-    document.getElementById('addMemberForm').style.display = 'none';
-    document.getElementById('memberForm').reset();
-}
-
-// Function to handle form submission
-function handleSubmit(event) {
-    event.preventDefault();
-
-    // Get form data
-    const formData = {
-        memberId: members.length + 1, // Generate new ID
-        name: document.getElementById('memberName').value,
-        email: document.getElementById('memberEmail').value,
-        role: document.getElementById('memberRole').value,
-        joinDate: new Date().toISOString().split('T')[0],
-        status: 'active'
-    };
-
-    // Add new member
-    members.push(formData);
-    
-    // Show success notification
-    showNotification('Member added successfully!');
-    
-    // Hide form and refresh list
-    hideAddMemberForm();
-    populateMembersList();
-}
-
-// Function to edit member
-function editMember(memberId) {
-    const member = members.find(m => m.memberId === memberId);
-    if (member) {
-        // Show edit form with member data
-        document.getElementById('addMemberForm').style.display = 'block';
-        document.getElementById('memberName').value = member.name;
-        document.getElementById('memberEmail').value = member.email;
-        document.getElementById('memberRole').value = member.role;
+// Update member role
+async function updateMemberRole(memberId, newRole) {
+    try {
+        // Check if we have a valid member ID
+        if (!memberId) {
+            throw new Error('Invalid member ID');
+        }
         
-        // Change form title and submit button
-        document.querySelector('#addMemberForm .section-header h3').textContent = 'Edit Member';
-        document.querySelector('#memberForm button[type="submit"]').textContent = 'Update Member';
+        // Debug the API endpoint
+        window.debugLog('Update Member Role', { memberId, newRole });
         
-        // Store memberId for update
-        document.getElementById('memberForm').dataset.memberId = memberId;
+        // Try the API call with potential alternative formats
+        let data;
+        try {
+            // First try with trailing slash
+            data = await apiCall(`/users/society/members/${memberId}/`, 'PATCH', { role: newRole });
+        } catch (error) {
+            // If that fails, try without trailing slash
+            data = await apiCall(`/users/society/members/${memberId}/`, 'PATCH', { role: newRole });
+        }
+        
+        showNotification(`Member role updated to ${newRole}`);
+    } catch (error) {
+        showNotification(`Failed to update member role: ${error.message}`, 'error');
+        // Reset the select to previous value
+        fetchMembers();
     }
 }
 
-// Function to remove member
-function removeMember(memberId) {
-    if (confirm('Are you sure you want to remove this member?')) {
-        // Remove member from array
-        members = members.filter(member => member.memberId !== memberId);
-        
-        // Show success notification
-        showNotification('Member removed successfully!');
-        
-        // Refresh the list
-        populateMembersList();
+// Remove member
+async function removeMember(memberId) {
+    if (confirm('Are you sure you want to remove this member from your society?')) {
+        try {
+            // Try different endpoint formats
+            try {
+                await apiCall(`/users/society/members/${memberId}/remove_member/`, 'DELETE');
+            } catch (error) {
+                await apiCall(`/users/society/members/${memberId}/remove_member`, 'DELETE');
+            }
+            
+            showNotification('Member removed successfully!');
+            fetchMembers();
+        } catch (error) {
+            showNotification(`Failed to remove member: ${error.message}`, 'error');
+        }
     }
+}
+
+// Process join requests
+async function fetchJoinRequests() {
+    // In a real app, this would be an API call
+    // For now, we'll use localStorage to simulate pending requests
+    return JSON.parse(localStorage.getItem('societyJoinRequests') || '[]');
 }
 
 // Populate join requests table
-function populateJoinRequests() {
-    const joinRequests = getJoinRequests();
+async function populateJoinRequests() {
+    const joinRequests = await fetchJoinRequests();
     const tbody = document.getElementById('joinRequestsList');
     tbody.innerHTML = '';
 
     if (joinRequests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;">No pending join requests</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">No pending join requests</td></tr>`;
         return;
     }
 
@@ -180,8 +237,6 @@ function populateJoinRequests() {
         tr.innerHTML = `
             <td>${req.viewerInfo.name}</td>
             <td>${req.viewerInfo.email}</td>
-            <td>${req.societyName}</td>
-            <td>${req.referralCode}</td>
             <td>${new Date(req.requestedAt).toLocaleString()}</td>
             <td>
                 <button class="btn btn-primary btn-sm" onclick="approveJoinRequest(${idx})">Approve</button>
@@ -192,47 +247,68 @@ function populateJoinRequests() {
     });
 }
 
-// Approve/Deny logic
-window.approveJoinRequest = function(idx) {
-    const joinRequests = getJoinRequests();
+// Approve join request
+async function approveJoinRequest(idx) {
+    const joinRequests = JSON.parse(localStorage.getItem('societyJoinRequests') || '[]');
     const req = joinRequests[idx];
-    // Add to members
-    members.push({
-        memberId: members.length + 1,
-        name: req.viewerInfo.name,
-        email: req.viewerInfo.email,
-        role: "member",
-        joinDate: new Date().toISOString().split('T')[0],
-        status: "active"
-    });
+    
+    try {
+        // This would be the API call to add the member
+        // For demo, we'll simulate the success
+        console.log('Adding member via API:', {
+            email: req.viewerInfo.email,
+            role: 'member'
+        });
+        
+        // Remove request
+        joinRequests.splice(idx, 1);
+        localStorage.setItem('societyJoinRequests', JSON.stringify(joinRequests));
+        
+        showNotification(`Approved ${req.viewerInfo.name}`);
+        populateJoinRequests();
+        fetchMembers(); // Refresh members list
+    } catch (error) {
+        showNotification('Failed to approve join request', 'error');
+    }
+}
+
+// Deny join request
+async function denyJoinRequest(idx) {
+    const joinRequests = JSON.parse(localStorage.getItem('societyJoinRequests') || '[]');
+    const req = joinRequests[idx];
+    
     // Remove request
     joinRequests.splice(idx, 1);
-    setJoinRequests(joinRequests);
-    showNotification(`Approved ${req.viewerInfo.name} for ${req.societyName}`);
-    populateJoinRequests();
-    populateMembersList();
-};
-
-window.denyJoinRequest = function(idx) {
-    const joinRequests = getJoinRequests();
-    const req = joinRequests[idx];
-    joinRequests.splice(idx, 1);
-    setJoinRequests(joinRequests);
+    localStorage.setItem('societyJoinRequests', JSON.stringify(joinRequests));
+    
     showNotification(`Denied join request from ${req.viewerInfo.name}`);
     populateJoinRequests();
-};
+}
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
-    // Populate members list
-    populateMembersList();
+    // Fetch and display members
+    fetchMembers();
+    
+    // Display join requests
     populateJoinRequests();
-
-    // Add form submit handler
-    document.getElementById('memberForm').addEventListener('submit', handleSubmit);
+    
+    // Change the "Add Member" button to "Generate Code"
+    const addMemberBtn = document.querySelector('.section-header .btn-primary');
+    if (addMemberBtn) {
+        addMemberBtn.innerHTML = '<i class="fas fa-key"></i> Generate Join Code';
+        addMemberBtn.onclick = generateJoinCode;
+    }
+    
+    // Remove the form section as we no longer need it
+    const addMemberForm = document.getElementById('addMemberForm');
+    if (addMemberForm) {
+        addMemberForm.remove();
+    }
 
     // Add logout handler
     document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('access_token'); // Clear token
         sessionStorage.clear();
         window.location.href = 'login.html';
     });
@@ -241,30 +317,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('societyJoinRequests')) {
         const demoJoinRequests = [
             {
-                societyId: 1,
-                societyName: "Computer Science Society",
-                referralCode: "CS2024",
                 viewerInfo: { name: "Alice Johnson", email: "alice.johnson@email.com" },
                 status: "pending",
                 requestedAt: new Date().toISOString()
             },
             {
-                societyId: 2,
-                societyName: "Cultural Society",
-                referralCode: "CULTURE2024",
                 viewerInfo: { name: "Bob Lee", email: "bob.lee@email.com" },
                 status: "pending",
                 requestedAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString()
             },
             {
-                societyId: 3,
-                societyName: "Photography Club",
-                referralCode: "PHOTO2024",
                 viewerInfo: { name: "Priya Patel", email: "priya.patel@email.com" },
                 status: "pending",
                 requestedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
             }
         ];
         localStorage.setItem('societyJoinRequests', JSON.stringify(demoJoinRequests));
+        populateJoinRequests();
     }
-}); 
+});

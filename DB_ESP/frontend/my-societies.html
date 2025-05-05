@@ -81,8 +81,33 @@
                         <i class="fas fa-plus"></i> Join New Society
                     </button>
                 </div>
+                <div id="loadingIndicator" class="loading-indicator">
+                    <i class="fas fa-spinner fa-pulse"></i> Loading societies...
+                </div>
+                <div id="apiErrorMessage" class="error-message" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="errorText">Could not load societies</span>
+                </div>
                 <div class="societies-grid" id="mySocieties">
                     <!-- Societies will be populated dynamically -->
+                </div>
+            </div>
+            
+            <!-- Debug Panel (collapsible) -->
+            <div class="debug-panel">
+                <div class="debug-header" id="toggleDebug">
+                    <h3><i class="fas fa-bug"></i> API Debug</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="debug-content" id="debugContent" style="display: none;">
+                    <div class="debug-section">
+                        <h4>Last Request</h4>
+                        <pre id="lastRequest">None</pre>
+                    </div>
+                    <div class="debug-section">
+                        <h4>Last Response</h4>
+                        <pre id="lastResponse">None</pre>
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,18 +120,29 @@
                 <button class="close-modal" id="closeJoinSocietyModal">&times;</button>
             </div>
             <div class="modal-body">
+                <div id="modalLoadingIndicator" class="loading-indicator" style="display: none;">
+                    <i class="fas fa-spinner fa-pulse"></i> Loading societies...
+                </div>
+                <div id="modalErrorMessage" class="error-message" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="modalErrorText">Could not load societies</span>
+                </div>
                 <form id="joinSocietyForm">
                     <div class="form-group">
                         <label for="selectSociety">Select Society</label>
                         <select id="selectSociety" required>
+                            <option value="">-- Select a Society --</option>
                             <!-- Societies will be populated by JS -->
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="referralCode">Referral Code</label>
-                        <input type="text" id="referralCode" required placeholder="Enter referral code">
+                        <label for="joinCode">Join Code</label>
+                        <input type="text" id="joinCode" required placeholder="Enter join code">
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Join Request</button>
+                    <button type="submit" class="btn btn-primary" id="submitJoinBtn">
+                        <span id="submitBtnText">Send Join Request</span>
+                        <i class="fas fa-spinner fa-pulse" id="submitSpinner" style="display: none;"></i>
+                    </button>
                 </form>
             </div>
         </div>

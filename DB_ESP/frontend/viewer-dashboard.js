@@ -1,324 +1,230 @@
-// Demo data for upcoming events
-const upcomingEvents = [
-    {
-        eventId: 1,
-        eventName: "Tech Workshop 2024",
-        eventDate: "2024-03-15",
-        eventTime: "14:00",
-        eventLocation: "Tech Building, Room 101",
-        eventDescription: "Learn about the latest technologies and tools in software development.",
-        eventImage: "https://via.placeholder.com/300x200",
-        societyName: "Tech Society",
-        registrationStatus: "registered"
-    },
-    {
-        eventId: 2,
-        eventName: "Cultural Festival",
-        eventDate: "2024-03-20",
-        eventTime: "18:00",
-        eventLocation: "Main Auditorium",
-        eventDescription: "Experience diverse cultures through performances and food.",
-        eventImage: "https://via.placeholder.com/300x200",
-        societyName: "Cultural Society",
-        registrationStatus: "pending"
-    }
-];
+// Set base URL for API requests
+window.baseUrl = "http://localhost:8000";
 
-// Demo data for recent activity
-const recentActivity = [
-    {
-        type: "registration",
-        eventName: "Tech Workshop 2024",
-        timestamp: "2024-03-10T10:30:00",
-        status: "confirmed"
-    },
-    {
-        type: "society_join",
-        societyName: "Cultural Society",
-        timestamp: "2024-03-08T15:45:00",
-        status: "active"
-    },
-    {
-        type: "feedback",
-        eventName: "Music Festival",
-        timestamp: "2024-03-05T20:15:00",
-        rating: 4
-    }
-];
-
-// Demo data for latest feedback
-const latestFeedback = {
-    eventName: "Music Festival",
-    eventDate: "2024-03-05",
-    rating: 4,
-    comment: "The event was well-organized with great performances. The sound system could have been better though.",
-    timestamp: "2024-03-05T20:15:00"
-};
-
-// Demo data for joined societies
-const demoSocieties = [
-    {
-        societyId: 1,
-        name: "Computer Science Society",
-        logo: "https://via.placeholder.com/150",
-        memberCount: 150,
-        role: "member",
-        upcomingEvents: 2
-    },
-    {
-        societyId: 2,
-        name: "Cultural Society",
-        logo: "https://via.placeholder.com/150",
-        memberCount: 200,
-        role: "member",
-        upcomingEvents: 1
-    },
-    {
-        societyId: 3,
-        name: "Photography Club",
-        logo: "https://via.placeholder.com/150",
-        memberCount: 75,
-        role: "member",
-        upcomingEvents: 0
-    }
-];
-
-// Demo data for pending feedback
-const demoPendingFeedback = [
-    {
-        eventId: 1,
-        eventName: "Tech Workshop 2024",
-        eventDate: "2024-02-10",
-        societyName: "Computer Science Society"
-    },
-    {
-        eventId: 2,
-        eventName: "Photography Exhibition",
-        eventDate: "2024-02-12",
-        societyName: "Photography Club"
-    }
-];
-
-// Function to populate upcoming events
-function populateUpcomingEvents() {
-    const eventsGrid = document.getElementById('upcomingEvents');
-    eventsGrid.innerHTML = '';
-
-    upcomingEvents.forEach(event => {
-        const eventCard = document.createElement('div');
-        eventCard.className = 'event-card';
-        eventCard.innerHTML = `
-            <div class="event-image">
-                <img src="${event.eventImage}" alt="${event.eventName}">
-            </div>
-            <div class="event-details">
-                <h3>${event.eventName}</h3>
-                <p class="event-date">
-                    <i class="fas fa-calendar"></i> ${formatDate(event.eventDate)}
-                    <i class="fas fa-clock"></i> ${event.eventTime}
-                </p>
-                <p class="event-location">
-                    <i class="fas fa-map-marker-alt"></i> ${event.eventLocation}
-                </p>
-                <p class="event-society">
-                    <i class="fas fa-users"></i> ${event.societyName}
-                </p>
-                <div class="event-status ${event.registrationStatus}">
-                    ${event.registrationStatus === 'registered' ? 'Registered' : 'Pending'}
-                </div>
-                <button class="btn btn-primary" onclick="viewEventDetails(${event.eventId})">
-                    View Details
-                </button>
-            </div>
-        `;
-        eventsGrid.appendChild(eventCard);
-    });
+// Get token from localStorage
+const token = localStorage.getItem('access_token');
+if (!token) {
+    console.error('Missing access token. Redirecting to login...');
+    window.location.href = 'login.html';
 }
 
-// Function to populate societies
-function populateSocieties() {
-    const societiesGrid = document.getElementById('mySocieties');
-    societiesGrid.innerHTML = '';
-
-    demoSocieties.forEach(society => {
-        const societyCard = document.createElement('div');
-        societyCard.className = 'society-card';
-        societyCard.innerHTML = `
-            <div class="society-logo">
-                <img src="${society.logo}" alt="${society.name}">
-            </div>
-            <div class="society-details">
-                <h3>${society.name}</h3>
-                <p class="society-stats">
-                    <span><i class="fas fa-users"></i> ${society.memberCount} members</span>
-                    <span><i class="fas fa-calendar"></i> ${society.upcomingEvents} upcoming</span>
-                </p>
-                <div class="society-actions">
-                    <button class="btn btn-primary" onclick="viewSociety(${society.societyId})">
-                        <i class="fas fa-eye"></i> View
-                    </button>
-                </div>
-            </div>
-        `;
-        societiesGrid.appendChild(societyCard);
-    });
+// Debug function to log API calls and responses
+function debugApiCall(method, url, response, data) {
+    console.group(`API ${method}: ${url}`);
+    console.log('Status:', response.status);
+    console.log('Response:', data);
+    console.groupEnd();
 }
 
-// Function to populate recent activity
-function populateRecentActivity() {
-    const activityList = document.getElementById('recentActivity');
-    activityList.innerHTML = '';
-
-    recentActivity.forEach(activity => {
-        const activityItem = document.createElement('div');
-        activityItem.className = 'activity-item';
+// Function to fetch current user data
+async function fetchCurrentUser() {
+    try {
+        const response = await fetch(`${window.baseUrl}/api/users/me/`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
         
-        let icon, content;
-        switch(activity.type) {
-            case 'registration':
-                icon = '<i class="fas fa-ticket-alt"></i>';
-                content = `Registered for ${activity.eventName}`;
-                break;
-            case 'society_join':
-                icon = '<i class="fas fa-users"></i>';
-                content = `Joined ${activity.societyName}`;
-                break;
-            case 'feedback':
-                icon = '<i class="fas fa-comment"></i>';
-                content = `Gave ${activity.rating} star feedback for ${activity.eventName}`;
-                break;
+        const data = await response.json();
+        debugApiCall('GET', '/api/users/me/', response, data);
+        
+        if (!response.ok) throw new Error(data.detail || 'Failed to fetch user data');
+        
+        // Update user name in the welcome section
+        document.getElementById('viewerName').textContent = data.username || 'Viewer';
+        
+        return data;
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        return null;
+    }
+}
+
+// Function to populate attending events (upcoming events)
+async function populateUpcomingEvents() {
+    const eventsGrid = document.getElementById('upcomingEvents');
+    eventsGrid.innerHTML = '<p>Loading events...</p>';
+
+    try {
+        const response = await fetch(`${window.baseUrl}/api/events/attending/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch attending events');
+        
+        const events = await response.json();
+        if (events.length === 0) {
+            eventsGrid.innerHTML = '<p>No upcoming events found. Browse events to join some!</p>';
+            return;
         }
-
-        activityItem.innerHTML = `
-            <div class="activity-icon">${icon}</div>
-            <div class="activity-content">
-                <p>${content}</p>
-                <span class="activity-time">${formatTimeAgo(activity.timestamp)}</span>
-            </div>
-        `;
-        activityList.appendChild(activityItem);
-    });
-}
-
-// Function to populate pending feedback
-function populatePendingFeedback() {
-    const feedbackList = document.getElementById('pendingFeedback');
-    feedbackList.innerHTML = '';
-
-    if (demoPendingFeedback.length === 0) {
-        feedbackList.innerHTML = `
-            <div class="no-feedback">
-                <i class="fas fa-check-circle"></i>
-                <p>No pending feedback</p>
-            </div>
-        `;
-        return;
-    }
-
-    demoPendingFeedback.forEach(feedback => {
-        const feedbackItem = document.createElement('div');
-        feedbackItem.className = 'feedback-item pending';
-        feedbackItem.innerHTML = `
-            <div class="feedback-header">
-                <div class="feedback-event">
-                    <h3>${feedback.eventName}</h3>
-                    <span class="feedback-date">
-                        <i class="fas fa-calendar"></i>
-                        ${new Date(feedback.eventDate).toLocaleDateString()}
-                    </span>
+        
+        // Clear loading message
+        eventsGrid.innerHTML = '';
+        
+        // Render each event card
+        events.forEach(event => {
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            // Make the entire card clickable
+            eventCard.style.cursor = 'pointer';
+            eventCard.addEventListener('click', () => {
+                window.location.href = `announcement-details.html?id=${event.id}`;
+            });
+            
+            eventCard.innerHTML = `
+                <div class="event-image">
+                    <img src="${event.banner || '/static/images/placeholder.png'}" 
+                        alt="${event.name}" 
+                        onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
                 </div>
-                <span class="society-name">${feedback.societyName}</span>
-            </div>
-            <div class="feedback-actions">
-                <button class="btn btn-primary" onclick="provideFeedback(${feedback.eventId})">
-                    <i class="fas fa-star"></i> Rate Event
-                </button>
-            </div>
-        `;
-        feedbackList.appendChild(feedbackItem);
-    });
-}
-
-// Function to populate latest feedback
-function populateLatestFeedback() {
-    const feedbackCard = document.getElementById('latestFeedback');
-    feedbackCard.innerHTML = `
-        <div class="feedback-header">
-            <h3>${latestFeedback.eventName}</h3>
-            <span class="feedback-date">${formatDate(latestFeedback.eventDate)}</span>
-        </div>
-        <div class="feedback-rating">
-            ${generateStarRating(latestFeedback.rating)}
-        </div>
-        <div class="feedback-comment">
-            <p>${latestFeedback.comment}</p>
-        </div>
-        <div class="feedback-footer">
-            <span class="feedback-time">${formatTimeAgo(latestFeedback.timestamp)}</span>
-        </div>
-    `;
-}
-
-// Helper function to format date
-function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-}
-
-// Helper function to format time ago
-function formatTimeAgo(timestamp) {
-    const now = new Date();
-    const then = new Date(timestamp);
-    const diff = now - then;
-    
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    
-    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-}
-
-// Helper function to generate star rating
-function generateStarRating(rating) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-        stars += `<i class="fas fa-star${i <= rating ? '' : ' far'}"></i>`;
+                <div class="event-details">
+                    <div class="event-header">
+                        <span class="event-category">${event.category_name}</span>
+                        <h3>${event.name}</h3>
+                    </div>
+                    <p class="event-date">
+                        <i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}
+                        <i class="fas fa-clock"></i> ${event.start_time}
+                    </p>
+                    <p class="event-location">
+                        <i class="fas fa-map-marker-alt"></i> ${event.location}
+                    </p>
+                    <p class="event-description">${event.description}</p>
+                    <div class="event-stats">
+                        <span class="event-attendees">
+                            <i class="fas fa-users"></i> ${event.attendee_count} attending
+                        </span>
+                        <span class="event-rating">
+                            <i class="fas fa-star"></i> ${event.average_rating || 'N/A'}
+                        </span>
+                    </div>
+                    <div class="event-actions">
+                        <a href="announcement-details.html?id=${event.id}" class="btn btn-primary">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            `;
+            eventsGrid.appendChild(eventCard);
+        });
+        
+    } catch (error) {
+        console.error('Error:', error);
+        eventsGrid.innerHTML = '<p class="error">Failed to load events</p>';
     }
-    return stars;
 }
 
-// Navigation functions
-function viewEventDetails(id) {
-    // Redirect to the announcement details page with the given id
-    window.location.href = `announcement-details.html?id=${id}`;
+// Function to get joined societies count
+async function getSocietiesCount() {
+    try {
+        // This is a placeholder - replace with actual endpoint when available
+        // For now we'll just return a dummy value
+        return 3;
+    } catch (error) {
+        console.error('Error fetching societies count:', error);
+        return 0;
+    }
 }
 
-function viewSociety(societyId) {
-    window.location.href = `society-details.html?id=${societyId}`;
+// Function to get events attended count
+async function getEventsAttendedCount() {
+    try {
+        // This is a placeholder - replace with actual endpoint when available
+        // For now we'll just return a dummy value
+        return 8;
+    } catch (error) {
+        console.error('Error fetching events attended count:', error);
+        return 0;
+    }
 }
 
-function provideFeedback(eventId) {
-    window.location.href = `provide-feedback.html?id=${eventId}`;
+// Function to get feedback given count
+async function getFeedbackCount() {
+    try {
+        // This is a placeholder - replace with actual endpoint when available
+        // For now we'll just return a dummy value
+        return 6;
+    } catch (error) {
+        console.error('Error fetching feedback count:', error);
+        return 0;
+    }
+}
+
+// Function to update stats
+async function updateStats() {
+    try {
+        // Fetch all required stats in parallel
+        const [eventsResponse, societiesResponse, commentsResponse] = await Promise.all([
+            fetch(`${window.baseUrl}/api/events/attending/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }),
+            fetch(`${window.baseUrl}/api/users/my-societies/`, {  // Changed endpoint to my-societies
+                headers: { 'Authorization': `Bearer ${token}` }
+            }),
+            // Assuming there's an endpoint for user's comments, if not, remove this
+            fetch(`${window.baseUrl}/api/events/comments/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+        ]);
+
+        if (!eventsResponse.ok || !societiesResponse.ok) 
+            throw new Error('Failed to fetch stats');
+
+        const [events, societies, comments] = await Promise.all([
+            eventsResponse.json(),
+            societiesResponse.json(),
+            commentsResponse.ok ? commentsResponse.json() : []
+        ]);
+
+        // Update stat cards
+        const statCards = document.querySelectorAll('.stat-number');
+        statCards[0].textContent = events.length; // Registered Events
+        statCards[1].textContent = societies.length; // Societies Joined - now using my-societies endpoint
+        statCards[2].textContent = events.filter(e => new Date(e.date) < new Date()).length; // Past Events (attended)
+        statCards[3].textContent = comments.length; // Feedback Given
+
+    } catch (error) {
+        console.error('Failed to update stats:', error);
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            stat.textContent = '-';
+        });
+    }
 }
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    // Set viewer name
-    const viewerName = sessionStorage.getItem('viewerName') || 'Viewer';
-    document.getElementById('viewerName').textContent = viewerName;
-
-    // Populate sections
-    populateUpcomingEvents();
-    populateSocieties();
-    populateRecentActivity();
-    populatePendingFeedback();
-    populateLatestFeedback();
-
-    // Add logout handler
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-    });
-}); 
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Fetch user data
+        await fetchCurrentUser();
+        
+        // Update stats
+        await updateStats();
+        
+        // Populate upcoming events
+        await populateUpcomingEvents();
+        
+        // Add logout handler
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('access_token');
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+        
+        // Add mobile menu toggle functionality
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    } catch (error) {
+        console.error('Error initializing dashboard:', error);
+    }
+});

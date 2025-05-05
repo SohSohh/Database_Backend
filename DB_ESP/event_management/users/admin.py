@@ -48,9 +48,18 @@ class HandlerAdmin(UserAdmin):
 
     regenerate_join_codes.short_description = "Regenerate join codes for selected handlers"
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(user_type='handler')
+
 
 @admin.register(Viewer)
 class ViewerAdmin(UserAdmin):
     list_display = ('id', 'username', 'email', 'first_name', 'last_name')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     inlines = [MembershipInline]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(user_type='viewer')
+

@@ -88,7 +88,7 @@
                     </div>
                     <div class="stat-info">
                         <h3>Registered Events</h3>
-                        <p class="stat-number">5</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -97,7 +97,7 @@
                     </div>
                     <div class="stat-info">
                         <h3>Societies Joined</h3>
-                        <p class="stat-number">3</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -106,7 +106,7 @@
                     </div>
                     <div class="stat-info">
                         <h3>Events Attended</h3>
-                        <p class="stat-number">8</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -115,7 +115,7 @@
                     </div>
                     <div class="stat-info">
                         <h3>Feedback Given</h3>
-                        <p class="stat-number">6</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
             </div>
@@ -124,38 +124,13 @@
             <div class="content-section">
                 <div class="section-header">
                     <h2><i class="fas fa-calendar"></i> Your Upcoming Events</h2>
-                    <!-- TODO: Replace with API call to fetch announcement details
-                         GET /api/announcements/{id}
-                         Then navigate to announcement detail page with data -->
-                    <button class="btn btn-primary" onclick="window.location.href='announcements.html?id=1'">
+                    <button class="btn btn-primary" onclick="window.location.href='announcements.html'">
                         <i class="fas fa-bullhorn"></i> Browse more events
                     </button>
                 </div>
                 <div class="events-grid" id="upcomingEvents">
                     <!-- Events will be populated dynamically -->
-                </div>
-            </div>
-
-            <!-- Recent Activity Section -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
-                </div>
-                <div class="activity-list" id="recentActivity">
-                    <!-- Activity items will be populated dynamically -->
-                </div>
-            </div>
-
-            <!-- Latest Feedback Section -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-comment"></i> Latest Feedback</h2>
-                    <button class="btn btn-primary" onclick="window.location.href='my-feedback.html'">
-                        <i class="fas fa-list"></i> View All
-                    </button>
-                </div>
-                <div class="feedback-card" id="latestFeedback">
-                    <!-- Latest feedback will be populated dynamically -->
+                    <p>Loading events...</p>
                 </div>
             </div>
         </div>
