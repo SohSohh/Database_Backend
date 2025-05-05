@@ -7,7 +7,10 @@ from .views import (
     UserAttendingEventsView,
     CategoryListView,
     EventCommentsView,
-    EventRatingView
+    EventRatingView,
+    AnnouncementListView,
+    AnnouncementDetailView,
+    HandlerAnnouncementsView,
 )
 
 # Consistent URL pattern organization - similar to user URLs
@@ -27,4 +30,9 @@ urlpatterns = [
 
     # Supporting endpoints
     path('categories/', CategoryListView.as_view(), name='category_list'),  # Event categories
+
+    # Announcement endpoints
+    path('announcements/', AnnouncementListView.as_view(), name='announcement_list'),
+    path('announcements/<int:pk>/', AnnouncementDetailView.as_view(), name='announcement_detail'),
+    path('announcements/handler/', HandlerAnnouncementsView.as_view(), name='handler_announcements'),
 ]

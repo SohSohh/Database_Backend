@@ -33,137 +33,19 @@
     <main>
         <section class="page-header">
             <div class="container">
-                <h1>Explore</h1>
-                <p>Stay updated with the latest news and events from our platform.</p>
+                <h1>Events</h1>
+                <p>Stay updated with the latest events from our platform.</p>
             </div>
         </section>
 
-        <section class="announcements-section">
+        <section class="events-section">
             <div class="container">
-                <div class="filter-container">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="educational">Educational</button>
-                    <button class="filter-btn" data-filter="event">Events</button>
-                    <button class="filter-btn" data-filter="important">Important</button>
-                </div>
-
-                <div class="announcements-container" id="announcements-container">
-                    <!-- Announcement cards will be displayed here -->
-                    <div class="announcement-card" data-category="event">
-                        <div class="announcement-image">
-                            <img src="event1.jpg" alt="Event 1">
-                        </div>
-                        <div class="card-content">
-                            <div class="card-header-row">
-                                <h3>Annual Science Fair</h3>
-                                <span class="category-tag event-tag">Event</span>
-                            </div>
-                            <div class="event-meta-col">
-                                <div class="event-date"><i class="fas fa-calendar-alt"></i> 2024-06-10</div>
-                                <div class="event-time"><i class="fas fa-clock"></i> 14:00</div>
-                                <div class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</div>
-                            </div>
-                            <p class="description">Join us for the annual science fair with exciting projects and prizes!</p>
-                            <div class="card-actions">
-                                <a href="announcement-details.html?id=2" class="read-more">Read More</a>
-                                <button class="rsvp-btn"><i class="fas fa-calendar-check"></i> RSVP</button>
-                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-                            </div>
-                        </div>
+                <!-- Add this line for category filters -->
+                <div id="category-filters" class="filter-container"></div>
+                <div class="events-grid" id="events-container">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading events...
                     </div>
-
-                    <div class="announcement-card" data-category="important">
-                        <div class="announcement-image">
-                            <img src="important1.jpg" alt="Important Announcement">
-                        </div>
-                        <div class="card-content">
-                            <div class="card-header-row">
-                                <h3>System Maintenance</h3>
-                                <span class="category-tag important-tag">Important</span>
-                            </div>
-                            <div class="event-meta-col">
-                                <div class="event-date"><i class="fas fa-calendar-alt"></i> 2024-06-12</div>
-                                <div class="event-time"><i class="fas fa-clock"></i> 09:00</div>
-                                <div class="event-location"><i class="fas fa-map-marker-alt"></i> Online</div>
-                            </div>
-                            <p class="description">The system will be down for maintenance on June 12th from 9:00 AM to 12:00 PM.</p>
-                            <div class="card-actions">
-                                <a href="announcement-details.html?id=5" class="read-more">Read More</a>
-                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="announcement-card" data-category="educational">
-                        <div class="announcement-image">
-                            <img src="educational1.jpg" alt="Educational Announcement">
-                        </div>
-                        <div class="card-content">
-                            <div class="card-header-row">
-                                <h3>New Course Registration</h3>
-                                <span class="category-tag educational-tag">Educational</span>
-                            </div>
-                            <div class="event-meta-col">
-                                <span class="event-date"><i class="fas fa-calendar-alt"></i> 2025-03-20</span>
-                                <span class="event-time"><i class="fas fa-clock"></i> 00:00</span>
-                                <span class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>
-                            </div>
-                            <p class="description">Registration for elective courses for the next semester is now open. Last date to register is March 20th.</p>
-                            <div class="card-actions">
-                                <a href="announcement-educational.html?id=5" class="read-more">Read More</a>
-                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="announcement-card" data-category="event">
-                        <div class="announcement-image">
-                            <img src="event1.jpg" alt="Event 1">
-                        </div>
-                        <div class="card-content">
-                            <div class="card-header-row">
-                                <h3>Technology Workshopr</h3>
-                                <span class="category-tag event-tag">Event</span>
-                            </div>
-                            <div class="event-meta-col">
-                                <span class="event-date"><i class="fas fa-calendar-alt"></i> 2025-03-07</span>
-                                <span class="event-time"><i class="fas fa-clock"></i> 00:00</span>
-                                <span class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>
-                            </div>
-                            <p class="description">Join our two-day workshop on emerging technologies featuring industry experts. Limited seats available!</p>
-                            <div class="card-actions">
-                                <a href="announcement-details.html?id=2" class="read-more">Read More</a>
-                                <button class="rsvp-btn"><i class="fas fa-calendar-check"></i> RSVP</button>
-                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                    <div class="announcement-card" data-category="important">
-                        <div class="announcement-image">
-                            <img src="important1.jpg" alt="Important Announcement">
-                        </div>
-                        <div class="card-content">
-                            <div class="card-header-row">
-                                <h3>System Maintenance Notice</h3>
-                                <span class="category-tag important-tag">Important</span>
-                            </div>
-                            <div class="event-meta-col">
-                                <span class="event-date"><i class="fas fa-calendar-alt"></i> 2025-03-15</span>
-                                <span class="event-time"><i class="fas fa-clock"></i> 22:00</span>
-                                <span class="event-location"><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>                            </div>
-                            <p class="description">The portal will be under maintenance from 10 PM to 2 AM on March 15th. Please plan your activities accordingly..</p>
-                            <div class="card-actions">
-                                <a href="announcement-details.html?id=5" class="read-more">Read More</a>
-                                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="pagination">
-                    <!-- Pagination will be dynamically generated by JavaScript -->
                 </div>
             </div>
         </section>

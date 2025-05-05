@@ -96,6 +96,36 @@ class SocietyMembersViewSet(viewsets.ReadOnlyModelViewSet):
             )
         )
 
+    @action(detail=False, methods=['post'], permission_classes=[IsHandler])
+    def add_member(self, request):
+        """
+        Allows a handler to add a member to their society.
+        """
+        viewer_id = request.data.get('viewer_id')
+        role = request.data.get('role', Membership.OTHER)
+
+        # Validate viewer existence
+        viewer = get_object_or_404(Viewer, id=viewer_id)
+
+        # Validate role
+        valid_roles = [choice[0] for choice in Membership.ROLE_CHOICES]
+        if role not in valid_roles:
+            return Response({"error": f"Invalid role. Must be one of: {', '.join(valid_roles)}"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Add member to the handler's society
+        membership, created = Membership.objects.update_or_create(
+            viewer=viewer,
+            handler=request.user,
+            defaults={'role': role}
+        )
+
+        action = "added to" if created else "updated in"
+        return Response(
+            {"detail": f"Member {viewer.username} {action} society with role {membership.get_role_display()}"},
+            status=status.HTTP_200_OK
+        )
+
     def add_member(self, request, pk=None):
         try:
             member = Viewer.objects.get(pk=pk)

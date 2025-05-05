@@ -36,7 +36,7 @@ function populateSocietyEvents() {
             // Make the entire card clickable
             eventCard.style.cursor = 'pointer';
             eventCard.addEventListener('click', () => {
-                window.location.href = `event-details.html?id=${event.id}`;
+                window.location.href = `announcement-details.html?id=${event.id}`;
             });
             
             eventCard.innerHTML = `

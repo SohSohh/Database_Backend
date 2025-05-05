@@ -2,10 +2,9 @@
 const token = localStorage.getItem('access_token');
 
 const API_CONFIG = {
-    baseUrl: 'http://localhost:8000/api',
+    baseUrl: 'http://127.0.0.1:8000/api',
     headers: {
         'Content-Type': 'application/json',
-        // In a real app, you'd get this from local storage or auth service
         'Authorization': `Bearer ${token}`
     }
 };
@@ -39,9 +38,13 @@ async function apiCall(endpoint, method = 'GET', body = null) {
             options.body = JSON.stringify(body);
         }
 
-        console.log(`${method} ${API_CONFIG.baseUrl}${endpoint}`, options);
+        // Remove leading slash from endpoint if present
+        const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+        const url = `${API_CONFIG.baseUrl}/${cleanEndpoint}`;
         
-        const response = await fetch(`${API_CONFIG.baseUrl}${endpoint}`, options);
+        console.log(`${method} ${url}`, options);
+        
+        const response = await fetch(url, options);
         
         // Handle non-JSON responses
         const contentType = response.headers.get('content-type');
@@ -143,11 +146,11 @@ function populateMembersList(members) {
         const memberId = member.id || member.user_id || member._id;
         
         row.innerHTML = `
-            <td>${member.name || member.user_id || 'N/A'}</td>
+            <td>${member.username || 'N/A'}</td>
             <td>${member.email || 'N/A'}</td>
             <td>
                 <select class="role-select" data-member-id="${memberId}" onchange="updateMemberRole('${memberId}', this.value)">
-                    <option value="Other" ${member.role === 'other' ? 'selected' : ''}>Other</option>
+                    <option value="other" ${member.role === 'other' ? 'selected' : ''}>Other</option>
                     <option value="deputy_director" ${member.role === 'deputy_director' ? 'selected' : ''}>Deputy Director</option>
                     <option value="executive" ${member.role === 'executive' ? 'selected' : ''}>Executive</option>
                     <option value="director" ${member.role === 'director' ? 'selected' : ''}>Director</option>
@@ -169,29 +172,11 @@ function populateMembersList(members) {
 // Update member role
 async function updateMemberRole(memberId, newRole) {
     try {
-        // Check if we have a valid member ID
-        if (!memberId) {
-            throw new Error('Invalid member ID');
-        }
-        
-        // Debug the API endpoint
-        window.debugLog('Update Member Role', { memberId, newRole });
-        
-        // Try the API call with potential alternative formats
-        let data;
-        try {
-            // First try with trailing slash
-            data = await apiCall(`/users/society/members/${memberId}/`, 'PATCH', { role: newRole });
-        } catch (error) {
-            // If that fails, try without trailing slash
-            data = await apiCall(`/users/society/members/${memberId}/`, 'PATCH', { role: newRole });
-        }
-        
-        showNotification(`Member role updated to ${newRole}`);
+        await apiCall(`/users/society/members/${memberId}/`, 'PATCH', { role: newRole });
+        showNotification('Member role updated successfully');
     } catch (error) {
         showNotification(`Failed to update member role: ${error.message}`, 'error');
-        // Reset the select to previous value
-        fetchMembers();
+        fetchMembers(); // Refresh the list
     }
 }
 
@@ -199,14 +184,8 @@ async function updateMemberRole(memberId, newRole) {
 async function removeMember(memberId) {
     if (confirm('Are you sure you want to remove this member from your society?')) {
         try {
-            // Try different endpoint formats
-            try {
-                await apiCall(`/users/society/members/${memberId}/remove_member/`, 'DELETE');
-            } catch (error) {
-                await apiCall(`/users/society/members/${memberId}/remove_member`, 'DELETE');
-            }
-            
-            showNotification('Member removed successfully!');
+            await apiCall(`/users/society/members/${memberId}/`, 'DELETE');
+            showNotification('Member removed successfully');
             fetchMembers();
         } catch (error) {
             showNotification(`Failed to remove member: ${error.message}`, 'error');

@@ -31,8 +31,7 @@ urlpatterns = [
 
     # Society and membership endpoints
     path('societies/', SocietyListView.as_view(), name='society_list'),
-# Add to urlpatterns in users/urls.py
-path('my-societies/', UserSocietiesView.as_view(), name='my_societies'),
+    path('my-societies/', UserSocietiesView.as_view(), name='my_societies'),
     path('membership/', MembershipView.as_view(), name='join_society'),
 
     path('society/members/', SocietyMembersViewSet.as_view({
@@ -47,4 +46,5 @@ path('my-societies/', UserSocietiesView.as_view(), name='my_societies'),
     }), name='society_member_detail'),
 
     path('society/join-code/', RegenerateJoinCodeView.as_view(), name='regenerate_join_code'),
+    path('society/members/add/', SocietyMembersViewSet.as_view({'post': 'add_member'}), name='add_member'),
 ]

@@ -1,5 +1,5 @@
 // Base URL for API calls
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 // Debug utilities
 const debugUtils = {
@@ -63,6 +63,9 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
         throw new Error('Authentication token not found. Please log in again.');
     }
     
+    // Remove leading slash from endpoint if present
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    
     const headers = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -78,10 +81,10 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
     }
     
     // Update debug info for request
-    debugUtils.updateRequestDebug(method, `${API_BASE_URL}${endpoint}`, headers, body);
+    debugUtils.updateRequestDebug(method, `${API_BASE_URL}/${cleanEndpoint}`, headers, body);
     
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, requestOptions);
+        const response = await fetch(`${API_BASE_URL}/${cleanEndpoint}`, requestOptions);
         let data;
         
         try {
@@ -235,39 +238,16 @@ async function joinSociety(societyId, joinCode) {
     submitSpinner.style.display = 'inline-block';
     
     try {
-        // Check if join code is correct (in a real app, this would be verified by the backend)
-        const correctCode = societyJoinCodes[societyId];
-        
-        if (!correctCode || joinCode !== correctCode) {
-            throw new Error('Invalid join code');
-        }
-        
-        // In a real app, this would be an API call to join the society
         const requestBody = {
-            society_id: societyId,
+            handler_id: societyId,
             join_code: joinCode
         };
         
-        // Simulate API request
-        debugUtils.updateRequestDebug('POST', `${API_BASE_URL}/societies/${societyId}/join/`, 
-            { 'Authorization': `Bearer ${getAuthToken()}`, 'Content-Type': 'application/json' }, 
-            requestBody);
-        
-        // Simulate successful response (in a real app this would be the actual API response)
-        const society = await apiRequest(`/societies/${societyId}/`);
-        
-        // Add membership info to the society object
-        society.role = 'member';
-        society.join_date = new Date().toISOString();
-        
-        debugUtils.updateResponseDebug(200, {
-            message: 'Successfully joined society',
-            society
-        });
+        await apiRequest('/users/membership/', 'POST', requestBody);
         
         // Close modal and show success message
         document.getElementById('joinSocietyModal').style.display = 'none';
-        showNotification(`You have successfully joined ${society.name}!`, 'success');
+        showNotification('Successfully joined society!', 'success');
         
         // Refresh societies list
         fetchMySocieties();

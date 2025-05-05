@@ -4,14 +4,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
-from .models import Event, Category, Comment
+from .models import Event, Category, Comment, Announcement
 from .serializers import (
     EventSerializer,
     EventDetailSerializer,
     EventUpdateSerializer,
     AttendeeSerializer,
     CategorySerializer,
-    CommentSerializer
+    CommentSerializer,
+    AnnouncementSerializer
 )
 from .permissions import IsHandlerOrReadOnly, IsEventHost
 
@@ -195,3 +196,43 @@ class EventCommentsView(generics.ListCreateAPIView):
             raise ValidationError({'error': 'Comments can only be added after the event has ended.'})
 
         serializer.save(user=self.request.user, event_id=event_id)
+
+
+class AnnouncementListView(generics.ListCreateAPIView):
+    """
+    List all announcements or create a new announcement.
+    - GET: Any authenticated user can view announcements
+    - POST: Only handlers can create announcements
+    """
+    queryset = Announcement.objects.all()
+    serializer_class = AnnouncementSerializer
+    permission_classes = [IsHandlerOrReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'description']
+    ordering_fields = ['date_made', 'title']
+
+    def perform_create(self, serializer):
+        serializer.save(host=self.request.user)
+
+
+class AnnouncementDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete an announcement.
+    - GET: Any authenticated user can view details
+    - PUT/PATCH/DELETE: Only the host can modify/delete it
+    """
+    queryset = Announcement.objects.all()
+    serializer_class = AnnouncementSerializer
+    permission_classes = [permissions.IsAuthenticated, IsEventHost]
+
+
+class HandlerAnnouncementsView(generics.ListAPIView):
+    """List announcements created by a specific handler"""
+    serializer_class = AnnouncementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'description']
+    ordering_fields = ['date_made', 'title']
+
+    def get_queryset(self):
+        return Announcement.objects.filter(host=self.request.user)

@@ -1,249 +1,14 @@
+const accessToken = localStorage.getItem('access_token');
 document.addEventListener('DOMContentLoaded', function() {
-    // Check authentication status
-    const authToken = localStorage.getItem('authToken');
     const userType = localStorage.getItem('userType');
     
-    updateNavigation(authToken, userType);
-    
-    // Filter functionality
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const announcementCards = document.querySelectorAll('.announcement-card');
-    
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const filterValue = btn.getAttribute('data-filter');
-            announcementCards.forEach(card => {
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
-    
-    // Modal functionality
-    const feedbackBtns = document.querySelectorAll('.feedback-btn');
-    const rsvpBtns = document.querySelectorAll('.rsvp-btn');
-    const feedbackModal = document.getElementById('feedbackModal');
-    const rsvpModal = document.getElementById('rsvpModal');
-    const closeButtons = document.querySelectorAll('.close-modal');
-    
-    // For feedback buttons
-    feedbackBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const announcementTitle = this.closest('.card-content').querySelector('h3').textContent;
-            document.getElementById('feedbackTitle').textContent = announcementTitle;
-            feedbackModal.style.display = 'block';
-        });
-    });
-    
-    // For RSVP buttons
-    rsvpBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const announcementTitle = this.closest('.card-content').querySelector('h3').textContent;
-            document.getElementById('rsvpTitle').textContent = announcementTitle;
-            rsvpModal.classList.add('show');
-            
-            // Reset RSVP options and form
-            document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('active'));
-            document.getElementById('selectedAttendance').value = '';
-            document.getElementById('additionalComments').value = '';
-        });
-    });
-    
-    // Star rating functionality
-    const stars = document.querySelectorAll('.star');
-    stars.forEach(star => {
-        star.addEventListener('click', () => {
-            const rating = star.getAttribute('data-rating');
-            document.getElementById('selectedRating').value = rating;
-            
-            // Update star display
-            stars.forEach(s => {
-                if (s.getAttribute('data-rating') <= rating) {
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('active');
-                }
-            });
-        });
-    });
-    
-    // Close modals
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('.modal').classList.remove('show');
-        });
-    });
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.classList.remove('show');
-        }
-    });
-    
-    // RSVP options functionality
-    const rsvpOptions = document.querySelectorAll('.rsvp-option');
-    rsvpOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            const value = option.getAttribute('data-value');
-            document.getElementById('selectedAttendance').value = value;
-            
-            // Update option display
-            rsvpOptions.forEach(opt => opt.classList.remove('active'));
-            option.classList.add('active');
-        });
-    });
-    
-    // Form submissions
-    const feedbackForm = document.getElementById('feedbackForm');
-    const rsvpForm = document.getElementById('rsvpForm');
-    
-    feedbackForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const rating = document.getElementById('selectedRating').value;
-        const feedback = document.getElementById('feedbackText').value;
-        
-        if (!rating) {
-            alert('Please select a rating');
-            return;
-        }
-        
-        // In a real application, send this data to your backend
-        console.log('Feedback submitted:', {
-            feedback,
-            rating: parseInt(rating)
-        });
-        
-        // Display success message (side notification)
-        showFeedbackSuccessMessage();
-        
-        // Reset form and close modal
-        this.reset();
-        document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
-        feedbackModal.style.display = 'none';
-    });
-    
-    rsvpForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const attendance = document.getElementById('selectedAttendance').value;
-        const additionalComments = document.getElementById('additionalComments').value;
-        
-        if (!attendance) {
-            alert('Please select whether you will attend');
-            return;
-        }
-        
-        // In a real application, send this data to your backend
-        console.log('RSVP submitted:', { 
-            attendance,
-            additionalComments 
-        });
-        
-        // Display success message
-        alert('Thank you for your RSVP!');
-        
-        // Reset form and close modal
-        this.reset();
-        document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('active'));
-        rsvpModal.classList.remove('show');
-    });
+    updateNavigation(accessToken, userType);
+    loadCategories();
+    loadEvents();
 
-    const announcementsContainer = document.querySelector('.announcements-container');
-    const paginationContainer = document.querySelector('.pagination');
-    const announcements = document.querySelectorAll('.announcement-card');
-    
-    const itemsPerPage = 4; // Show 4 items per page (2 rows x 2 columns)
-    const totalPages = Math.ceil(announcements.length / itemsPerPage);
-    let currentPage = 1;
-
-    function showPage(page) {
-        const start = (page - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-
-        announcements.forEach((announcement, index) => {
-            announcement.style.display = (index >= start && index < end) ? 'flex' : 'none';
-        });
-
-        // Scroll to the very top of the page instantly
-        window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-
-    function createPaginationButtons() {
-        let html = '';
-        
-        // Previous button
-        html += `<button class="pagination-prev" ${currentPage === 1 ? 'disabled' : ''}>
-            <i class="fas fa-chevron-left"></i>
-        </button>`;
-
-        // Current page info
-        html += `<div class="pagination-info">
-            <span class="current-page">${currentPage}</span>
-            <span>of</span>
-            <span class="total-pages">${totalPages}</span>
-        </div>`;
-
-        // Next button
-        html += `<button class="pagination-next" ${currentPage === totalPages ? 'disabled' : ''}>
-            <i class="fas fa-chevron-right"></i>
-        </button>`;
-
-        paginationContainer.innerHTML = html;
-
-        // Previous button click
-        const prevButton = document.querySelector('.pagination-prev');
-        if (prevButton) {
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1 && !prevButton.hasAttribute('disabled')) {
-                    currentPage--;
-                    showPage(currentPage);
-                    createPaginationButtons();
-                }
-            });
-        }
-
-        // Next button click
-        const nextButton = document.querySelector('.pagination-next');
-        if (nextButton) {
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages && !nextButton.hasAttribute('disabled')) {
-                    currentPage++;
-                    showPage(currentPage);
-                    createPaginationButtons();
-                }
-            });
-        }
-    }
-
-    // Initialize pagination
-    if (announcements.length > 0) {
-        showPage(1);
-        createPaginationButtons();
-    }
-
-    // Profile icon functionality
-    const profileIcon = document.querySelector(".profile-icon");
-    if (profileIcon) {
-        profileIcon.addEventListener("click", () => {
-            // Check if user is logged in
-            const isLoggedIn = localStorage.getItem("authToken") !== null;
-
-            if (isLoggedIn) {
-                // If logged in, go to profile page
-                window.location.href = "profile.html";
-            } else {
-                // If not logged in, go to login page
-                window.location.href = "login.html";
-            }
-        });
-    }
+    // Remove or comment out the following lines if not implemented
+    // initializeModals();
+    // initializePagination();
 });
 
 function updateNavigation(isLoggedIn, userType) {
@@ -300,58 +65,21 @@ function updateNavigation(isLoggedIn, userType) {
 // Function to create announcement cards dynamically
 function createAnnouncementCard(announcement) {
     const card = document.createElement('div');
-    card.className = `announcement-card ${announcement.category}`;
-    card.setAttribute('data-category', announcement.category);
+    card.className = 'announcement-card';
     
-    const categoryLabel = getCategoryLabel(announcement.category);
-    
-    // Format the date
-    const date = new Date(announcement.date);
-    const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    
-    // Create card structure
     card.innerHTML = `
-        <div class="category-tag ${announcement.category}-tag">${categoryLabel}</div>
-        <div class="card-content">
-            <h3>${announcement.title}</h3>
-            <p class="post-date">Posted on ${formattedDate}</p>
+        <div class="announcement-content">
+            <h3>${announcement.name}</h3>
+            <p class="announcement-meta">
+                <span class="host"><i class="fas fa-user"></i> ${announcement.host_username}</span>
+                <span class="date"><i class="fas fa-calendar"></i> ${new Date(announcement.date).toLocaleDateString()}</span>
+            </p>
             <p class="description">${announcement.description}</p>
-            <div class="card-actions">
-                <a href="announcement-details.html?id=${announcement.id}" class="read-more">Read More</a>
-                ${announcement.category === 'event' ? '<button class="rsvp-btn"><i class="fas fa-calendar-check"></i> RSVP</button>' : ''}
-                <button class="feedback-btn"><i class="fas fa-comment"></i> Feedback</button>
-            </div>
+            <a href="announcement-details.html?id=${announcement.id}" class="read-more">
+                Read More <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
     `;
-    
-    // Add event listeners to the new buttons
-    const feedbackBtn = card.querySelector('.feedback-btn');
-    const rsvpBtn = card.querySelector('.rsvp-btn');
-    
-    if (feedbackBtn) {
-        feedbackBtn.addEventListener('click', function() {
-            const announcementTitle = this.closest('.card-content').querySelector('h3').textContent;
-            const modalTitle = document.querySelector('#feedbackModal h2');
-            modalTitle.textContent = `Provide Feedback for "${announcementTitle}"`;
-            
-            document.getElementById('feedbackModal').style.display = 'block';
-        });
-    }
-    
-    if (rsvpBtn) {
-        rsvpBtn.addEventListener('click', function() {
-            const announcementTitle = this.closest('.card-content').querySelector('h3').textContent;
-            const modalTitle = document.querySelector('#rsvpModal h2');
-            modalTitle.textContent = `RSVP for "${announcementTitle}"`;
-            
-            document.getElementById('rsvpModal').style.display = 'flex';
-        });
-    }
-    
     return card;
 }
 
@@ -369,21 +97,41 @@ function getCategoryLabel(category) {
 }
 
 // In a real application, you would fetch announcements from your backend
-function loadAnnouncements() {
-    fetch('/api/announcements')
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('announcements-container');
-            container.innerHTML = ''; // Clear existing content
-            
-            data.forEach(announcement => {
-                const announcementCard = createAnnouncementCard(announcement);
-                container.appendChild(announcementCard);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading announcements:', error);
+async function loadAnnouncements() {
+    const container = document.getElementById('announcements-container');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading announcements...</div>';
+
+    try {
+        const url = `${API_BASE_URL}/events/?ordering=date&category=announcement`;
+        const options = {
+            method: 'GET'
+        };
+        console.log('Request:', {
+            method: options.method,
+            url: url,
+            headers: options.headers
         });
+        const response = await fetch(url, options);
+        const announcements = await response.json();
+        console.log('Response:', {
+            status: response.status,
+            data: announcements
+        });
+
+        container.innerHTML = '';
+
+        if (announcements.length === 0) {
+            container.innerHTML = '<p class="no-results">No announcements found.</p>';
+            return;
+        }
+
+        announcements.forEach(announcement => {
+            container.appendChild(createAnnouncementCard(announcement));
+        });
+    } catch (error) {
+        console.error('Error loading announcements:', error);
+        container.innerHTML = '<p class="error">Failed to load announcements.</p>';
+    }
 }
 
 // RSVP Functionality
@@ -578,4 +326,256 @@ function showFeedbackSuccessMessage() {
             document.body.removeChild(successMessage);
         }, 300);
     }, 3000);
+}
+
+// Configuration
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+function createEventCard(event) {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    
+    card.innerHTML = `
+        <div class="event-image">
+            <img src="${event.banner || '/static/images/placeholder.png'}" 
+                alt="${event.name}" 
+                onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
+        </div>
+        <div class="event-details">
+            <div class="event-header">
+                <span class="category-badge">${event.category_name || 'Event'}</span>
+                <h3>${event.name}</h3>
+            </div>
+            <div class="event-meta">
+                <p class="host"><i class="fas fa-user"></i> ${event.host_username}</p>
+                <p class="event-date"><i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}</p>
+                <p class="event-time"><i class="fas fa-clock"></i> ${event.start_time} - ${event.end_time}</p>
+                <p class="event-location"><i class="fas fa-map-marker-alt"></i> ${event.location}</p>
+            </div>
+            <p class="event-description">${event.description.substring(0, 150)}${event.description.length > 150 ? '...' : ''}</p>
+            <div class="event-footer">
+                <div class="event-stats">
+                    <span class="attendees"><i class="fas fa-users"></i> ${event.attendee_count} attending</span>
+                    <span class="rating"><i class="fas fa-star"></i> ${event.average_rating || 'N/A'}</span>
+                </div>
+                <div class="action-buttons">
+                    <a href="announcement-details.html?id=${event.id}" class="btn btn-primary">View Details</a>
+                    ${!event.is_attending ? `<button class="rsvp-btn" data-event-id="${event.id}">
+                        <i class="fas fa-calendar-check"></i> RSVP
+                    </button>` : `<button class="rsvp-btn attending" data-event-id="${event.id}">
+                        <i class="fas fa-check"></i> Attending
+                    </button>`}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add RSVP button click handler
+    const rsvpBtn = card.querySelector('.rsvp-btn');
+    if (rsvpBtn) {
+        rsvpBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const eventId = rsvpBtn.getAttribute('data-event-id');
+            openRSVPModal(eventId, event.name);
+        });
+    }
+
+    return card;
+}
+
+async function loadCategories() {
+    try {
+        const url = `${API_BASE_URL}/events/categories/`;
+        const options = { 
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        };
+        console.log('Request:', {
+            method: options.method,
+            url: url,
+            headers: options.headers
+        });
+        const response = await fetch(url, options);
+        const categories = await response.json();
+        console.log('Response:', {
+            status: response.status,
+            data: categories
+        });
+        const filterContainer = document.getElementById('category-filters');
+        
+        filterContainer.innerHTML = ''; // Clear existing filters
+        
+        categories.forEach(category => {
+            const button = document.createElement('button');
+            button.className = 'filter-btn';
+            button.setAttribute('data-filter', category.id);
+            button.textContent = category.name;
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(btn => 
+                    btn.classList.remove('active'));
+                button.classList.add('active');
+                loadEvents(category.id);
+            });
+            filterContainer.appendChild(button);
+        });
+    } catch (error) {
+        console.error('Error loading categories:', error);
+    }
+}
+
+async function fetchWithLogs(url, options = {}) {
+    const defaultOptions = {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const finalOptions = { ...defaultOptions, ...options };
+
+    console.log('Request:', {
+        method: finalOptions.method || 'GET',
+        url: url,
+        headers: finalOptions.headers,
+        body: finalOptions.body ? JSON.parse(finalOptions.body) : undefined
+    });
+
+    const response = await fetch(url, finalOptions);
+    let data;
+    try {
+        data = await response.json();
+    } catch (e) {
+        data = null;
+    }
+
+    console.log('Response:', {
+        status: response.status,
+        data: data
+    });
+
+    if (!response.ok) {
+        throw new Error('Request failed');
+    }
+
+    return data;
+}
+
+async function loadEvents(categoryId = null) {
+    const container = document.getElementById('events-container');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading events...</div>';
+
+    try {
+        let url = `${API_BASE_URL}/events/?ordering=date`;
+        const accessToken = localStorage.getItem('access_token');
+        if (categoryId && categoryId !== 'all') {
+            url += `&category=${categoryId}`;
+        }
+
+        const options = {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        };
+
+        console.log('Request:', {
+            method: options.method,
+            url: url,
+            headers: options.headers
+        });
+
+        const response = await fetch(url, options);
+        const events = await response.json();
+
+        console.log('Response:', {
+            status: response.status,
+            data: events
+        });
+
+        container.innerHTML = '';
+
+        // Use events.data if present, otherwise use events directly
+        const eventList = Array.isArray(events) ? events : (Array.isArray(events.data) ? events.data : []);
+        if (eventList.length === 0) {
+            container.innerHTML = '<p class="no-results">No events found.</p>';
+            return;
+        }
+
+        eventList.forEach(event => {
+            container.appendChild(createEventCard(event));
+        });
+
+        // Update pagination
+        updatePagination(eventList.length);
+    } catch (error) {
+        console.error('Error loading events:', error);
+        container.innerHTML = '<p class="error">Failed to load events.</p>';
+    }
+}
+
+async function handleRSVP(eventId) {
+    try {
+        const url = `${API_BASE_URL}/events/${eventId}/attendance/`;
+        const body = JSON.stringify({ action: 'attend' });
+        console.log('Request:', {
+            method: 'POST',
+            url: url,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.parse(body)
+        });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: body
+        });
+        const data = await response.json();
+        console.log('Response:', {
+            status: response.status,
+            data: data
+        });
+
+        showRSVPSuccessMessage();
+        loadEvents();
+    } catch (error) {
+        console.error('Error submitting RSVP:', error);
+        alert('Failed to submit RSVP. Please try again.');
+    }
+}
+
+async function submitFeedback(eventId, rating, content) {
+    try {
+        const url = `${API_BASE_URL}/events/${eventId}/comments/`;
+        const body = JSON.stringify({
+            content: content,
+            rating: rating
+        });
+        console.log('Request:', {
+            method: 'POST',
+            url: url,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.parse(body)
+        });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: body
+        });
+        const data = await response.json();
+        console.log('Response:', {
+            status: response.status,
+            data: data
+        });
+
+        showFeedbackSuccessMessage();
+    } catch (error) {
+        console.error('Error submitting feedback:', error);
+        alert('Failed to submit feedback. Please try again.');
+    }
+}
+
+// Add this dummy function to prevent errors if you want to keep the call
+function updatePagination(/* count */) {
+    // No-op or implement pagination logic here if needed
 }

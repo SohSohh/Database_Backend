@@ -1,6 +1,6 @@
 # events/serializers.py
 from rest_framework import serializers
-from .models import Event, Category, Comment
+from .models import Event, Category, Comment, Announcement
 
 
 class BaseEventSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class BaseEventSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(BaseEventSerializer):
-    host_username = serializers.CharField(source='host.username', read_only=True)
+    host_username = serializers.CharField(source='user.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
@@ -49,10 +49,11 @@ class EventSerializer(BaseEventSerializer):
 
 class EventDetailSerializer(BaseEventSerializer):
     """Event serializer with dynamic fields"""
-    host_username = serializers.CharField(source='host.username', read_only=True)
+    host_username = serializers.CharField(source='user.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
     average_rating = serializers.FloatField(read_only=True)
+    category_name = serializers.CharField(source='category.name', read_only=True)  # Added field
 
     class Meta:
         model = Event
@@ -60,7 +61,7 @@ class EventDetailSerializer(BaseEventSerializer):
             'id', 'name', 'host', 'host_username', 'start_time',
             'end_time', 'date', 'location', 'description',
             'banner', 'created_at', 'updated_at', 'attendee_count',
-            'is_attending', 'average_rating'
+            'is_attending', 'average_rating', 'category', 'category_name'  # Added category_name
         )
         read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count', 'average_rating')
 
@@ -154,3 +155,12 @@ class CommentSerializer(serializers.ModelSerializer):
         """Set user as the current user when creating a comment"""
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    host_username = serializers.CharField(source='host.username', read_only=True)
+
+    class Meta:
+        model = Announcement
+        fields = ('id', 'title', 'host', 'host_username', 'date_made', 'description', 'updated_at')
+        read_only_fields = ('host', 'date_made', 'updated_at')

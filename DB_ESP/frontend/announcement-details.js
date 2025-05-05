@@ -258,6 +258,17 @@ async function loadAnnouncementDetails() {
     }
 
     try {
+        // First, fetch available categories
+        const categoriesResponse = await fetch(`${API_BASE_URL}/events/categories/`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const categories = await categoriesResponse.json();
+        
+        // Then fetch event details
         const response = await fetch(`${API_BASE_URL}/events/${eventId}/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -270,14 +281,30 @@ async function loadAnnouncementDetails() {
 
         // Update UI with event details
         elements.title.textContent = event.name;
+        
+        // Set category badge text directly from the API response
         elements.category.textContent = event.category_name;
+        elements.category.style.backgroundColor = '#5C0000';
+        elements.category.style.color = 'white';
+        elements.category.style.padding = '4px 12px';
+        elements.category.style.borderRadius = '16px';
+        elements.category.style.fontSize = '0.875rem';
+        elements.category.style.fontWeight = '500';
+        
         elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;
         elements.author.textContent = `by ${event.host_username}`;
         elements.content.innerHTML = event.description;
 
+        // Show RSVP button only if category is NOT announcement
+        elements.rsvpButton.style.display = 
+            event.category_name?.toLowerCase() === 'announcement' ? 'none' : 'inline-block';
+
+        // Update attendance count - ensuring it's a number
+        const attendeeCount = typeof event.attendee_count === 'number' ? event.attendee_count : 0;
+        document.getElementById('attending-count').textContent = attendeeCount;
+
         // Update attendance status
         updateAttendanceButton(event.is_attending);
-        updateAttendeeCount(event.attendee_count);
 
         // Load comments
         await loadFeedbacks(eventId);
