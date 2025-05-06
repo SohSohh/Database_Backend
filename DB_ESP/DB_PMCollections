@@ -1,0 +1,1663 @@
+{
+	"info": {
+		"_postman_id": "9425e712-2e4a-4775-ae68-14fd532ad83f",
+		"name": "Event Management API",
+		"description": "A comprehensive collection for testing the Event Management API with users, societies, events, and all related functionalities.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42806078"
+	},
+	"item": [
+		{
+			"name": "1. Authentication & User Management",
+			"item": [
+				{
+					"name": "Register Handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    pm.expect(jsonData.access).to.not.be.undefined;",
+									"    pm.expect(jsonData.refresh).to.not.be.undefined;",
+									"});",
+									"",
+									"pm.test(\"User type is handler\", function () {",
+									"    pm.expect(jsonData.user.user_type).to.eql(\"handler\");",
+									"});",
+									"",
+									"if (jsonData.access) {",
+									"    pm.environment.set(\"handler_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"handler_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"handler_refresh\", jsonData.refresh);",
+									"    pm.collectionVariables.set(\"handler_id\", jsonData.user.id);",
+									"    pm.collectionVariables.set(\"join_code\", jsonData.user.join_code || \"\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testsociety@example.com\",\n    \"username\": \"testsociety\",\n    \"password\": \"Test1234!\",\n    \"society_name\": \"Test Society\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register/handler/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"register",
+								"handler",
+								""
+							]
+						},
+						"description": "Register a new handler (society) user"
+					},
+					"response": []
+				},
+				{
+					"name": "Register Viewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    pm.expect(jsonData.access).to.not.be.undefined;",
+									"    pm.expect(jsonData.refresh).to.not.be.undefined;",
+									"});",
+									"",
+									"pm.test(\"User type is viewer\", function () {",
+									"    pm.expect(jsonData.user.user_type).to.eql(\"viewer\");",
+									"});",
+									"",
+									"if (jsonData.access) {",
+									"    pm.environment.set(\"viewer_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"viewer_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"viewer_refresh\", jsonData.refresh);",
+									"    pm.collectionVariables.set(\"viewer_id\", jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"viewer@example.com\",\n    \"username\": \"testviewer1\",\n    \"password\": \"Test1234!\",\n    \"password2\": \"Test1234!\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"Viewer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register/viewer/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"register",
+								"viewer",
+								""
+							]
+						},
+						"description": "Register a new viewer user"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    pm.expect(jsonData.access).to.not.be.undefined;",
+									"    pm.expect(jsonData.refresh).to.not.be.undefined;",
+									"});",
+									"",
+									"if (jsonData.access) {",
+									"    pm.environment.set(\"handler_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"handler_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"handler_refresh\", jsonData.refresh);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\n//     \"email\": \"testsociety@example.com\",\n//     \"password\": \"Test1234!\"\n// }\n\n{\n    \"email\": \"s3251potifyalternative777@gmail.com\",\n    \"password\": \"Hopeful!Mechanic\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/login/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"login",
+								""
+							]
+						},
+						"description": "Login as a handler"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Viewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    pm.expect(jsonData.access).to.not.be.undefined;",
+									"    pm.expect(jsonData.refresh).to.not.be.undefined;",
+									"});",
+									"",
+									"if (jsonData.access) {",
+									"    pm.environment.set(\"viewer_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"viewer_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"viewer_refresh\", jsonData.refresh);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"viewer@example.com\",\n    \"password\": \"Test1234!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/login/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"login",
+								""
+							]
+						},
+						"description": "Login as a viewer"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token (Handler)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has new access token\", function () {",
+									"    pm.expect(jsonData.access).to.not.be.undefined;",
+									"});",
+									"",
+									"if (jsonData.access) {",
+									"    pm.environment.set(\"handler_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"handler_token\", jsonData.access);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{handler_refresh}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/token/refresh/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"token",
+								"refresh",
+								""
+							]
+						},
+						"description": "Refresh the handler's access token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Handler)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has user data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.not.be.undefined;",
+									"    pm.expect(jsonData.user_type).to.eql(\"handler\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/me/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me",
+								""
+							]
+						},
+						"description": "Get the current handler user's information"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has user data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.not.be.undefined;",
+									"    pm.expect(jsonData.user_type).to.eql(\"handler\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/me/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me",
+								""
+							]
+						},
+						"description": "Get the current handler user's information"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Join Code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has join code\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.join_code).to.not.be.undefined;",
+									"    pm.expect(jsonData.join_code.length).to.eql(5);",
+									"    pm.collectionVariables.set(\"join_code\", jsonData.join_code);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/society/join-code/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"society",
+								"join-code",
+								""
+							]
+						},
+						"description": "Generate a new join code for the handler society"
+					},
+					"response": []
+				},
+				{
+					"name": "List Society Members",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has results array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/society/members/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"society",
+								"members",
+								""
+							]
+						},
+						"description": "List all members of the handler's society"
+					},
+					"response": []
+				},
+				{
+					"name": "List Societies (as Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Response has societies\", function () {",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/societies/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"societies",
+								""
+							]
+						},
+						"description": "List all societies (as a viewer)"
+					},
+					"response": []
+				},
+				{
+					"name": "Join Society (Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Viewer joined society\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.detail).to.include(\"joined\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"handler_id\": {{handler_id}},\n    \"join_code\": \"{{join_code}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/membership/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"membership",
+								""
+							]
+						},
+						"description": "Join a society as a viewer"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Society Member Detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has member data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.not.be.undefined;",
+									"    pm.expect(jsonData.user_type).to.eql(\"viewer\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/society/members/{{viewer_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"society",
+								"members",
+								"{{viewer_id}}",
+								""
+							]
+						},
+						"description": "Get details of a specific society member"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Member to Society",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update Member Role - Valid Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains success message\", function() {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData).to.have.property(\"detail\");",
+									"  pm.expect(jsonData.detail).to.include(\"Role updated\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"other\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/society/members/{{viewer_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"society",
+								"members",
+								"{{viewer_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Member (Handler) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Member removed\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(jsonData.detail).to.include(\"removed\")});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/society/members/{{viewer_id}}/remove_member/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"society",
+								"members",
+								"{{viewer_id}}",
+								"remove_member",
+								""
+							]
+						},
+						"description": "Remove a member from the handler's society"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for user authentication and management"
+		},
+		{
+			"name": "2. Events Management",
+			"item": [
+				{
+					"name": "Create Event (Handler)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Response has event data\", function () {",
+									"    pm.expect(jsonData.id).to.not.be.undefined;",
+									"    pm.expect(jsonData.name).to.eql(\"Test Event\");",
+									"    pm.collectionVariables.set(\"event_id\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Event\",\n    \"start_time\": \"18:00:00\",\n    \"end_time\": \"20:00:00\",\n    \"date\": \"2025-06-01\",\n    \"location\": \"Test Location\",\n    \"description\": \"A test event created by the handler society\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								""
+							]
+						},
+						"description": "Create a new event (as a handler)"
+					},
+					"response": []
+				},
+				{
+					"name": "List Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has events array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								""
+							]
+						},
+						"description": "List all events"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has events array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								""
+							]
+						},
+						"description": "List all events"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has event details\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(Number(pm.collectionVariables.get(\"event_id\")));",
+									"    pm.expect(jsonData.name).to.eql(\"Test Event\");",
+									"    pm.expect(jsonData.attendees).to.not.be.undefined;",
+									"    pm.expect(jsonData.host).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						},
+						"description": "Get detailed information about an event"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Rating Average",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has event details\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(Number(pm.collectionVariables.get(\"event_id\")));",
+									"    pm.expect(jsonData.name).to.eql(\"Test Event\");",
+									"    pm.expect(jsonData.attendees).to.not.be.undefined;",
+									"    pm.expect(jsonData.host).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						},
+						"description": "Get detailed information about an event"
+					},
+					"response": []
+				},
+				{
+					"name": "Attend Event (Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Viewer now attending event\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.detail).to.include(\"attending\");",
+									"    pm.expect(jsonData.attendee_count).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"attend\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/attendance/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								"attendance",
+								""
+							]
+						},
+						"description": "Attend an event (as a viewer)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attending Events (Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains attending events\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"    ",
+									"    // Check if our test event is in the list",
+									"    var found = false;",
+									"    for (var i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id === Number(pm.collectionVariables.get(\"event_id\"))) {",
+									"            found = true;",
+									"            break;",
+									"        }",
+									"    }",
+									"    pm.expect(found).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/attending/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"attending",
+								""
+							]
+						},
+						"description": "Get all events the viewer is attending"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment to Event (Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has comment data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.not.be.undefined;",
+									"    pm.expect(jsonData.content).to.eql(\"This is a test comment!\");",
+									"    pm.expect(jsonData.user).to.not.be.undefined;",
+									"    pm.expect(jsonData.event).to.eql(Number(pm.collectionVariables.get(\"event_id\")));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"This is a test comment!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/comments/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								"comments",
+								""
+							]
+						},
+						"description": "Add a comment to an event"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Comments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Response has comments array\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"pm.expect(jsonData.length).to.be.greaterThan(0)});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/comments/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								"comments",
+								""
+							]
+						},
+						"description": "Get all comments for an event"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event (Handler)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Event updated correctly\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(jsonData.name).to.eql(\"Updated Test Event\")});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Test Event\",\n    \"description\": \"This event has been updated by the handler\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						},
+						"description": "Update an event as the handler"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My (Handler) Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Event updated correctly\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(jsonData.name).to.eql(\"Updated Test Event\")});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Test Event\",\n    \"description\": \"This event has been updated by the handler\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						},
+						"description": "Update an event as the handler"
+					},
+					"response": []
+				},
+				{
+					"name": "Unattend Event (Viewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Viewer no longer attending\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(jsonData.detail).to.include(\"no longer\")});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"unattend\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/attendance/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								"attendance",
+								""
+							]
+						},
+						"description": "Unattend an event (as a viewer)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Handler Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Response has handler events\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"pm.expect(jsonData.length).to.be.greaterThan(0)});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/handler/events/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"handler",
+								"events",
+								""
+							]
+						},
+						"description": "Get all events created by the handler"
+					},
+					"response": []
+				},
+				{
+					"name": "Categories List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Response has categories array\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(Array.isArray(jsonData)).to.be.true});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/categories/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"categories",
+								""
+							]
+						},
+						"description": "List all event categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event (Handler)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function(){pm.response.to.have.status(204)});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						},
+						"description": "Delete an event (as the handler)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for event management"
+		},
+		{
+			"name": "3. Cleanup",
+			"item": [
+				{
+					"name": "Remove Member (Handler)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});",
+									"pm.test(\"Member removed\", function(){",
+									"var jsonData = pm.response.json();",
+									"pm.expect(jsonData.detail).to.include(\"removed\")});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/society/members/{{viewer_id}}/remove_member/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"society",
+								"members",
+								"{{viewer_id}}",
+								"remove_member",
+								""
+							]
+						},
+						"description": "Remove a member from the handler's society"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Viewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 205\", function(){pm.response.to.have.status(205)});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{viewer_refresh}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/logout/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"logout",
+								""
+							]
+						},
+						"description": "Logout the viewer user"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 205\", function(){pm.response.to.have.status(205)});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{handler_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{handler_refresh}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/logout/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"logout",
+								""
+							]
+						},
+						"description": "Logout the handler user"
+					},
+					"response": []
+				}
+			],
+			"description": "Cleanup endpoints for session management"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "viewer_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "handler_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "viewer_refresh",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "handler_refresh",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "event_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "handler_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "viewer_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "join_code",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

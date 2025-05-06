@@ -1,0 +1,201 @@
+{
+  "info": {
+    "name": "Event Management API",
+    "description": "Postman collection for Event Management API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "List All Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/events/",
+              "host": ["{{base_url}}"],
+              "path": ["events"]
+            }
+          }
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Event\",\n  \"start_time\": \"10:00:00\",\n  \"end_time\": \"12:00:00\",\n  \"date\": \"2023-07-01\",\n  \"location\": \"New Location\",\n  \"description\": \"New event description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/events/",
+              "host": ["{{base_url}}"],
+              "path": ["events"]
+            }
+          }
+        },
+        {
+          "name": "Retrieve Event Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/events/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["events", ":id"]
+            }
+          }
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Event Name\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/events/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["events", ":id"]
+            }
+          }
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/events/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["events", ":id"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Announcements",
+      "item": [
+        {
+          "name": "List All Announcements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/events/announcements/",
+              "host": ["{{base_url}}"],
+              "path": ["events", "announcements"]
+            }
+          }
+        },
+        {
+          "name": "Create Announcement",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Announcement\",\n  \"description\": \"Details about the announcement\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/events/announcements/",
+              "host": ["{{base_url}}"],
+              "path": ["events", "announcements"]
+            }
+          }
+        },
+        {
+          "name": "Retrieve Announcement Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/events/announcements/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["events", "announcements", ":id"]
+            }
+          }
+        },
+        {
+          "name": "Update Announcement",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Announcement Title\",\n  \"description\": \"Updated details\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/events/announcements/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["events", "announcements", ":id"]
+            }
+          }
+        },
+        {
+          "name": "Delete Announcement",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/events/announcements/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["events", "announcements", ":id"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
