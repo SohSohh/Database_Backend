@@ -47,9 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleLogout(e) {
         e.preventDefault();
-        // Clear auth data
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userType');
+        localStorage.setItem('showLogoutMessage', 'true'); // Set flag for success message
+        // Clear authentication tokens (using keys consistent with viewer-dashboard.js)
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         // Redirect to login page
         window.location.href = 'login.html';
     }
