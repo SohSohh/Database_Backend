@@ -218,6 +218,7 @@ const elements = {
     title: document.getElementById('announcement-title'),
     category: document.getElementById('category-badge'),
     postDate: document.getElementById('post-date'),
+    metaInfo: document.querySelector('.meta-info'), // Added for animation
     author: document.getElementById('author'),
     content: document.getElementById('announcement-content'),
     feedbacksList: document.getElementById('comments-list'),
@@ -245,6 +246,12 @@ function initPage() {
     loadAnnouncementDetails();
     loadRelatedAnnouncements();
     setupEventListeners();
+}
+
+// Helper function to wrap letters in spans for animation
+function wrapChars(element) {
+    if (!element || !element.textContent) return;
+    element.innerHTML = element.textContent.replace(/\S/g, "<span class='char'>$&</span>");
 }
 
 // Load announcement details
@@ -284,7 +291,7 @@ async function loadAnnouncementDetails() {
         
         // Set category badge text directly from the API response
         elements.category.textContent = event.category_name;
-        elements.category.style.backgroundColor = '#5C0000';
+        elements.category.style.backgroundColor = '#002366';
         elements.category.style.color = 'white';
         elements.category.style.padding = '4px 12px';
         elements.category.style.borderRadius = '16px';
@@ -308,6 +315,16 @@ async function loadAnnouncementDetails() {
 
         // Load comments
         await loadFeedbacks(eventId);
+
+        // Trigger animations for title and meta info
+        if (elements.title) {
+            requestAnimationFrame(() => {
+                elements.title.classList.add('in-view');
+            });
+        }
+        if (elements.metaInfo) {
+            elements.metaInfo.classList.add('in-view');
+        }
         
     } catch (error) {
         showError('Failed to load event details');
@@ -409,17 +426,49 @@ async function loadRelatedAnnouncements() {
             .slice(0, 3);
 
         elements.relatedAnnouncements.innerHTML = '';
-        relatedEvents.forEach(event => {
+
+        // Create and append the grid container
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'related-grid';
+        elements.relatedAnnouncements.appendChild(gridContainer);
+
+        relatedEvents.forEach((event, index) => {
             const announcementElement = document.createElement('div');
-            announcementElement.className = 'related-announcement-card';
+            announcementElement.className = 'event-card'; // Use 'event-card' to match CSS
+            // Set CSS custom property for staggered animation
+            announcementElement.style.setProperty('--animation-order', index + 1);
+            
+            const eventName = event.name || 'Untitled Event';
+            const categoryName = event.category_name || 'General';
+            // Assuming 'event.date' is provided by the API as per 'ordering=date'.
+            // Fallback to 'event.created_at' or a default string if 'event.date' is not available.
+            const displayDate = event.date 
+                ? new Date(event.date).toLocaleDateString() 
+                : (event.created_at ? new Date(event.created_at).toLocaleDateString() : 'Date N/A');
+            
+            let excerpt = 'No description available.';
+            if (event.description) {
+                excerpt = event.description.length > 100 ? event.description.substring(0, 97) + '...' : event.description;
+            }
+
+            // Updated innerHTML to match the CSS structure for .event-card and its children
+            // This ensures .event-content provides padding and other styles apply correctly.
             announcementElement.innerHTML = `
-                <div class="card-category">${event.category_name}</div>
-                <h4><a href="announcement-details.html?id=${event.id}">${event.name}</a></h4>
-                <p class="card-date">${new Date(event.date).toLocaleDateString()}</p>
-                <p class="card-excerpt">${event.description.substring(0, 100)}...</p>
-                <a href="announcement-details.html?id=${event.id}" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                <div class="event-category">${categoryName}</div>
+                <div class="event-content">
+                    <h5 class="event-title"><a href="announcement-details.html?id=${event.id}">${eventName}</a></h5>
+                    <p class="event-date"><i class="fas fa-calendar-alt"></i> ${displayDate}</p>
+                    <p class="event-description">${excerpt}</p>
+                    <div class="event-footer">
+                         <a href="announcement-details.html?id=${event.id}" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
             `;
-            elements.relatedAnnouncements.appendChild(announcementElement);
+            gridContainer.appendChild(announcementElement); // Append cards to the grid container
+            // Add the 'visible' class to trigger the CSS animation and make the card appear
+            requestAnimationFrame(() => {
+                announcementElement.classList.add('visible');
+            });
         });
     } catch (error) {
         showError('Failed to load related events');

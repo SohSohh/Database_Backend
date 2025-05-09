@@ -88,8 +88,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const userMenuLogout = document.getElementById('user-menu-logout');
 
     function handleLogout() {
-        // Add your logout logic here
-        window.location.href = 'index.html';
+        // Set flag to show logout message on the login page
+        localStorage.setItem('showLogoutMessage', 'true');
+        // Remove authentication tokens
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_type'); // Also remove user_type
+        // Redirect to the login page
+        window.location.href = 'login.html';
+
     }
 
     if (logoutBtn) {

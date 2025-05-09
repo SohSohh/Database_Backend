@@ -210,9 +210,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Add logout handler
         document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.setItem('showLogoutMessage', 'true'); // Set flag for success message
+            // Clear authentication tokens
+            localStorage.removeItem('auth_tokens');
             localStorage.removeItem('access_token');
-            sessionStorage.clear();
-            window.location.href = 'login.html';
+            localStorage.removeItem('refresh_token');
+            window.location.href = 'index.html';
         });
         
         // Add mobile menu toggle functionality

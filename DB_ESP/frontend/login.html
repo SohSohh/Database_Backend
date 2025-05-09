@@ -4,19 +4,671 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - EventHub</title>
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        :root {
+            --midnight: #F2EFE9;     /* Main background (Very light off-white/beige) */
+            --arctic: #262626;       /* Primary text color (Dark gray) */
+            --arctic-rgb: 38, 38, 38; /* RGB for --arctic */
+            --apres-ski: #8C8C8C;    /* Muted/secondary text (Mid gray) */
+            --slopes: #BFBFBD;       /* Lighter gray for subtle elements/text/borders (Light-mid gray) */
+            --mountainside: #E9E5DC; /* Secondary light background / Sections (Light beige/gray) */
+            --mountainside-rgb: 233, 229, 220; /* RGB for --mountainside */
+            
+            --glow-color: #002366;       /* Primary accent - US Navy Blue */
+            --glow-color-rgb: 0, 35, 102;  /* RGB version for US Navy Blue */
+            --hover-color: #001a4d;      /* Darker Navy Blue for hover */
+
+            --border-color-light: #BFBFBD; 
+            --card-bg-light: #FFFFFF; 
+            --card-bg-subtle-light: #F2EFE9; 
+            --shadow-color-light: rgba(38, 38, 38, 0.08); 
+            --shadow-color-medium: rgba(38, 38, 38, 0.12);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Hide default cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--midnight); 
+            color: var(--arctic);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--glow-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999; 
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+        }
+        
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(var(--glow-color-rgb), 0.1);
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.1s linear, background-color 0.2s, width 0.2s, height 0.2s;
+        }
+
+        .cursor.active {
+            width: 30px;
+            height: 30px;
+            border-color: var(--hover-color);
+        }
+
+        .cursor-follower.active {
+            width: 50px;
+            height: 50px;
+            background: rgba(var(--glow-color-rgb), 0.2);
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        /* Background Effects */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6; 
+            background: linear-gradient(
+                135deg,
+                var(--midnight) 0%,
+                var(--mountainside) 50%,
+                var(--midnight) 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+        
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giIHJlc3VsdD0ibm9pc2UiLz48ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMC4xIDAgMCAwIDAgMCAwLjEgMCAwIDAgMCAwIDAuMSAwIDAgMCAwIDAgMC4yIDAiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNub2lzZSkiLz48L3N2Zz4');
+            opacity: 0.05; 
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            background-color: rgba(var(--glow-color-rgb), 0.3); 
+            border-radius: 50%;
+            opacity: 0;
+            animation-name: particleFloat;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        /* Login Page Specific Styles */
+        .login-page {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .welcome-section {
+            flex: 1.2; 
+            background-color: var(--mountainside);
+            padding: 3rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: flex-start; 
+            position: relative;
+            overflow: hidden; 
+            background-image: linear-gradient(135deg, var(--mountainside) 0%, var(--card-bg-subtle-light) 100%);
+        }
+
+        .welcome-section::before { 
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at top left, rgba(var(--glow-color-rgb), 0.05) 0%, transparent 40%);
+            opacity: 0.7;
+            z-index: 0;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            right: 2rem; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .logo { 
+            color: var(--arctic);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block; 
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--glow-color);
+            transform: translateX(-101%); 
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .logo:hover::before {
+            transform: translateX(0);
+        }
+
+        .back-link {
+            color: var(--apres-ski);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--glow-color);
+        }
+
+        .back-link:hover i {
+            transform: translateX(-3px);
+        }
+
+        .welcome-content {
+            position: relative; 
+            z-index: 1;
+            max-width: 500px; 
+            animation: fadeIn 1s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+
+        .welcome-content h1 {
+            font-size: 3.2rem; 
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            color: var(--arctic);
+        }
+        #welcome-heading .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .welcome-content p#welcome-subtext {
+            font-size: 1.1rem;
+            color: var(--apres-ski);
+            margin-bottom: 2rem;
+            max-width: 450px;
+            line-height: 1.7;
+        }
+
+        .welcome-image-container {
+            margin-top: 2rem; 
+            width: 100%;
+            max-width: 400px; 
+            opacity: 0;
+            animation: slideUp 1s ease-out 0.5s forwards;
+            z-index: 1;
+            perspective: 1000px; /* Add perspective for 3D hover effect */
+            position: relative;
+        }
+
+        .welcome-image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(var(--arctic-rgb, 38,38,38), 0.15);
+            object-fit: cover;
+            filter: contrast(1.05) saturate(1.1);
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        box-shadow 0.5s cubic-bezier(0.25, 0.8, 0.25, 1),
+                        filter 0.5s ease-in-out;
+            transform: rotateY(7deg); /* Initial subtle tilt */
+            transform-style: preserve-3d; /* Needed for 3D transforms */
+        }
+
+        .welcome-image-container::after { /* Sheen overlay */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(var(--glow-color-rgb), 0.03) 0%, transparent 60%);
+            border-radius: 12px; /* Match image border-radius */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none; /* Allow interaction with the image */
+        }
+
+        .welcome-image-container:hover img {
+            transform: rotateY(-3deg) scale(1.08); /* Tilt slightly other way and scale more */
+            box-shadow: 0 20px 45px rgba(var(--arctic-rgb, 38,38,38), 0.2);
+            filter: contrast(1.1) saturate(1.15);
+        }
+        .welcome-image-container:hover::after {
+            opacity: 1; /* Show sheen on hover */
+        }
+
+        .form-section {
+            flex: 1;
+            background-color: var(--midnight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem;
+            position: relative; 
+        }
+
+        .form-container {
+            background-color: var(--card-bg-light);
+            padding: 2.5rem 3rem; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px var(--shadow-color-light);
+            width: 100%;
+            max-width: 450px; 
+            text-align: center; 
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease-out 0.3s forwards;
+        }
+
+        .form-container h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--arctic);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-container .subtitle {
+            color: var(--apres-ski);
+            margin-bottom: 2.5rem; 
+            font-size: 1rem;
+        }
+
+        .login-form {
+            text-align: left; 
+        }
+
+        #status-messages .error-message {
+            background-color: rgba(220, 53, 69, 0.1); /* Softer red */
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative; 
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--apres-ski);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 0.9rem 1rem; 
+            border: 1px solid var(--border-color-light);
+            border-radius: 6px;
+            background-color: var(--card-bg-subtle-light); 
+            color: var(--arctic);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="email"]::placeholder,
+        .form-group input[type="password"]::placeholder {
+            color: var(--slopes);
+        }
+
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus {
+            outline: none;
+            border-color: var(--glow-color);
+            box-shadow: 0 0 0 3px rgba(var(--glow-color-rgb), 0.2);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem; 
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: var(--glow-color); 
+        }
+
+        .remember-me label {
+            color: var(--apres-ski);
+            font-weight: 400; 
+            margin-bottom: 0; 
+        }
+
+        .forgot-password {
+            color: var(--glow-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--hover-color);
+            text-decoration: underline;
+        }
+
+        .btn-primary.login-button {
+            background: var(--glow-color);
+            color: var(--midnight); 
+            border: 2px solid var(--glow-color);
+            border-radius: 6px;
+            padding: 0.9rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: block; 
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            z-index: 1;
+            letter-spacing: 0.5px;
+            cursor: pointer; 
+        }
+
+        .btn-primary.login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%; 
+            width: 100%;
+            height: 100%;
+            background: var(--hover-color); 
+            transition: all 0.35s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: -1;
+        }
+
+        .btn-primary.login-button:hover {
+            color: var(--midnight); 
+            border-color: var(--hover-color);
+        }
+
+        .btn-primary.login-button:hover::before {
+            left: 0; 
+        }
+
+        .loading-spinner {
+            margin-left: 0.5rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--apres-ski);
+            margin: 2rem 0; 
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color-light);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem; 
+        }
+
+        .social-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color-light);
+            border-radius: 6px;
+            background-color: transparent; 
+            color: var(--arctic);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none; /* Ensure no underline for links */
+
+        }
+
+        .social-button:hover {
+            border-color: var(--glow-color);
+            background-color: rgba(var(--glow-color-rgb), 0.05);
+            color: var(--glow-color);
+        }
+
+        .social-button img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .social-button i.fab.fa-apple {
+            font-size: 1.3rem; /* Apple icon size adjustment */
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--apres-ski);
+            margin-top: 1rem; /* Added margin top */
+        }
+
+        .register-link a {
+            color: var(--glow-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: var(--hover-color);
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0vh) scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100vh) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) { 
+            .login-page {
+                flex-direction: column;
+            }
+            .welcome-section {
+                flex: 0 0 auto; 
+                min-height: 50vh; 
+                padding: 3rem 2rem;
+                align-items: center; 
+                text-align: center;
+            }
+            .logo-container {
+                position: static; 
+                margin-bottom: 2rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .welcome-content {
+                align-items: center;
+            }
+            .welcome-content h1 {
+                font-size: 2.5rem;
+            }
+            .welcome-content p#welcome-subtext {
+                max-width: 100%;
+            }
+            .welcome-image-container {
+                max-width: 300px;
+                margin: 2rem auto 0; 
+            }
+            .form-section {
+                padding: 2rem 1.5rem;
+            }
+            .form-container {
+                padding: 2rem;
+                margin-top: 0; 
+            }
+        }
+
+        @media (max-width: 576px) { 
+            .welcome-section {
+                min-height: auto; /* Adjust for smaller screens */
+                padding: 2rem 1rem;
+            }
+            .welcome-content h1 {
+                font-size: 2rem;
+            }
+            .welcome-content p#welcome-subtext {
+                font-size: 1rem;
+            }
+            .form-container {
+                padding: 1.5rem;
+            }
+            .form-container h2 {
+                font-size: 1.8rem;
+            }
+            .social-login {
+                flex-direction: column;
+            }
+            .btn-primary.login-button, .social-button {
+                font-size: 0.9rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
+        <!-- Custom cursor elements -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Background effects -->
+    <div class="gradient-bg"></div>
+    <div class="noise-overlay"></div>
+    <div class="particles"></div>
     <main class="login-page">
         <div class="welcome-section">
-            <div class="logo">
-                <span class="logo-icon">EventHub</span>
+            <div class="logo-container">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">EventHub</span>
+                </a>
                 <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to website</a>
             </div>
             <div class="welcome-content">
-                <h1>Welcome Back!<br>Ready to Explore?</h1>
+                <h1 id="welcome-heading">Welcome Back!<br>Ready to Explore?</h1>
+                <p id="welcome-subtext">Sign in to unlock a world of events tailored just for you. Your next adventure awaits.</p>
+            </div>
+            <div class="welcome-image-container">
+                <img src="https://images.unsplash.com/photo-1505238680356-667803448bb6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Abstract event visual">
             </div>
         </div>
         
@@ -32,12 +684,12 @@
                     </div>
                     
                     <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder="Email address" required>
-                    </div>
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="you@example.com" required>                    </div>
 
                     <div class="form-group">
-                        <input type="password" id="password" name="password" placeholder="Password" required>
-                    </div>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Your password" required>                    </div>
                     
                     <div class="form-options">
                         <div class="remember-me">
@@ -47,27 +699,12 @@
                         <a href="forgot-password.html" class="forgot-password">Forgot password?</a>
                     </div>
                     
-                    <button type="submit" class="login-button" id="submitBtn">
+                    <button type="submit" class="btn-primary login-button" id="submitBtn">
                         <span class="button-text">Sign In</span>
                         <span class="loading-spinner" style="display: none;">
                             <i class="fas fa-spinner fa-spin"></i>
                         </span>
                     </button>
-                    
-                    <div class="divider">
-                        <span>Or register with</span>
-                    </div>
-
-                    <div class="social-login">
-                        <button type="button" class="social-button google">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-                            <span>Google</span>
-                        </button>
-                        <button type="button" class="social-button apple">
-                            <i class="fab fa-apple"></i>
-                            <span>Apple</span>
-                        </button>
-                    </div>
                 </form>
                 
                 <div class="register-link">
@@ -79,5 +716,63 @@
 
     <script type="module" src="config.js"></script>
     <script type="module" src="login.js"></script>
+        <script>
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX + 'px';
+                cursorFollower.style.top = e.clientY + 'px';
+            }, 80); 
+        });
+
+        document.querySelectorAll('a, button, input[type="checkbox"], .social-button').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('active');
+                cursorFollower.classList.add('active');
+            });
+
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+                cursorFollower.classList.remove('active');
+            });
+        });
+
+        // Particles animation
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            if (!particlesContainer) return;
+            const particleCount = 20; 
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                const size = Math.random() * 4 + 1; 
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = Math.random() * 15 + 10; 
+
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = posX + '%';
+                particle.style.top = posY + '%';
+                particle.style.animationDelay = delay + 's';
+                particle.style.animationDuration = duration + 's';
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+        if (document.querySelector('.particles')) { // Check if particles div exists
+            createParticles();
+        }
+
+    </script>
 </body>
 </html>
