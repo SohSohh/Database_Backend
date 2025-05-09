@@ -195,6 +195,7 @@ class EventCommentsView(generics.ListCreateAPIView):
         if not event.has_ended():
             raise ValidationError({'error': 'Comments can only be added after the event has ended.'})
 
+        # Removed validation for "announcement" category
         serializer.save(user=self.request.user, event_id=event_id)
 
 
@@ -236,3 +237,4 @@ class HandlerAnnouncementsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Announcement.objects.filter(host=self.request.user)
+

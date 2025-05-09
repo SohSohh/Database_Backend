@@ -182,22 +182,64 @@
 /* Event Description */
 .event-description-container {
     margin-bottom: 30px;
+    background: linear-gradient(120deg, #f2efe9 80%, #e9e5dc 100%);
+    border-left: 6px solid #F5A623;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,35,102,0.07);
+    padding: 2.2rem 2rem 2rem 2.5rem;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 1.13rem;
+    color: #222;
+    position: relative;
+    animation: fadeInDesc 0.7s cubic-bezier(.4,1.4,.6,1) 0.1s both;
 }
-
+@keyframes fadeInDesc {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
 .event-description-container h2 {
-    margin-bottom: 15px;
-    font-size: 1.3rem;
-    color: #333;
+    font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+    color: #002366;
+    margin-top: 1.5em;
+    margin-bottom: 0.7em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    font-size: 1.45rem;
+    border-bottom: 2px solid #F5A62344;
+    padding-bottom: 0.2em;
 }
-
 .event-description {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    line-height: 1.6;
-    color: #444;
-    white-space: pre-line;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 1.09rem;
+    color: #222;
+    line-height: 1.7;
+    margin-bottom: 1.1em;
+}
+.event-description ul,
+.event-description ol {
+    margin: 1em 0 1em 1.5em;
+    padding-left: 1.2em;
+    font-size: 1.08rem;
+}
+.event-description ul li {
+    margin-bottom: 0.5em;
+    list-style: disc inside;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+}
+.event-description a {
+    color: #F5A623;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+.event-description a:hover {
+    color: #002366;
+}
+.event-description strong {
+    color: #002366;
+    font-weight: 600;
+}
+.event-description em {
+    color: #F5A623;
 }
 
 /* Comments Section */

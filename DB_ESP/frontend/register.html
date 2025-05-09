@@ -38,8 +38,21 @@
             scroll-behavior: smooth;
         }
         
+        @font-face {
+            font-family: 'BlushAsliring';
+            src: url('static/fonts/BlushAsliring-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Retro Floral';
+            src: url('static/fonts/Retro Floral.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'BlushAsliring', 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--midnight); 
             color: var(--arctic);
             line-height: 1.6;
@@ -578,6 +591,11 @@
         .register-link a:hover {
             color: var(--hover-color);
             text-decoration: underline;
+        }
+
+        /* Secondary font for subtext, subtitles, and muted/secondary UI */
+        .subtitle, .register-link, .form-group label, .form-options, .back-link, .welcome-content p#welcome-subtext, .form-container .subtitle, .password-strength, .strength-meter, #strengthText {
+            font-family: 'Retro Floral', 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif !important;
         }
 
         /* Animations */

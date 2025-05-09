@@ -297,10 +297,47 @@ async function loadAnnouncementDetails() {
         elements.category.style.borderRadius = '16px';
         elements.category.style.fontSize = '0.875rem';
         elements.category.style.fontWeight = '500';
+        elements.category.style.fontFamily = 'Retro Floral';
+        
         
         elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;
-        elements.author.textContent = `by ${event.host_username}`;
-        elements.content.innerHTML = event.description;
+        elements.author.textContent = `by ${event.host_username}`;        // Format and enhance the description content        // Process the description to add better formatting
+        let formattedContent = event.description;
+        
+        // Set start/end time if available
+        const startTime = event.start_time ? event.start_time : '--:--';
+        const endTime = event.end_time ? event.end_time : '--:--';
+        document.getElementById('event-start-time').textContent = startTime;
+        document.getElementById('event-end-time').textContent = endTime;
+        
+        // Convert line breaks to proper paragraphs if not already formatted as HTML
+        if (!formattedContent.includes('<p>') && !formattedContent.includes('<h')) {
+            // Split by double line breaks for paragraphs
+            formattedContent = formattedContent
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>')
+                .replace(/^(.+)$/m, '<p>$1</p>');
+                
+            // Basic pattern detection for headings (e.g., lines ending with colon or all caps lines)
+            formattedContent = formattedContent
+                .replace(/<p>([A-Z][^<>]{0,40}:)<\/p>/g, '<h2>$1</h2>')
+                .replace(/<p>([A-Z][^a-z<>]{5,50})<\/p>/g, '<h2>$1</h2>');
+                
+            // Look for patterns that look like lists and format them properly
+            formattedContent = formattedContent.replace(/<p>(\s*[-•*]\s+.+?)<\/p>/g, '<ul><li>$1</li></ul>');
+            formattedContent = formattedContent.replace(/<\/ul>\s*<ul>/g, '');
+            formattedContent = formattedContent.replace(/<li>([-•*]\s+)(.*?)(<br>[-•*]\s+.*?)*<\/li>/g, function(match) {
+                return match.replace(/<br>[-•*]\s+/g, '</li><li>');
+            });
+        }
+        
+        const formattedDescription = `
+            <div class="content-section visible">
+                ${formattedContent}
+            </div>
+        `;
+        elements.content.innerHTML = formattedDescription;
+        elements.content.style.fontFamily = 'Retro Floral';
 
         // Show RSVP button only if category is NOT announcement
         elements.rsvpButton.style.display = 

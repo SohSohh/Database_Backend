@@ -130,9 +130,9 @@ document.addEventListener("DOMContentLoaded", function () {
           localStorage.setItem('user_id', data.user_id);
 
           // Show success message and redirect
-          showSuccess(registerForm, "Registration successful! Redirecting to dashboard...");
+          showSuccess(registerForm, "Registration successful! Redirecting to login screen...");
           setTimeout(() => {
-            window.location.href = 'viewer-dashboard.html';
+            window.location.href = 'login.html';
           }, 2000);
         } else {
           const errorMessage = getErrorMessage(data);

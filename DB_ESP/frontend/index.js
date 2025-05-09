@@ -1,9 +1,8 @@
+// API Base URL
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+
 document.addEventListener("DOMContentLoaded", () => {
   // Check and display logout message if needed
-    if (localStorage.getItem('showLogoutMessage')) {
-    showSuccessMessage('Successfully logged out');
-    localStorage.removeItem('showLogoutMessage');
-  }
   if (localStorage.getItem('showLogoutMessage')) {
     showSuccessMessage('Successfully logged out');
     localStorage.removeItem('showLogoutMessage');
@@ -65,39 +64,49 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // In a real application, you would fetch this data from your backend
-  // For now, we'll use static data for demonstration
-
-  // Check if user is logged in (for demonstration purposes)
-  const isLoggedIn = localStorage.getItem("authToken") !== null
-  const userType = localStorage.getItem("userType") // This would be set during login
+  // Check if user is logged in
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+  const userType = localStorage.getItem("userType");
 
   // Update navigation based on login status
-  updateNavigation(isLoggedIn, userType)
+  updateNavigation(isLoggedIn, userType);
 
-  // Load featured events (in a real app, this would come from your backend)
-  // loadFeaturedEvents();
+  // Load featured events from the backend
+  loadFeaturedEvents();
 
-  // Load latest announcements (in a real app, this would come from your backend)
-  // loadLatestAnnouncements();
+  // Handle RSVP button clicks with event delegation
+  const eventsContainer = document.querySelector('.events-row');
+  if (eventsContainer) {
+    eventsContainer.addEventListener('click', async function(e) {
+      const rsvpButton = e.target.closest('.rsvp-btn');
+      if (!rsvpButton || rsvpButton.disabled) return;
 
-  // RSVP Modal Logic for Featured Events
-  let selectedRsvp = null;
-  let currentEventId = null;
+      rsvpButton.disabled = true;
+      rsvpButton.style.opacity = '0.7';
+      
+      const eventId = rsvpButton.getAttribute('data-event-id');
+      const eventName = rsvpButton.getAttribute('data-event-name');
+      
+      if (!eventId || !eventName) {
+        console.error('Missing event data attributes');
+        rsvpButton.disabled = false;
+        rsvpButton.style.opacity = '1';
+        return;
+      }
 
-  // RSVP Button Click Handler
-  document.querySelectorAll('.rsvp-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-          const eventId = this.getAttribute('data-event-id');
-          const eventTitle = this.closest('.card-content').querySelector('h3').textContent;
-          
-          // Update modal title with event name
-          document.querySelector('#rsvpModal h2').textContent = `RSVP for ${eventTitle}`;
-          
-          // Show modal
-          document.getElementById('rsvpModal').style.display = 'block';
-          
-          // Reset form
+      const isCurrentlyAttending = rsvpButton.classList.contains('rsvp-active');
+
+      try {
+        await handleRSVP(eventId, eventName, isCurrentlyAttending);
+      } catch (error) {
+        console.error('RSVP action failed:', error);
+        showSuccessToast('Failed to update RSVP status. Please try again.', true);
+      } finally {
+        rsvpButton.disabled = false;
+        rsvpButton.style.opacity = '1';
+      }
+    });
+  }
           document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('selected'));
       });
   });

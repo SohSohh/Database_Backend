@@ -811,7 +811,7 @@ h1.glitch-text {
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: var(--arctic); /* Dark text */
+            color: var (--arctic); /* Dark text */
         }
         
         /* Milestones Section */
@@ -1860,6 +1860,29 @@ h1.glitch-text {
             .testimonials-grid {
                 grid-template-columns: 1fr;
             }
+        }
+        @font-face {
+            font-family: 'BlushAsliring';
+            src: url('static/fonts/BlushAsliring-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Retro Floral';
+            src: url('static/fonts/Retro Floral.otf') format('opentype'),
+                 url('static/fonts/Retro Floral.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        /* Headings use BlushAsliring */
+        h1, h2, h3, h4, h5, h6, .glitch-text, .about-hero-left h1, .feature-content h2, .milestones-header h2, .team .about-container h2, .testimonials-header h2, .contact-header h2 {
+            font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif !important;
+            letter-spacing: 0.5px;
+        }
+        /* Secondary text uses Retro Floral */
+        .stat-label, .about-hero-left > p, .feature-content p, .benefit-text, .milestone-card p, .team-position, .team-bio, .testimonial-text, .author-position, .contact-header p, .info-content p, .info-content a, .footer-description, .footer-links, .btn-primary, .stat-item, .benefit-item, .milestone-card, .team-card, .testimonial-card, .contact-form, .info-card {
+            font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+            letter-spacing: 0.2px;
         }
     </style>
 </head>

@@ -151,3 +151,4 @@ class Announcement(models.Model):
 
     class Meta:
         ordering = ['-date_made']
+

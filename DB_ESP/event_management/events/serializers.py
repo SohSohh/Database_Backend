@@ -1,6 +1,7 @@
 # events/serializers.py
 from rest_framework import serializers
 from .models import Event, Category, Comment, Announcement
+import users
 
 
 class BaseEventSerializer(serializers.ModelSerializer):
@@ -18,7 +19,7 @@ class BaseEventSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(BaseEventSerializer):
-    host_username = serializers.CharField(source='user.username', read_only=True)
+    host_username = serializers.CharField(source='host.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
@@ -32,7 +33,7 @@ class EventSerializer(BaseEventSerializer):
             'banner', 'created_at', 'updated_at', 'attendee_count',
             'is_attending', 'category', 'category_name', 'average_rating'
         )
-        read_only_fields = ('host', 'created_at', 'updated_at', 'attendee_count', 'average_rating')
+        read_only_fields = ('host', 'host_username', 'created_at', 'updated_at', 'attendee_count', 'average_rating')
 
     def create(self, validated_data):
         """Set host as the current user when creating an event"""
@@ -49,7 +50,7 @@ class EventSerializer(BaseEventSerializer):
 
 class EventDetailSerializer(BaseEventSerializer):
     """Event serializer with dynamic fields"""
-    host_username = serializers.CharField(source='user.username', read_only=True)
+    host_username = serializers.CharField(source='host.username', read_only=True)
     attendee_count = serializers.IntegerField(read_only=True)
     is_attending = serializers.SerializerMethodField(read_only=True)
     average_rating = serializers.FloatField(read_only=True)

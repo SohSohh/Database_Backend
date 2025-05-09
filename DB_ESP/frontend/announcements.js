@@ -130,6 +130,16 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.error('Events container not found for RSVP delegation. RSVP functionality might not work.');
     }
+
+    // Add Retro Floral font to event action buttons
+    const style = document.createElement('style');
+    style.textContent = `
+      .details-btn, .rsvp-btn, .btn-primary, .btn-hero-primary {
+        font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif !important;
+        letter-spacing: 0.2px;
+      }
+    `;
+    document.head.appendChild(style);
 }); // End of main DOMContentLoaded
 
   
@@ -339,11 +349,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const shortDescription =
       event.description.length > 120 ? event.description.substring(0, 120) + "..." : event.description
   
+    // Use /images/placeholder.png if event.banner is missing or empty
+    const bannerUrl = event.banner && event.banner.trim() !== "" ? event.banner : "static/images/placeholder.png"
+  
     card.innerHTML = `
       <div class="event-image">
-        <img src="${event.banner || "/placeholder.svg?height=450&width=300"}" 
+        <img src="${bannerUrl}" 
           alt="${event.name}" 
-          onerror="this.onerror=null;this.src='/placeholder.svg?height=450&width=300';">
+          onerror="this.onerror=null;this.src='/images/placeholder.png';">
       </div>
       <span class="category-badge">${event.category_name || "Event"}</span>
       <div class="event-details">

@@ -91,7 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('event-time').textContent = `${formatTime(event.start_time)} - ${formatTime(event.end_time)}`;
         document.getElementById('event-location').textContent = event.location;
         document.getElementById('event-created').textContent = formatDateTime(event.created_at);
-        document.getElementById('event-description').innerHTML = event.description;
+        // Enhanced: Render event description with modern container and typography
+        const descContainer = document.getElementById('event-description');
+        descContainer.innerHTML = event.description || '<em>No description provided.</em>';
         
         // Set banner image
         const bannerImg = document.getElementById('event-banner');

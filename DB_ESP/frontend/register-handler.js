@@ -27,16 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
 
         if (response.ok) {
-          // Store the tokens
-          localStorage.setItem('access_token', data.access);
-          localStorage.setItem('refresh_token', data.refresh);
-          localStorage.setItem('user_type', 'handler');
-          localStorage.setItem('user_id', data.user.id);
-          localStorage.setItem('join_code', data.user.join_code || '');
-
           showSuccess(registerForm, "Registration successful! Redirecting to dashboard...");
           setTimeout(() => {
-            window.location.href = 'handler-dashboard.html';
+            window.location.href = 'login.html';
           }, 2000);
         } else {
           const message = data.detail || Object.values(data)[0]?.[0] || 'Registration failed';
