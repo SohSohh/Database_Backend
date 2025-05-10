@@ -3,424 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcement Details - Event Management System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Announcement Details - EventHub</title>
+    <link rel="stylesheet" href="fonts.css">
+    <link rel="stylesheet" href="handler-dashboard.css">
     <link rel="stylesheet" href="announcements-details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Custom Cursor Elements -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-    <!-- Header -->
-    <header>
-        <nav class="main-nav">
-            <div class="logo">
-                <a href="#">EventHub</a>
-            </div>
-            <ul class="nav-links">
-              <li><a href="index.html" class="active">Home</a></li>
-              <li><a href="announcements.html">Events</a></li>
-              <li><a href="about.html">About Us</a></li>
-              <li><a href="about.html#contact">Contact</a></li>
-          </ul>
-            <div class="profile-icon">
-                <a href="#" id="profileIconLink" aria-haspopup="true" aria-expanded="false" title="Profile menu">
-                    <i class="fas fa-user"></i>
-                </a>
-                <div class="profile-dropdown-menu" role="menu" id="profileDropdown">
-                    <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
-                    <a href="handler-dashboard.html" role="menuitem"><i class="fas fa-tachometer-alt"></i> Handler Dashboard</a>
-                    <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="brand-link">
+                <h1>EventHub</h1>
+            </a>
+            <h2>Event Viewer</h2>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li class="nav-item">
+                    <a href="viewer-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        My Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-societies.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        My Societies
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-registrations.html" class="nav-link">
+                        <i class="fas fa-ticket-alt"></i>
+                        My Registrations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-feedback.html" class="nav-link">
+                        <i class="fas fa-comment"></i>
+                        My Feedback
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logout-btn" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="announcement-container">
+            <!-- Announcement Header -->
+            <div class="announcement-header">
+                <h1 id="announcement-title" class="announcement-title">Loading announcement...</h1>
+                <div class="meta-info">
+                    <span id="category-badge" class="category-badge">Category</span>
+                    <span class="meta-item" id="post-date">
+                        <i class="fas fa-calendar-alt"></i> Posted on: Loading...
+                    </span>
+                    <span class="meta-item" id="author">
+                        <i class="fas fa-user"></i> by: Loading...
+                    </span>
                 </div>
             </div>
-            <button id="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </nav>
-    </header>
 
-    <main>
-        <div class="announcement-details-layout">
-            <!-- Left: Event Details (2/3 width) -->
-            <section class="announcement-details-main">
-                <div class="announcement-details-header">
-                    <div class="header-top">
-                        <div class="header-main">
-                            <div class="category-badge" id="category-badge">Category</div>
-                            <h1 id="announcement-title">Announcement Title</h1>
-                            <div class="meta-info">
-                                <div class="meta-main">
-                                    <span class="post-date" id="post-date">Posted on April 5, 2025</span>
-                                    <span class="author" id="author">by Community Events Team</span>
-                                    <span class="event-time" id="event-time"><i class="fas fa-clock"></i> <span id="event-start-time">--:--</span> - <span id="event-end-time">--:--</span></span>
-                                    <span class="attendee-count">
-                                        <i class="fas fa-users"></i>
-                                        <span id="attending-count">0</span> attending
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="action-buttons">
-                            <button id="rsvp-button" class="rsvp-btn" style="display: none;"><i class="fas fa-calendar-check"></i> RSVP</button>
-                            <button id="share-button" class="share-btn"><i class="fas fa-share-alt"></i> Share</button>
-                        </div>
+            <!-- Action Buttons -->
+            <div class="announcement-actions">
+                <button id="rsvp-button" class="action-btn rsvp-btn">
+                    <i class="fas fa-calendar-check"></i> RSVP
+                </button>
+                <button id="share-button" class="action-btn share-btn">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+            </div>
+
+            <!-- Event Details Box -->
+            <div class="event-details-box">
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-clock"></i> Start Time
+                    </div>
+                    <div class="detail-value" id="event-start-time">--:--</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-clock"></i> End Time
+                    </div>
+                    <div class="detail-value" id="event-end-time">--:--</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-users"></i> Attending
+                    </div>
+                    <div class="detail-value" id="attending-count">0</div>
+                </div>
+            </div>
+
+            <!-- Announcement Content -->
+            <div class="announcement-content">
+                <div id="announcement-content"></div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <div class="comments-header">
+                    <h2><i class="fas fa-comments"></i> Comments</h2>
+                    <div class="rating-summary">
+                        <div class="stars">★★★★☆</div>
+                        <span class="rating-count">(0 reviews)</span>
                     </div>
                 </div>
-                <div class="announcement-details-content" id="announcement-content">
-                    <!-- Content will be populated by JavaScript -->
+                <div id="comments-list">
+                    <!-- Comments will be loaded here -->
                 </div>
-            </section>
-            <!-- Right: Related Announcements (1/3 width) -->
-            <aside class="related-announcements">
-                <h3>Related Announcements</h3>
-                <div class="related-announcements-container" id="related-announcements">
-                    <!-- Related announcements will be populated by JavaScript -->
-                </div>
-            </aside>
-        </div>
-        <!-- Feedback Section at the bottom -->
-        <div class="feedback-section">
-            <div class="section-header">
-                <h3>Event Feedback</h3>
-                <div class="overall-rating">
-                    <span class="rating-text">Overall Rating:</span>
-                    <div class="stars">★★★★★</div>
-                    <span class="rating-count" id="overall-rating-count">(0 reviews)</span>
-                </div>
-            </div>
-            <div class="feedbacks-list" id="comments-list">
-                <!-- Feedbacks will be populated by JavaScript -->
-            </div>
-            <div class="add-feedback">
-                <h4>Share Your Feedback</h4>
-                <form id="comment-form">
-                    <div class="rating-input">
-                        <label>Your Rating:</label>
-                        <div class="star-rating">
-                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5">★</label>
-                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
-                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
-                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
-                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
-                        </div>
+
+                <!-- Comment Form -->
+                <form id="comment-form" class="comment-form">
+                    <div class="form-group">
+                        <label for="comment-text">Leave a Comment</label>
+                        <textarea id="comment-text" placeholder="Share your thoughts..."></textarea>
                     </div>
                     <div class="form-group">
-                        <textarea id="comment-text" rows="4" placeholder="Share your experience..." required></textarea>
+                        <label>Rating</label>
+                        <div class="rating-input">
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="rating" value="5">
+                                <label for="star5" title="5 stars">★</label>
+                                
+                                <input type="radio" id="star4" name="rating" value="4">
+                                <label for="star4" title="4 stars">★</label>
+                                
+                                <input type="radio" id="star3" name="rating" value="3">
+                                <label for="star3" title="3 stars">★</label>
+                                
+                                <input type="radio" id="star2" name="rating" value="2">
+                                <label for="star2" title="2 stars">★</label>
+                                
+                                <input type="radio" id="star1" name="rating" value="1">
+                                <label for="star1" title="1 star">★</label>
+                            </div>
+                            <span id="rating-value">No Rating</span>
+                        </div>
                     </div>
-                    <button type="submit" class="btn-primary">Submit Feedback</button>
+                    <div class="form-actions">
+                        <button type="submit" class="action-btn rsvp-btn">
+                            <i class="fas fa-paper-plane"></i> Submit
+                        </button>
+                    </div>
                 </form>
             </div>
-        </div>
-    </main>
 
-    <style>
-    .announcement-details-layout {
-        display: flex;
-        gap: 2.5rem;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem 2.5rem 0 2.5rem;
-        align-items: flex-start;
-    }
-    .announcement-details-main {
-        flex: 2 1 0;
-        min-width: 0;
-    }
-    .related-announcements {
-        flex: 1 1 0;
-        min-width: 260px;
-        max-width: 420px;
-        background: var(--card-bg-subtle-light, #f2efe9);
-        border-radius: 12px;
-        padding: 1.5rem 1rem;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-        margin-top: 0;
-        position: sticky;
-        top: 6rem;
-        height: fit-content;
-    }
-    .related-announcements h3 {
-        font-size: 1.2rem;
-        margin-bottom: 1.2rem;
-        font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
-    }
-    .related-announcements-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
-    }
-    .feedback-section {
-        max-width: 1200px;
-        margin: 3rem auto 2rem auto;
-        background: var(--card-bg-light, #fff);
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-        padding: 2.5rem 2.5rem;
-    }
-    @media (max-width: 1400px) {
-        .announcement-details-layout {
-            max-width: 100vw;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-        }
-        .feedback-section {
-            max-width: 98vw;
-            padding-left: 1.2rem;
-            padding-right: 1.2rem;
-        }
-    }
-    @media (max-width: 992px) {
-        .announcement-details-layout {
-            flex-direction: column;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        .related-announcements {
-            max-width: 100%;
-            width: 100%;
-            position: static;
-            margin-top: 2rem;
-        }
-        .announcement-details-main {
-            width: 100%;
-        }
-        .feedback-section {
-            max-width: 100vw;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-    }
-    .add-feedback .form-group textarea#comment-text {
-        width: 100%;
-        min-width: 100%;
-        max-width: 100%;
-        min-height: 120px;
-        font-size: 1.08rem;
-        padding: 1.2rem 1.1rem;
-        border-radius: 10px;
-        border: 1.5px solid var(--glow-color, #002366);
-        background: linear-gradient(135deg, #f2efe9 80%, #e9e5dc 100%);
-        box-shadow: 0 2px 12px rgba(0,35,102,0.06), 0 1.5px 0.5px rgba(0,0,0,0.02);
-        transition: border-color 0.3s, box-shadow 0.3s;
-        resize: vertical;
-        font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
-    }
-    .add-feedback .form-group textarea#comment-text:focus {
-        border-color: #F5A623;
-        box-shadow: 0 0 0 2px #F5A62333;
-        background: linear-gradient(135deg, #fffbe9 80%, #f5e9dc 100%);
-    }
-    .add-feedback .form-group {
-        margin-bottom: 1.2rem;
-    }
-    .add-feedback {
-        background: linear-gradient(120deg, #f2efe9 80%, #e9e5dc 100%);
-        border-radius: 14px;
-        box-shadow: 0 4px 18px rgba(0,35,102,0.07);
-        padding: 2rem 1.5rem 1.5rem 1.5rem;
-        margin-top: 2rem;
-        border: 1.5px solid var(--glow-color, #002366);
-        position: relative;
-        overflow: hidden;
-    }
-    .add-feedback:before {
-        content: '';
-        position: absolute;
-        top: -40px; left: -40px;
-        width: 120px; height: 120px;
-        background: radial-gradient(circle, #F5A62333 0%, transparent 80%);
-        z-index: 0;
-        pointer-events: none;
-    }
-    .add-feedback h4 {
-        font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
-        font-size: 1.3rem;
-        margin-bottom: 1.1rem;
-        position: relative;
-        z-index: 1;
-    }
-    .add-feedback form {
-        position: relative;
-        z-index: 1;
-    }
-    /* Enhanced Event Description Styling */
-    .announcement-details-content .content-section {
-        background: linear-gradient(120deg, #f2efe9 85%, #e9e5dc 100%);
-        border-radius: 16px;
-        border-left: 6px solid #F5A623;
-        box-shadow: 0 4px 18px rgba(0,35,102,0.07);
-        padding: 2.2rem 2.2rem 2rem 2.5rem;
-        margin-bottom: 2.5rem;
-        font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
-        font-size: 1.18rem;
-        color: #2d2d2d;
-        line-height: 1.75;
-        position: relative;
-        overflow: hidden;
-        transition: box-shadow 0.3s;
-    }
-    .announcement-details-content .content-section:hover {
-        box-shadow: 0 8px 32px rgba(245,166,35,0.10), 0 4px 18px rgba(0,35,102,0.09);
-    }
-    .announcement-details-content .content-section h2, 
-    .announcement-details-content .content-section h3 {
-        font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
-        color: #002366;
-        font-size: 1.45rem;
-        margin-top: 1.6rem;
-        margin-bottom: 0.7rem;
-        letter-spacing: 0.01em;
-        background: linear-gradient(90deg, #F5A62322 60%, transparent 100%);
-        padding-left: 0.2em;
-        border-left: 3px solid #F5A623;
-    }
-    .announcement-details-content .content-section ul {
-        margin: 1.1em 0 1.1em 1.5em;
-        padding-left: 1.2em;
-        list-style: none;
-    }
-    .announcement-details-content .content-section ul li {
-        position: relative;
-        margin-bottom: 0.6em;
-        padding-left: 1.2em;
-        font-size: 1.08em;
-    }
-    .announcement-details-content .content-section ul li:before {
-        content: '\2022';
-        color: #F5A623;
-        font-size: 1.5em;
-        position: absolute;
-        left: 0;
-        top: 0.05em;
-    }
-    .announcement-details-content .content-section p {
-        margin-bottom: 1.1em;
-        font-size: 1.08em;
-    }
-    .announcement-details-content .content-section strong {
-        color: #002366;
-        font-weight: 600;
-    }
-    .announcement-details-content .content-section a {
-        color: #F5A623;
-        text-decoration: underline;
-        transition: color 0.2s;
-    }
-    .announcement-details-content .content-section a:hover {
-        color: #002366;
-    }
-    @media (max-width: 700px) {
-        .announcement-details-content .content-section {
-            padding: 1.2rem 0.7rem 1.2rem 1.1rem;
-            font-size: 1.04rem;
-        }
-        .announcement-details-content .content-section h2 {
-            font-size: 1.13rem;
-        }
-    }
-    /* Description Box Styling */
-#announcement-content .content-section {
-    background: linear-gradient(120deg, #f2efe9 80%, #e9e5dc 100%);
-    border-left: 6px solid #F5A623;
-    border-radius: 16px;
-    box-shadow: 0 4px 18px rgba(0,35,102,0.07);
-    padding: 2.2rem 2rem 2rem 2.5rem;
-    margin-bottom: 2.5rem;
-    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 1.13rem;
-    color: #222;
-    position: relative;
-    animation: fadeInDesc 0.7s cubic-bezier(.4,1.4,.6,1) 0.1s both;
-}
-@keyframes fadeInDesc {
-    from { opacity: 0; transform: translateY(24px) scale(0.98); }
-    to { opacity: 1; transform: none; }
-}
-#announcement-content .content-section h1,
-#announcement-content .content-section h2,
-#announcement-content .content-section h3 {
-    font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
-    color: #002366;
-    margin-top: 1.5em;
-    margin-bottom: 0.7em;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-}
-#announcement-content .content-section h2 {
-    font-size: 1.45rem;
-    border-bottom: 2px solid #F5A62344;
-    padding-bottom: 0.2em;
-}
-#announcement-content .content-section h3 {
-    font-size: 1.18rem;
-    color: #F5A623;
-}
-#announcement-content .content-section p {
-    margin-bottom: 1.1em;
-    line-height: 1.7;
-    font-size: 1.09rem;
-}
-#announcement-content .content-section ul,
-#announcement-content .content-section ol {
-    margin: 1em 0 1em 1.5em;
-    padding-left: 1.2em;
-    font-size: 1.08rem;
-}
-#announcement-content .content-section ul li {
-    margin-bottom: 0.5em;
-    list-style: disc inside;
-    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
-}
-#announcement-content .content-section a {
-    color: #F5A623;
-    text-decoration: underline;
-    transition: color 0.2s;
-}
-#announcement-content .content-section a:hover {
-    color: #002366;
-}
-#announcement-content .content-section strong {
-    color: #002366;
-    font-weight: 600;
-}
-#announcement-content .content-section em {
-    color: #F5A623;
-}
-    </style>
-
-    <!-- Share Modal -->
-    <div id="shareModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Share this Announcement</h2>
-                <button class="close-modal" aria-label="Close modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="share-link-container">
-                    <input type="text" id="shareLink" readonly>
-                    <button id="copyLinkBtn" class="copy-btn" title="Copy link">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <div class="share-options">
-                    <button class="share-option facebook">
-                        <i class="fab fa-facebook"></i>
-                        <span>Share on Facebook</span>
-                    </button>
-                    <button class="share-option twitter">
-                        <i class="fab fa-twitter"></i>
-                        <span>Share on Twitter</span>
-                    </button>
-                    <button class="share-option linkedin">
-                        <i class="fab fa-linkedin"></i>
-                        <span>Share on LinkedIn</span>
-                    </button>
-                    <button class="share-option email">
-                        <i class="fas fa-envelope"></i>
-                        <span>Share via Email</span>
-                    </button>
+            <!-- Related Announcements -->
+            <div class="related-section">
+                <h2><i class="fas fa-link"></i> Related Events</h2>
+                <div id="related-announcements">
+                    <!-- Related announcements will be loaded here -->
                 </div>
             </div>
         </div>
@@ -429,185 +188,64 @@
     <!-- RSVP Modal -->
     <div id="rsvpModal" class="modal">
         <div class="modal-content">
+            <button class="close-modal">&times;</button>
             <div class="modal-header">
-                <h2>RSVP for Event</h2>
-                <button class="close-modal" aria-label="Close modal">&times;</button>
+                <h3>Will you attend this event?</h3>
             </div>
-            <div class="modal-body">
-                <form id="rsvpForm">
-                    <div class="form-group">
-                        <label for="rsvpStatus">Will you attend?</label>
-                        <div class="rsvp-options">
-                            <button type="button" class="rsvp-option" data-value="yes">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Yes</span>
-                            </button>
-                            <button type="button" class="rsvp-option" data-value="maybe">
-                                <i class="fas fa-question-circle"></i>
-                                <span>Maybe</span>
-                            </button>
-                            <button type="button" class="rsvp-option" data-value="no">
-                                <i class="fas fa-times-circle"></i>
-                                <span>No</span>
-                            </button>
-                        </div>
+            <form id="rsvpForm">
+                <div class="rsvp-options">
+                    <div class="rsvp-option" data-value="yes">
+                        <i class="fas fa-check-circle"></i>
+                        <div>Yes</div>
                     </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Submit RSVP</button>
+                    <div class="rsvp-option" data-value="maybe">
+                        <i class="fas fa-question-circle"></i>
+                        <div>Maybe</div>
                     </div>
-                </form>
+                    <div class="rsvp-option" data-value="no">
+                        <i class="fas fa-times-circle"></i>
+                        <div>No</div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="action-btn rsvp-btn">
+                        <i class="fas fa-check"></i> Confirm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="modal-header">
+                <h3>Share this Event</h3>
+            </div>
+            <div class="share-options">
+                <div class="share-option facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="share-option twitter">
+                    <i class="fab fa-twitter"></i>
+                </div>
+                <div class="share-option linkedin">
+                    <i class="fab fa-linkedin-in"></i>
+                </div>
+                <div class="share-option email">
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+            <div class="share-link-container">
+                <input type="text" id="shareLink" readonly>
+                <button id="copyLinkBtn" class="copy-link-btn">
+                    <i class="fas fa-copy"></i>
+                </button>
             </div>
         </div>
     </div>
 
-      <!-- Footer -->
-      <footer>
-        <div class="footer-container">
-            <div class="footer-col">
-                <a href="index.html" class="footer-logo">EventHub</a>
-                <p class="footer-description">Connecting people with experiences that matter. Discover, book, and enjoy events seamlessly with our innovative platform.</p>
-                <div class="footer-social">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            
-            <div class="footer-links">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="events.html">Browse Events</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                    <li><a href="faq.html">FAQ</a></li>
-                </ul>
-            </div>
-            
-              <div class="footer-links">
-                  <h4>Account</h4>
-                  <ul>
-                      <li><a href="login.html">Login</a></li>
-                      <li><a href="register.html">Create Account</a></li>
-                      <li><a href="register-handler.html">Society Signup</a></li>
-                      <li><a href="profile.html">My Profile</a></li> 
-                  </ul>
-              </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2025 EventHub. All rights reserved.</a></p>
-        </div>
-    </footer>
-
     <script src="announcement-details.js"></script>
-    <script>
-        // Cursor Effect
-        const cursor = document.querySelector('.cursor');
-        const follower = document.querySelector('.cursor-follower');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            
-            setTimeout(() => {
-                follower.style.left = e.clientX + 'px';
-                follower.style.top = e.clientY + 'px';
-            }, 100);
-        });
-        
-        document.addEventListener('mousedown', () => {
-            cursor.classList.add('cursor-hover');
-            follower.classList.add('follower-hover');
-        });
-        
-        document.addEventListener('mouseup', () => {
-            cursor.classList.remove('cursor-hover');
-            follower.classList.remove('follower-hover');
-        });
-        
-        const links = document.querySelectorAll('a, button, .btn-primary, .btn-outline');
-        links.forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                cursor.classList.add('cursor-hover');
-                follower.classList.add('follower-hover');
-            });
-            
-            link.addEventListener('mouseleave', () => {
-                cursor.classList.remove('cursor-hover');
-                follower.classList.remove('follower-hover');
-            });
-        });
-
-        // Sticky Header
-        const header = document.querySelector('header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-        
-        // Mobile Navigation
-        const hamburger = document.getElementById('hamburger-menu');
-        const navLinks = document.querySelector('.nav-links');
-        
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('open');
-            navLinks.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('open');
-                navLinks.classList.remove('active');
-            });
-        });
-        
-          // Profile Dropdown Toggle
-          const profileIconLink = document.getElementById('profileIconLink');
-          const profileDropdown = document.getElementById('profileDropdown');
-
-          if (profileIconLink && profileDropdown) {
-            profileIconLink.addEventListener('click', (event) => {
-                event.preventDefault();
-                const isExpanded = profileIconLink.getAttribute('aria-expanded') === 'true' || false;
-                profileIconLink.setAttribute('aria-expanded', !isExpanded);
-                profileDropdown.classList.toggle('active');
-            });
-
-            // Close dropdown if clicked outside
-            document.addEventListener('click', (event) => {
-                if (!profileIconLink.contains(event.target) && !profileDropdown.contains(event.target)) {
-                    if (profileDropdown.classList.contains('active')) {
-                        profileDropdown.classList.remove('active');
-                        profileIconLink.setAttribute('aria-expanded', 'false');
-                    }
-                }
-            });
-
-            // Close dropdown with Escape key
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && profileDropdown.classList.contains('active')) {
-                    profileDropdown.classList.remove('active');
-                    profileIconLink.setAttribute('aria-expanded', 'false');
-                }
-            });
-          }
-
-          // Example Logout Functionality
-          const logoutBtnDropdown = document.getElementById('logoutBtnDropdown');
-          if (logoutBtnDropdown) {
-              logoutBtnDropdown.addEventListener('click', (event) => {
-                  event.preventDefault();
-                  alert('Logout clicked! Implement your actual logout logic here (e.g., clearing session, redirecting to login page).');
-                  // Example: window.location.href = 'login.html';
-              });
-          }
-          
-    </script>
 </body>
 </html>
