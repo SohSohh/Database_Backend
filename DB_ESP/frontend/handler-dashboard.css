@@ -1,4 +1,4 @@
-/* Root Variables */
+/* Root Variables - Defined once at the top */
 :root {
     /* Color Palette */
     --midnight: #F2EFE9;     /* Main background (Very light off-white/beige) */
@@ -33,6 +33,22 @@
     --transition-speed: 0.3s;
     --section-spacing: 2rem;
     --sidebar-width: 250px;
+}
+
+/* Font Faces - Defined once */
+@font-face {
+    font-family: 'BlushAsliring';
+    src: url('static/fonts/BlushAsliring-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Retro Floral';
+    src: url('static/fonts/Retro Floral.otf') format('opentype'),
+         url('static/fonts/Retro Floral.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 /* Global Styles */
@@ -106,16 +122,6 @@ body {
     letter-spacing: 0.5px;
     background: linear-gradient(45deg, var(--glow-color), #0055b3);
     -webkit-background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
-    background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 2px 10px rgba(var(--glow-color-rgb), 0.3);
@@ -365,6 +371,7 @@ body {
 
 /* Content Sections */
 .content-section {
+    position: relative;
     background: var(--card-bg-light);
     border-radius: 24px;
     padding: 2rem;
@@ -1504,92 +1511,512 @@ body {
     }
 }
 
-/* Font Faces */
-@font-face {
-    font-family: 'BlushAsliring';
-    src: url('static/fonts/BlushAsliring-Regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Retro Floral';
-    src: url('static/fonts/Retro Floral.otf') format('opentype'),
-         url('static/fonts/Retro Floral.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+/* Society Cards - Enhanced */
+.societies-grid { 
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
 }
 
-/* Society Details Page Overrides */
-body.society-page .main-content {
-    margin-left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-body.society-page .society-container {
-    max-width: 1200px;
-    width: 100%;
-    padding: 2rem;
-    margin: 0 auto;
-}
-
-body.society-page .society-header {
+.society-card {
     background: var(--card-bg-light);
     border-radius: 24px;
     overflow: hidden;
-    margin-bottom: 3rem;
-    box-shadow: 0 15px 35px rgba(var(--glow-color-rgb), 0.08);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
     border: 1px solid var(--border-color-light);
-}
-
-body.society-page .society-banner {
-    background: linear-gradient(135deg, 
-        rgba(var(--glow-color-rgb), 0.05) 0%,
-        rgba(var(--glow-color-rgb), 0.02) 100%);
-    padding: 4rem 3rem;
-    text-align: center;
-}
-
-body.society-page .society-info h1 {
-    font-size: 3.2rem;
-    margin-bottom: 1.5rem;
-    font-family: "BlushAsliring", "Poppins", sans-serif;
-    background: linear-gradient(45deg, var(--arctic), var(--glow-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-body.society-page .society-meta {
+    position: relative;
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    height: 100%;
     display: flex;
+    flex-direction: column;
+}
+
+.society-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.society-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.society-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.society-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.society-card:hover {
+    transform: translateY(-16px);
+    box-shadow: 0 20px 40px var(--shadow-color-medium);
+    border-color: var(--glow-color);
+}
+
+.society-logo {
+    height: 150px;
+    overflow: hidden;
+    position: relative;
+    background: var(--card-bg-subtle-light);
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 3.5rem;
-    font-size: 1.1rem;
-    margin-top: 2rem;
 }
 
-body.society-page .content-section {
+.society-logo img {
     width: 100%;
-    margin: 0 auto;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-/* Responsive adjustments for society page */
+.society-card:hover .society-logo img {
+    transform: scale(1.05);
+}
+
+.society-details {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.society-details h3 {
+    font-size: 1.3rem;
+    color: var(--arctic);
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+    font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.society-description {
+    color: var(--apres-ski);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    flex-grow: 1;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.society-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.society-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--apres-ski);
+    font-size: 0.85rem;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.society-stats span i {
+    color: var(--glow-color);
+}
+
+.society-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--card-bg-subtle-light);
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.society-card:hover .society-info {
+    background: rgba(var(--glow-color-rgb), 0.05);
+}
+
+.join-date,
+.member-role {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--apres-ski);
+    font-size: 0.85rem;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.2px;
+}
+
+.join-date i,
+.member-role i {
+    color: var(--glow-color);
+}
+
+.society-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.society-actions .btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    letter-spacing: 0.2px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.society-actions .btn-primary {
+    background: transparent;
+    color: var(--glow-color);
+    border: 2px solid var(--glow-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.society-actions .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--glow-color);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.society-actions .btn-primary:hover {
+    color: var(--midnight);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(var(--glow-color-rgb), 0.3);
+}
+
+.society-actions .btn-primary:hover::before {
+    width: 100%;
+}
+
+.society-actions .btn-primary i {
+    transition: transform 0.3s ease;
+}
+
+.society-actions .btn-primary:hover i {
+    transform: translateX(5px);
+}
+
+/* No Societies State */
+.no-societies {
+    text-align: center;
+    padding: 3.5rem 2rem;
+    background: var(--card-bg-light);
+    border-radius: 24px;
+    box-shadow: var(--card-shadow);
+    animation: fadeIn 0.8s ease forwards;
+    border: 1px solid var(--border-color-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.no-societies::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--glow-color), transparent);
+}
+
+.no-societies i {
+    font-size: 3rem;
+    color: var(--slopes);
+    margin-bottom: 1rem;
+    animation: bounce 2s ease infinite;
+}
+
+.no-societies p {
+    color: var(--apres-ski);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.2px;
+}
+
+.no-societies .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: 0.2px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.no-societies .btn-primary {
+    background: transparent;
+    color: var(--glow-color);
+    border: 2px solid var(--glow-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.no-societies .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--glow-color);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.no-societies .btn-primary:hover {
+    color: var(--midnight);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(var(--glow-color-rgb), 0.3);
+}
+
+.no-societies .btn-primary:hover::before {
+    width: 100%;
+}
+
+/* Modal Styles - Enhanced */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: var(--card-bg-light);
+    border-radius: 24px;
+    max-width: 450px;
+    width: 90%;
+    margin: 60px auto;
+    padding: 0;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color-light);
+    animation: modalSlideIn 0.4s ease;
+    transform: translateY(0);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color-light);
+    position: relative;
+}
+
+.modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--glow-color), transparent);
+}
+
+.modal-header h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--arctic);
+    margin: 0;
+    font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.close-modal {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--apres-ski);
+    transition: all 0.3s ease;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.close-modal:hover {
+    color: var(--glow-color);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 1.75rem;
+}
+
+.modal-footer {
+    text-align: right;
+    margin-top: 1.5rem;
+}
+
+.modal-footer .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: 0.2px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.modal-footer .btn-primary {
+    background: transparent;
+    color: var(--glow-color);
+    border: 2px solid var(--glow-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-footer .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--glow-color);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.modal-footer .btn-primary:hover {
+    color: var(--midnight);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(var(--glow-color-rgb), 0.3);
+}
+
+.modal-footer .btn-primary:hover::before {
+    width: 100%;
+}
+
+/* Success Notification */
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--glow-color);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(var(--glow-color-rgb), 0.3);
+    font-size: 1rem;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    animation: notificationSlideIn 0.4s ease forwards;
+    font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.2px;
+}
+
+/* Additional Animations */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes notificationSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .societies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
-    body.society-page .society-container {
-        padding: 1rem;
+    .societies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
-    
-    body.society-page .society-banner {
-        padding: 2rem 1.5rem;
-    }
-    
-    body.society-page .society-info h1 {
-        font-size: 2.4rem;
-    }
-    
-    body.society-page .society-meta {
+
+    .society-stats {
         flex-direction: column;
-        gap: 1.5rem;
-        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .society-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+    .societies-grid {
+        grid-template-columns: 1fr;
     }
 }

@@ -1,3 +1,5 @@
+/* Updated society-details.css */
+
 /* Society Details Page Styles */
 :root {
   --card-bg-light: #ffffff;
@@ -8,20 +10,22 @@
   --apres-ski: #8c8c8c;
 }
 
-/* Override main content margin */
+/* Fix for the main content - ensure proper centering */
 .main-content {
-  margin-left: 0 !important;
+  margin-left: 12px !important;
   width: 100% !important;
-  min-height: 100vh;
+  min-height: 100vh !important;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 2rem;
+  padding: 2rem !important;
+  display: flex;
+  justify-content: center;
 }
 
 .society-container {
-  max-width: 1200px;
+  max-width: 1200px !important;
   width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   animation: fadeIn 0.8s ease-out;
 }
 
@@ -30,11 +34,12 @@
   background: var(--card-bg-light);
   border-radius: 24px;
   overflow: hidden;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   box-shadow: 0 15px 35px rgba(var(--glow-color-rgb), 0.08);
   border: 1px solid var(--border-color-light);
   transition: all 0.4s ease;
   position: relative;
+  width: 100%;
 }
 
 .society-header:hover {
@@ -46,7 +51,7 @@
   background: linear-gradient(135deg, 
     rgba(var(--glow-color-rgb), 0.05) 0%,
     rgba(var(--glow-color-rgb), 0.02) 100%);
-  padding: 4rem 3rem;
+  padding: 3rem 2rem;
   text-align: center;
   position: relative;
 }
@@ -65,9 +70,10 @@
     transparent);
 }
 
+/* Improved society info styling */
 .society-info h1 {
-  font-size: 3.2rem;
-  margin-bottom: 1.5rem;
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
   font-family: "BlushAsliring", "Poppins", sans-serif;
   background: linear-gradient(45deg, var(--arctic), var(--glow-color));
   -webkit-background-clip: text;
@@ -75,21 +81,23 @@
   -webkit-text-fill-color: transparent;
   animation: titleFade 1s ease-out forwards;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
+/* Improved meta information layout */
 .society-meta {
   display: flex;
   justify-content: center;
-  gap: 3.5rem;
-  font-size: 1.1rem;
-  margin-top: 2rem;
+  gap: 2rem;
+  font-size: 1rem;
+  margin-top: 1.5rem;
   font-family: "Retro Floral", "Poppins", sans-serif;
 }
 
 .society-meta span {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
   color: var(--apres-ski);
   transition: all 0.3s ease;
   padding: 0.5rem 1rem;
@@ -105,21 +113,22 @@
 
 .society-meta span i {
   color: var(--glow-color);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 /* Enhanced Content Section */
 .content-section {
   background: var(--card-bg-light);
   border-radius: 24px;
-  padding: 2.5rem;
-  margin-bottom: 2.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
   box-shadow: 0 10px 30px rgba(var(--glow-color-rgb), 0.05);
   border: 1px solid var(--border-color-light);
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
   animation: fadeInUp 0.8s ease-out forwards;
+  width: 100%;
 }
 
 .content-section::before {
@@ -127,9 +136,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--glow-color), transparent);
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--glow-color), transparent);
 }
 
 .content-section:hover {
@@ -141,31 +150,83 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color-light);
+  position: relative;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--glow-color), transparent);
 }
 
 .section-header h2 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: var(--arctic);
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   font-family: "BlushAsliring", "Poppins", sans-serif;
 }
 
 .section-header h2 i {
   color: var(--glow-color);
-  font-size: 1.5rem;
 }
 
 /* Events Grid */
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 1rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+}
+
+/* Event Card Styles - Matching viewer dashboard */
+.event-card {
+  background: var(--card-bg-light);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: 1px solid var(--border-color-light);
+  position: relative;
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.event-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.event-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--glow-color);
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--glow-color), transparent);
+  z-index: 2;
 }
 
 /* Loading Message */
@@ -175,6 +236,7 @@
   color: var(--apres-ski);
   font-size: 1.1rem;
   font-family: "Retro Floral", "Poppins", sans-serif;
+  width: 100%;
 }
 
 /* Animations */
@@ -214,11 +276,11 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .society-container {
-    padding: 1.5rem;
+    padding: 0;
   }
   
   .society-info h1 {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
   }
 }
 
@@ -228,12 +290,13 @@
   }
 
   .society-meta {
-    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
   }
 
   .society-info h1 {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
   }
 
   .content-section {
@@ -243,7 +306,7 @@
 
 @media (max-width: 576px) {
   .society-container {
-    padding: 0.5rem;
+    padding: 0;
   }
 
   .society-banner {
@@ -251,7 +314,12 @@
   }
 
   .society-info h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .society-meta {
+    flex-direction: column;
+    align-items: center;
   }
 
   .events-grid {
