@@ -119,6 +119,7 @@
   position: relative;
   z-index: 2;
   animation: fadeIn 0.8s ease-out;
+  background: white;
 }
 
 .society-info h1 {

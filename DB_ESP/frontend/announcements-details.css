@@ -162,85 +162,84 @@
 }
 
 /* ===== Action Buttons ===== */
-.announcement-actions {
-  display: flex;
-  gap: 1rem;
-  animation: fadeInUp 0.6s ease forwards;
-  animation-delay: 0.3s;
-  opacity: 0;
-  justify-content: center; /* Center the action buttons */
-}
-
+/* Base styles for both buttons to ensure consistency */
 .action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   padding: 0.9rem 1.8rem;
-  border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 600;
+  border-radius: 30px;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: all var(--transition-smooth);
-  border: none;
   position: relative;
   overflow: hidden;
 }
 
-.rsvp-btn {
+/* RSVP button styles */
+.action-btn.rsvp-btn {
+  background-color: var(--midnight);
+  color: var(--glow-color);
+  border: 2px solid var(--glow-color);
+}
+
+/* Hover state */
+.action-btn.rsvp-btn:hover {
   background-color: var(--glow-color);
   color: white;
-  box-shadow: 0 4px 12px rgba(var(--glow-color-rgb), 0.3);
-}
-
-.rsvp-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0) 0%, 
-    rgba(255, 255, 255, 0.2) 50%, 
-    rgba(255, 255, 255, 0) 100%);
-  transition: left 0.8s ease;
-}
-
-.rsvp-btn:hover {
-  background-color: var(--hover-color);
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.4);
+  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.3);
 }
 
-.rsvp-btn:hover::before {
-  left: 100%;
+/* Active (RSVP'd) state */
+.action-btn.rsvp-btn.rsvp-active {
+  background-color: #117a00; /* Green for confirmed */
+  color: white;
+  border-color: #117a00;
 }
 
-.rsvp-btn.attending {
-  background-color: #228B22; /* Success green */
+/* Hover state for active button */
+.action-btn.rsvp-btn.rsvp-active:hover {
+  background-color: #0d5d00; /* Darker green for hover */
+  border-color: #0d5d00;
 }
 
-.share-btn {
-  background-color: var(--card-bg-light);
+/* Icon in button */
+.action-btn.rsvp-btn i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+/* Icon hover effect */
+.action-btn.rsvp-btn:hover i {
+  transform: scale(1.2);
+}
+
+/* Text in button */
+.action-btn.rsvp-btn span {
+  margin-left: 5px;
+}
+
+/* Share button specific styles */
+.action-btn.share-btn {
+  background-color: var(--midnight);
   color: var(--glow-color);
   border: 2px solid var(--glow-color);
   box-shadow: 0 4px 12px rgba(var(--glow-color-rgb), 0.1);
 }
 
-.share-btn:hover {
-  background-color: rgba(var(--glow-color-rgb), 0.05);
+.action-btn.share-btn:hover {
+  background-color: var(--glow-color);
+  color: white;
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.2);
+  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.3);
 }
 
-.action-btn i {
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
-}
-
-.action-btn:hover i {
-  transform: scale(1.2);
+/* Text in share button */
+.action-btn.share-btn span {
+  margin-left: 5px;
 }
 
 /* ===== Event Details Box ===== */
@@ -1001,6 +1000,310 @@
 
 #rsvpModal .form-actions button:hover i {
   transform: scale(1.2);
+}
+
+/* ===== Enhanced Share Modal Styling ===== */
+
+/* Modal Base */
+#shareModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+#shareModal.active {
+  display: flex; /* This ensures when active, the flex properties center the modal */
+  align-items: center; /* Ensures vertical centering for flex items */
+  justify-content: center; /* Ensures horizontal centering for flex items */
+}
+
+/* Modal Content */
+#shareModal .modal-content {
+  background-color: var(--midnight);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  animation: shareModalScaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  border: 1px solid rgba(var(--glow-color-rgb), 0.1);
+  overflow: hidden;
+}
+
+/* Background Decoration */
+#shareModal .modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(var(--glow-color-rgb), 0.08) 0%, transparent 70%);
+  z-index: -1;
+  border-radius: 50%;
+}
+
+#shareModal .modal-content::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(var(--glow-color-rgb), 0.05) 0%, transparent 70%);
+  z-index: -1;
+  border-radius: 50%;
+}
+
+/* Close Button */
+#shareModal .close-modal {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background: rgba(var(--midnight-rgb), 0.7);
+  border: none;
+  font-size: 1.2rem;
+  color: var(--apres-ski);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+#shareModal .close-modal:hover {
+  color: var(--arctic);
+  background-color: var(--mountainside);
+  transform: rotate(90deg);
+}
+
+/* Modal Header */
+#shareModal .modal-header {
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+#shareModal .modal-header h3 {
+  font-family: 'PlayfairDisplay', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--arctic);
+  position: relative;
+  display: inline-block;
+  margin: 0 0 0.5rem 0;
+}
+
+#shareModal .modal-header h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--glow-color), transparent);
+  border-radius: 3px;
+}
+
+/* Share Options */
+#shareModal .share-options {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+}
+
+#shareModal .share-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-color: var(--mountainside);
+  color: var(--arctic);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+#shareModal .share-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--glow-color);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+
+#shareModal .share-option:hover {
+  color: white;
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(var(--glow-color-rgb), 0.25);
+}
+
+#shareModal .share-option:hover::before {
+  transform: scale(1);
+}
+
+/* Social icons specific colors on hover */
+#shareModal .share-option.facebook:hover {
+  background-color: #1877f2;
+}
+
+#shareModal .share-option.twitter:hover {
+  background-color: #1da1f2;
+}
+
+#shareModal .share-option.linkedin:hover {
+  background-color: #0a66c2;
+}
+
+#shareModal .share-option.email:hover {
+  background-color: #ea4335;
+}
+
+/* Share Link Container */
+#shareModal .share-link-container {
+  background-color: var(--mountainside);
+  border-radius: 12px;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-top: 1.5rem;
+  border: 1px solid rgba(var(--glow-color-rgb), 0.1);
+  overflow: hidden;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+#shareModal #shareLink {
+  flex: 1;
+  padding: 1rem 1.2rem;
+  border: none;
+  background: transparent;
+  color: var(--arctic);
+  font-size: 0.95rem;
+  font-family: 'SourceSans3', sans-serif;
+  outline: none;
+}
+
+#shareModal .copy-link-btn {
+  background: var(--glow-color);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#shareModal .copy-link-btn:hover {
+  background: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(var(--glow-color-rgb), 0.2);
+}
+
+#shareModal .copy-link-btn i {
+  font-size: 1.1rem;
+}
+
+/* Animations */
+@keyframes shareModalScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #shareModal .modal-content {
+    padding: 2rem;
+    width: 90%;
+  }
+  
+  #shareModal .share-options {
+    gap: 1rem;
+  }
+  
+  #shareModal .share-option {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #shareModal .modal-content {
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  #shareModal .share-options {
+    gap: 0.75rem;
+  }
+  
+  #shareModal .share-option {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+  }
+  
+  #shareModal .modal-header h3 {
+    font-size: 1.5rem;
+  }
+  
+  #shareModal .share-link-container {
+    flex-direction: column;
+  }
+  
+  #shareModal #shareLink {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #shareModal .copy-link-btn {
+    width: 100%;
+  }
 }
 
 /* ===== Event Cards for My Registrations Page ===== */

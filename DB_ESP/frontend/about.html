@@ -6,27 +6,49 @@
     <title>About Us - EventHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Reset and Base Styles */
+        @font-face {
+            font-family: 'BlushAsliring';
+            src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        /* Apply BlushAsliring font to header elements */
+        .main-nav .logo a,
+        .main-nav .nav-links a,
+        .hero-section h1,
+        .hero-section h2,
+        .hero-section h3,
+        .section-header h2,
+        .page-header h1 {
+            font-family: 'BlushAsliring', 'PlayfairDisplay', serif !important;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Base Styles */
         :root {
-            /* New Soft Light Theme Color Palette */
+            /* Color Palette */
             --midnight: #F2EFE9;     /* Main background (Very light off-white/beige) */
+            --midnight-rgb: 242, 239, 233; /* RGB for midnight */
             --arctic: #262626;       /* Primary text color (Dark gray) */
             --apres-ski: #8C8C8C;    /* Muted/secondary text (Mid gray) */
             --slopes: #BFBFBD;       /* Lighter gray for subtle elements/text/borders (Light-mid gray) */
             --mountainside: #E9E5DC; /* Secondary light background / Sections (Light beige/gray) */
             --mountainside-rgb: 233, 229, 220; /* RGB for --mountainside */
             
-            /* Additional colors for accents - Light Theme */
+            /* Accent colors */
             --glow-color: #002366;       /* Primary accent - US Navy Blue */
             --glow-color-rgb: 0, 35, 102;  /* RGB version for US Navy Blue */
             --accent-color: #8C8C8C;     /* Using a new palette gray for other accents/text */
             --hover-color: #001a4d;      /* Darker Navy Blue for hover */
+            --highlight-color: #F5A623;  /* Warm accent for highlights */
 
-            /* Helper variables for light theme */
-            --border-color-light: #BFBFBD; /* Using new --slopes */
-            --card-bg-light: #FFFFFF; /* Pure white for cards to pop slightly against off-white/beige */
-            --card-bg-subtle-light: #F2EFE9; /* For cards that need to be less prominent, matching main bg */
+            /* Helper variables */
+            --border-color-light: #BFBFBD; /* Using --slopes */
+            --card-bg-light: #FFFFFF; /* Pure white for cards */
+            --card-bg-subtle-light: #F2EFE9; /* For less prominent cards */
             --shadow-color-light: rgba(38, 38, 38, 0.08); /* Subtle shadow using --arctic as base */
+            --shadow-color-medium: rgba(38, 38, 38, 0.15); /* Medium shadow */
         }
         
         * {

@@ -113,53 +113,15 @@ async function addNewFeedback(rating, text) {
 }
 
 // Show success message
-function showSuccessMessage() {
+function showSuccessMessage(message = 'Operation completed successfully') {
     const successMessage = document.createElement('div');
     successMessage.className = 'success-message';
-    successMessage.textContent = 'Thank you for your feedback!';
+    successMessage.textContent = message;
     successMessage.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: var(--primary-color);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        z-index: 1000;
-    `;
-
-    document.body.appendChild(successMessage);
-
-    // Animate in
-    setTimeout(() => {
-        successMessage.style.opacity = '1';
-        successMessage.style.transform = 'translateY(0)';
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        successMessage.style.opacity = '0';
-        successMessage.style.transform = 'translateY(-10px)';
-        setTimeout(() => {
-            document.body.removeChild(successMessage);
-        }, 300);
-    }, 3000);
-}
-
-// Show success message for RSVP
-function showRSVPSuccessMessage() {
-    const successMessage = document.createElement('div');
-    successMessage.className = 'success-message';
-    successMessage.textContent = 'Thank you for your RSVP!';
-    successMessage.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--primary-color);
+        background: var(--glow-color, #002366);
         color: white;
         padding: 15px 25px;
         border-radius: 8px;
@@ -446,10 +408,16 @@ async function handleAttendance(action) {
         const result = await response.json();
         updateAttendanceButton(action === 'attend');
         updateAttendeeCount(result.attendee_count);
-        showRSVPSuccessMessage();
+        
+        // Show appropriate success message
+        const message = action === 'attend' 
+            ? `You have successfully RSVP'd to this event!`
+            : `You have canceled your RSVP for this event.`;
+        showSuccessMessage(message);
         
     } catch (error) {
         showError('Failed to update attendance');
+        throw error;
     }
 }
 
@@ -543,53 +511,39 @@ function showError(message) {
 
 // Setup event listeners
 function setupEventListeners() {
-    // RSVP button click
-    elements.rsvpButton.addEventListener('click', function() {
-        if (demoAnnouncement.category.toLowerCase() === 'event') {
-            // Show RSVP modal
-            elements.rsvpModal.style.display = 'block';
-        } else {
-            showSuccessMessage('Thank you for your interest!');
+    // Replace RSVP button click handler to directly toggle attendance
+    elements.rsvpButton.addEventListener('click', async function() {
+        // Check if user is logged in
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            showError('Please log in to RSVP');
+            return;
+        }
+        
+        try {
+            // Disable button during API call
+            elements.rsvpButton.disabled = true;
+            elements.rsvpButton.style.opacity = '0.7';
+            
+            // Toggle attendance (if currently attending, unattend; otherwise attend)
+            await handleAttendance(currentAttendanceStatus ? 'unattend' : 'attend');
+            
+            // Re-enable button
+            elements.rsvpButton.disabled = false;
+            elements.rsvpButton.style.opacity = '1';
+        } catch (error) {
+            console.error('Failed to update RSVP status:', error);
+            elements.rsvpButton.disabled = false;
+            elements.rsvpButton.style.opacity = '1';
         }
     });
     
-    // RSVP option selection
-    elements.rsvpOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            // Remove selected class from all options
-            elements.rsvpOptions.forEach(opt => opt.classList.remove('selected'));
-            // Add selected class to clicked option
-            this.classList.add('selected');
-        });
+    // Share button click (keep this unchanged)
+    elements.shareButton.addEventListener('click', function() {
+        elements.shareModal.style.display = 'block';
+        elements.shareLink.value = window.location.href;
     });
-
-    // RSVP form submission
-    elements.rsvpForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const selectedOption = document.querySelector('.rsvp-option.selected');
-        if (!selectedOption) {
-            alert('Please select your attendance status');
-            return;
-        }
-
-        const value = selectedOption.dataset.value;
-        try {
-            // Only send attendance request if user selects "yes"
-            if (value === 'yes') {
-                await handleAttendance('attend');
-            } else if (currentAttendanceStatus) {
-                // If user was attending and now selects "no" or "maybe", unattend
-                await handleAttendance('unattend');
-            }
-            
-            elements.rsvpModal.style.display = 'none';
-            document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-            showRSVPSuccessMessage();
-        } catch (error) {
-            showError('Failed to update attendance status');
-        }
-    });
-
+    
     // Feedback form submission
     elements.feedbackForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -612,12 +566,6 @@ function setupEventListeners() {
         // Clear form
         elements.feedbackText.value = '';
         document.querySelector('input[name="rating"]:checked').checked = false;
-    });
-
-    // Share button click
-    elements.shareButton.addEventListener('click', function() {
-        elements.shareModal.style.display = 'block';
-        elements.shareLink.value = window.location.href;
     });
 
     // Share options click handlers
@@ -668,11 +616,6 @@ function setupEventListeners() {
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
-            // Reset RSVP form if it's the RSVP modal
-            if (event.target === elements.rsvpModal) {
-                elements.rsvpForm.reset();
-                document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-            }
         }
     });
 
@@ -681,13 +624,78 @@ function setupEventListeners() {
         button.addEventListener('click', function() {
             const modal = this.closest('.modal');
             modal.style.display = 'none';
-            // Reset RSVP form if it's the RSVP modal
-            if (modal === elements.rsvpModal) {
-                elements.rsvpForm.reset();
-                document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-            }
         });
     });
+
+    // Profile Dropdown Toggle
+    const profileIconLink = document.getElementById('profileIconLink');
+    const profileDropdown = document.getElementById('profileDropdown');
+
+    function updateProfileDropdown() {
+        const accessToken = localStorage.getItem('access_token');
+        const userType = localStorage.getItem('user_type');
+        profileDropdown.innerHTML = '';
+        if (accessToken) {
+            // User is logged in
+            profileDropdown.innerHTML = `
+                <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
+                <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
+                <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
+                </a>
+                <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            `;
+        } else {
+            // Not logged in
+            profileDropdown.innerHTML = `
+                <a href="login.html" role="menuitem"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="register.html" role="menuitem"><i class="fas fa-user-plus"></i> Register</a>
+            `;
+        }
+    }
+
+    if (profileIconLink && profileDropdown) {
+        updateProfileDropdown();
+        profileIconLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            const isExpanded = profileIconLink.getAttribute('aria-expanded') === 'true' || false;
+            profileIconLink.setAttribute('aria-expanded', !isExpanded);
+            profileDropdown.classList.toggle('active');
+            updateProfileDropdown();
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!profileIconLink.contains(event.target) && !profileDropdown.contains(event.target)) {
+                if (profileDropdown.classList.contains('active')) {
+                    profileDropdown.classList.remove('active');
+                    profileIconLink.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+
+        // Close dropdown with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && profileDropdown.classList.contains('active')) {
+                profileDropdown.classList.remove('active');
+                profileIconLink.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Logout button logic (delegated)
+        profileDropdown.addEventListener('click', (event) => {
+            if (event.target.closest('#logoutBtnDropdown')) {
+                event.preventDefault();
+                // Remove tokens and user info
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user_type');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('join_code');
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        });
+    }
 }
 
 // On page load or after RSVP, update the UI:
@@ -698,20 +706,47 @@ function updateRSVPCounters() {
 }
 
 // Initialize page when DOM is loaded
-document.addEventListener('DOMContentLoaded', initPage);
+document.addEventListener('DOMContentLoaded', () => {
+    initPage();
+    addRSVPStyles();
+});
 
 function updateAttendanceButton(isAttending) {
     currentAttendanceStatus = isAttending;
     const rsvpButton = elements.rsvpButton;
+    
     if (isAttending) {
-        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> Attending';
-        rsvpButton.classList.add('attending');
+        rsvpButton.classList.add('rsvp-active');
+        rsvpButton.innerHTML = '<i class="fas fa-check-circle"></i><span>RSVP\'d</span>';
     } else {
-        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> RSVP';
-        rsvpButton.classList.remove('attending');
+        rsvpButton.classList.remove('rsvp-active');
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i><span>RSVP</span>';
     }
 }
 
 function updateAttendeeCount(count) {
     document.getElementById('attending-count').textContent = count;
+}
+
+// Add additional CSS for the RSVP button states
+function addRSVPStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .rsvp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .rsvp-btn.rsvp-active {
+            background-color: #117a00; /* Green color for active state */
+        }
+        
+        .rsvp-btn span {
+            margin-left: 5px;
+        }
+    `;
+    document.head.appendChild(style);
 }

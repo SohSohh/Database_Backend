@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
           document.querySelectorAll('.rsvp-option').forEach(opt => opt.classList.remove('selected'));
       });
-  });
 
   // RSVP Form Submission
   document.getElementById('rsvpForm').addEventListener('submit', function(e) {
@@ -231,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }, 300);
       }, 3000);
   }
-})
 
 function updateNavigation(isLoggedIn, userType) {
   const navLinks = document.querySelector(".nav-links")
