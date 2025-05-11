@@ -1,4 +1,4 @@
-        /* Custom Fonts */        @font-face {
+/* Custom Fonts */        @font-face {
             font-family: 'PlayfairDisplay';
             src: url('./static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
                  url('./static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
@@ -284,8 +284,8 @@
         }
 
         .profile-dropdown-menu a:hover {
-            /* Removed background-color and color change on hover */
-            /* Links will retain their default appearance */
+            background-color: rgba(var(--glow-color-rgb), 0.05);
+            color: var(--glow-color);
         }
 
         .profile-dropdown-menu a i {
@@ -294,23 +294,22 @@
             width: 20px;
             text-align: center;
             color: var(--apres-ski);
-            transition: none; /* Removed icon color transition on hover */
+            transition: color 0.2s ease;
         }
 
         .profile-dropdown-menu a:hover i {
-            /* Removed icon color change on hover */
+            color: var(--glow-color);
         }
 
         .profile-dropdown-menu a#logoutBtnDropdown {
             color: #e74c3c; /* Distinct color for logout */
-        }
-
-        .profile-dropdown-menu a#logoutBtnDropdown:hover {
-            /* Removed background-color and color change on hover for logout */
-            /* Logout button will retain its default appearance on hover */
+        }        .profile-dropdown-menu a#logoutBtnDropdown:hover {
+            background-color: rgba(231, 76, 60, 0.05);
+            color: #c0392b;
         }
         .profile-dropdown-menu a#logoutBtnDropdown:hover i {
-            /* Removed icon color change on hover for logout */        }
+            color: #c0392b;
+        }
 
         /* Hamburger Menu (existing styles) */
         #hamburger-menu {
@@ -595,6 +594,8 @@
             margin: 0 auto;
             gap: 3rem;
             perspective: 1000px;
+            position: relative;
+            z-index: 2;
         }
 
         .hero-content-left { /* Replaces .about-hero-left */
@@ -1707,4 +1708,27 @@
             .cta-title {
                 font-size: 2rem;
             }
+        }
+
+        /* Hero Interactive Background Styles */
+        .hero-interactive-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Ensure hero-section has position relative for the absolute positioned background */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Make sure content is above the interactive background */
+        .hero-main-row {
+            position: relative;
+            z-index: 2;
         }
