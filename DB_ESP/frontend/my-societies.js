@@ -185,9 +185,6 @@ function populateSocieties(societies) {
             <div class="no-societies">
                 <i class="fas fa-users"></i>
                 <p>No societies joined yet</p>
-                <button class="btn btn-primary" id="noSocietiesJoinBtn">
-                    <i class="fas fa-plus"></i> Join a Society
-                </button>
             </div>
         `;
         // Add event listener to the "Join a Society" button

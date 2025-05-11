@@ -6,12 +6,24 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  background: linear-gradient(120deg, #f2efe9 80%, #e9e5dc 100%);
   border-radius: 12px;
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: #ffffff !important; /* Changed to white background */
+  border: 1px solid rgba(0, 0, 0, 0.03); /* Adding subtle border */
 }
-
+/* Add a pseudo-element with white background as a backup */
+.breadcrumb-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ffffff;
+  border-radius: 12px;
+  z-index: -1;
+}
 .breadcrumb {
   display: flex;
   list-style: none;
@@ -265,7 +277,7 @@
 .event-description-container {
   margin-bottom: 30px;
   background: linear-gradient(120deg, #f2efe9 80%, #e9e5dc 100%);
-  border-left: 6px solid #f5a623;
+  border-left: 6px solid var(--glow-color);
   border-radius: 16px;
   box-shadow: 0 4px 18px rgba(0, 35, 102, 0.07);
   padding: 2.2rem 2rem 2rem 2.5rem;
@@ -293,7 +305,7 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   font-size: 1.45rem;
-  border-bottom: 2px solid #f5a62344;
+  border-bottom: 2px solid var(--glow-color);
   padding-bottom: 0.2em;
 }
 .event-description {

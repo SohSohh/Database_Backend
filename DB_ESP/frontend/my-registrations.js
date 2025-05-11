@@ -112,9 +112,6 @@ async function populateRegistrations() {
                 <div class="no-registrations">
                     <i class="fas fa-calendar-plus"></i>
                     <p>No events registered</p>
-                    <button class="btn btn-primary" onclick="window.location.href='browse-events.html'">
-                        <i class="fas fa-plus"></i> Register for an Event
-                    </button>
                 </div>
             `;
             return;
