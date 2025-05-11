@@ -59,6 +59,15 @@ class HandlerSerializer(BaseUserSerializer):
         read_only_fields = ('email', 'user_type', 'join_code', 'total_comments')
 
 
+class HandlerWithRoleSerializer(HandlerSerializer):
+    """Serializer for handlers that includes the current user's role in that society"""
+    role = serializers.CharField(read_only=True)
+    role_display = serializers.CharField(read_only=True)
+
+    class Meta(HandlerSerializer.Meta):
+        fields = HandlerSerializer.Meta.fields + ('role', 'role_display')
+
+
 class ViewerSerializer(BaseUserSerializer):
     class Meta:
         model = Viewer
@@ -160,3 +169,4 @@ class SocietyMembershipSerializer(serializers.Serializer):
 
 class JoinCodeSerializer(serializers.Serializer):
     join_code = serializers.CharField(read_only=True)
+

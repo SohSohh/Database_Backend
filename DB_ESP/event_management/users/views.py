@@ -6,7 +6,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Count
 from rest_framework.decorators import action
-from django.db.models import Subquery, OuterRef, Count
+from django.db.models import Subquery, OuterRef, Count, F, Value, CharField
+from django.db.models.functions import Concat
 from django.db import models
 from .models import CustomUser, Handler, Viewer, Membership
 from .serializers import (
@@ -17,7 +18,7 @@ from .serializers import (
     HandlerRegistrationSerializer,
     SocietyMembershipSerializer,
     JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer,
-    ViewerProfileUpdateSerializer
+    ViewerProfileUpdateSerializer, HandlerWithRoleSerializer
 )
 from .permissions import IsHandler, IsViewer
 
@@ -290,12 +291,22 @@ class UserDetailView(generics.RetrieveUpdateAPIView):  # Changed to include Upda
 class UserSocietiesView(generics.ListAPIView):
     """List all societies (handlers) that the current user is a member of"""
     permission_classes = (permissions.IsAuthenticated, IsViewer)
-    serializer_class = HandlerSerializer
+    serializer_class = HandlerWithRoleSerializer
 
     def get_queryset(self):
+        viewer = self.request.user
+        
+        # Get handlers with member counts and role information for the current user
         return Handler.objects.filter(
-            viewer_memberships__viewer=self.request.user
+            viewer_memberships__viewer=viewer
         ).annotate(
-            member_count=Count('viewer_memberships')
+            member_count=Count('viewer_memberships'),
+            role=F('viewer_memberships__role'),
+            role_display=models.Case(
+                *[models.When(viewer_memberships__role=choice[0], then=models.Value(choice[1]))
+                  for choice in Membership.ROLE_CHOICES],
+                default=models.Value('Unknown'),
+                output_field=models.CharField(),
+            )
         )
 
