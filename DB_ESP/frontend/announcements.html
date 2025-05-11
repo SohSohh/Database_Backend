@@ -238,11 +238,9 @@
             font-weight: 500;
             white-space: nowrap;
             transition: none; /* Removed hover/click transition effects */
-        }
-
-        .profile-dropdown-menu a:hover {
-            /* Removed background-color and color change on hover */
-            /* Links will retain their default appearance */
+        }        .profile-dropdown-menu a:hover {
+            background-color: rgba(var(--glow-color-rgb), 0.05);
+            color: var(--glow-color);
         }
 
         .profile-dropdown-menu a i {
@@ -251,23 +249,22 @@
             width: 20px;
             text-align: center;
             color: var(--apres-ski);
-            transition: none; /* Removed icon color transition on hover */
+            transition: color 0.2s ease;
         }
 
         .profile-dropdown-menu a:hover i {
-            /* Removed icon color change on hover */
+            color: var(--glow-color);
         }
 
         .profile-dropdown-menu a#logoutBtnDropdown {
             color: #e74c3c; /* Distinct color for logout */
-        }
-
-        .profile-dropdown-menu a#logoutBtnDropdown:hover {
-            /* Removed background-color and color change on hover for logout */
-            /* Logout button will retain its default appearance on hover */
+        }        .profile-dropdown-menu a#logoutBtnDropdown:hover {
+            background-color: rgba(231, 76, 60, 0.05);
+            color: #c0392b;
         }
         .profile-dropdown-menu a#logoutBtnDropdown:hover i {
-            /* Removed icon color change on hover for logout */        }
+            color: #c0392b;
+        }
 
         /* Hamburger Menu (existing styles) */
         /* Hamburger Menu */
@@ -494,10 +491,10 @@
             background: var(--hover-color);
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(var(--glow-color-rgb), 0.3);
-        }
-        /* RSVP Modal Specific Styles (if different from general modal) */
+        }        /* RSVP Modal Specific Styles (if different from general modal) */
         #rsvpModal .modal-content { /* More specific if needed */
-            /* Styles specific to RSVP modal content */
+            max-width: 90%;
+            width: 450px;
         }
         
         /* General Modal Styles (if you plan to have other modals) */
@@ -600,10 +597,21 @@
         }
         
         .event-card:hover {
-            transform: translateY(-16px) scale(1.05) rotateX(4deg) rotateY(-4deg); /* Enhanced lift and tilt */
-            box-shadow: 0 20px 40px var(--shadow-color-medium); /* More pronounced shadow */
-            border-color: var(--glow-color);
-            background-color: var(--card-bg-subtle-light); /* Subtle background change */
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px var(--shadow-color-medium);
+            background-color: var(--card-bg-subtle-light);
+        }
+        
+        .event-card:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--glow-color), var(--highlight-color), var(--glow-color));
+            border-radius: 16px 16px 0 0;
+            opacity: 0.8;
         }
         
         .event-image {
@@ -644,12 +652,30 @@
             position: relative; /* Ensure details are above the sheen */
             z-index: 1;
         }
-        
-        .event-details h3 {
+          .event-details h3 {
             font-size: 1.1rem;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: var(--arctic);
             line-height: 1.3;
+            position: relative;
+            display: inline-block;
+            font-family: 'PlayfairDisplay', serif;
+            font-weight: 600;
+        }
+        
+        .event-details h3::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--glow-color), var(--highlight-color));
+            transition: width 0.4s ease;
+        }
+        
+        .event-card:hover .event-details h3::after {
+            width: 100%;
         }
         
         .event-meta {
@@ -672,30 +698,49 @@
             margin-right: 5px;
             font-size: 0.9rem;
         }
-        
-        .event-description {
+          .event-description {
             font-size: 0.9rem;
             color: var(--apres-ski);
-            margin-bottom: 15px;
-            line-height: 1.5;
+            margin: 12px 0;
+            line-height: 1.6;
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3; /* Standard property for compatibility */
             -webkit-box-orient: vertical;
             overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .event-footer {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 35, 102, 0.08);
         }
         
         .event-stats {
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(248, 248, 248, 0.5);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 12px;
             font-size: 0.8rem;
             color: var(--apres-ski);
+        }
+        
+        .event-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+        
+        .event-stats i {
+            color: var(--glow-color);
+            opacity: 0.85;
         }
         
         .action-buttons {
@@ -1021,36 +1066,71 @@
 /* Event Card Layout Fixes */
 .event-card {
     flex: 0 0 300px;
-    height: auto;  /* Changed from fixed height to auto */
-    min-height: 400px; /* Set minimum height instead of fixed height */
-    max-height: 550px; /* Add maximum height for consistency */
+    height: auto;
+    min-height: 400px;
+    max-height: 550px;
     display: flex;
     flex-direction: column;
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     background-color: var(--card-bg-light);
     border: 1px solid var(--border-color-light);
-    margin: 10px 5px; /* Add some margin between cards */
+    margin: 12px 8px;
+    backdrop-filter: blur(5px);
 }
         
         .event-card:hover {
-            transform: translateY(-15px) rotate(2deg);
-            transform: translateY(-10px); /* Adjusted for a subtle lift like about page cards */
-            box-shadow: 0 12px 28px var(--shadow-color-medium); /* Using theme variable for shadow */
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 35, 102, 0.15);
+            border-color: var(--glow-color);
+        }
+        
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--glow-color), transparent);
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .event-card:hover::before {
+            opacity: 1;
         }
         
 /* Event Image Sizing */
 .event-image {
     position: relative;
-    height: 180px; /* Slightly reduced from 200px */
+    height: 180px;
     width: 100%;
     flex-shrink: 0;
+    overflow: hidden;
 }
         
-        .event-image img { /* This rule will take precedence */
+        .event-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.25));
+            z-index: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .event-card:hover .event-image::after {
+            background: linear-gradient(to bottom, rgba(var(--glow-color-rgb), 0.1), rgba(0,0,0,0.3));
+        }
+        
+        .event-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -1075,139 +1155,214 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         .event-details {
-    padding: 16px;
+    padding: 20px;
     z-index: 2;
     color: var(--arctic);
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Change from auto to hidden to prevent scrollbars */
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(248,248,248,0.05) 100%);
 }
-        
-        .event-card:hover .event-details {
-            /* padding-bottom: 40px; */ /* No longer needed if not absolutely positioned */
-        }
         
         .event-details h3 {
     font-size: 1.3rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     line-height: 1.3;
     color: var(--arctic);
+    position: relative;
+    display: inline-block;
+}
+
+        .event-details h3::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--glow-color);
+    opacity: 0.7;
+    transition: width 0.3s ease;
+}
+
+        .event-card:hover .event-details h3::after {
+    width: 100%;
 }
 
         
 .event-meta {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 4px;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
     margin-bottom: 10px;
-    font-size: 0.85rem;
-    line-height: 1.3;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    font-family: 'SourceSans3', sans-serif;
+    background-color: rgba(var(--midnight-rgb), 0.3);
+    padding: 10px;
+    border-radius: 8px;
 }
         
-        .event-meta p { /* This rule will take precedence */
+        .event-meta p {
             display: flex;
             align-items: center;
             margin: 0;
-            color: var(--apres-ski); /* Confirming theme secondary text color */
+            color: var(--apres-ski);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        .event-meta i { /* This rule will take precedence */
-            color: var(--glow-color); /* Changed from highlight-color to navy */
+        .event-meta i {
+            color: var(--glow-color);
             margin-right: 8px;
+            font-size: 0.9rem;
+            opacity: 0.85;
         }
-        
-        .event-description {
+          .event-description {
     font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 8px 0 12px;
+    line-height: 1.6;
+    margin: 12px 0;
     color: var(--apres-ski);
     display: -webkit-box;
     -webkit-line-clamp: 3; /* Show 3 lines before truncating */
+    line-clamp: 3; /* Standard property for compatibility */
     -webkit-box-orient: vertical;
     overflow: hidden;
-    flex-grow: 0; /* Don't let it expand too much */
-    flex-shrink: 1; /* Allow it to shrink if needed */
+    flex-grow: 0;
+    flex-shrink: 1;
+    background: linear-gradient(180deg, var(--apres-ski), var(--apres-ski) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    padding-bottom: 2px;
 }
         
 .event-footer {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
+    flex-direction: column;
+    margin-top: auto;
     padding-top: 12px;
-    border-top: 1px solid var(--border-color-light);
+    border-top: 1px solid rgba(0, 35, 102, 0.08);
     flex-shrink: 0;
 }
         
-        .event-stats { /* This rule will take precedence */
+        .event-stats {
             display: flex;
-            gap: 15px;
+            justify-content: center;
+            gap: 20px;
             font-size: 0.85rem;
-            color: var(--apres-ski); /* Confirming theme secondary text color */
+            color: var(--apres-ski);
+            background: rgba(248, 248, 248, 0.5);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .event-card:hover .event-stats {
+            background: rgba(0, 35, 102, 0.03);
         }
         
         .event-stats i {
-            color: var(--glow-color); /* Changed from highlight-color to navy */
+            color: var(--glow-color);
             margin-right: 5px;
         }
-        
-        .action-buttons { /* This rule will take precedence */
+        .action-buttons {
             display: flex;
             gap: 10px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 4px;
         }
         
         .details-btn,
-        .rsvp-btn { /* This rule will take precedence */
-            padding: 8px 16px;
+        .rsvp-btn {
+            padding: 9px 0;
             border-radius: 30px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            border-radius: 6px; /* Align with modal's .btn-primary */
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-        
-        .details-btn { /* This rule will take precedence */
-            background-color: transparent;
-            color: var(--glow-color); /* Confirming theme accent color */
-            border: 1px solid var(--glow-color); /* Confirming theme accent color for border */
-        }
-        
-        .details-btn:hover { /* This rule will take precedence */
-            background-color: rgba(var(--glow-color-rgb), 0.1); /* Confirming lighter accent on hover */
-            border-color: var(--glow-color);
-        }
-        
-        .rsvp-btn { /* This rule will take precedence */
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 0.5rem 1rem;
-            background-color: transparent;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'SourceSans3', sans-serif;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+        }          .details-btn {
+            background-color: rgba(var(--glow-color-rgb), 0.04);
             color: var(--glow-color);
-            border: 1px solid var(--glow-color);
-            border-radius: 4px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-top: 0.5rem;
-            position: relative; /* Ensure button is above the sheen */
+            border: none;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .details-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--glow-color);
+            transition: width 0.3s ease;
+        }
+        
+        .details-btn:hover {
+            background-color: rgba(var(--glow-color-rgb), 0.08);
+        }
+        
+        .details-btn:hover::after {
+            width: 100%;
+        }
+        
+        .rsvp-btn {
+            background-color: var(--glow-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            position: relative;
             z-index: 1;
+            overflow: hidden;
         }
         
-        .rsvp-btn:hover { /* This rule will take precedence */
-            background-color: var(--glow-color);
+        .rsvp-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+        
+        .rsvp-btn:hover {
+            background-color: #001a4d; /* Darker shade of navy */
+        }
+        
+        .rsvp-btn:hover::before {
+            left: 100%;
+        }
+        
+        .rsvp-btn.rsvp-active {
+            background-color: #117a00; /* A green color for active state */
             color: white;
         }
         
-        .rsvp-btn.rsvp-active { /* This rule will take precedence - Changed from .attending to .rsvp-active for consistency */
-            background-color: var(--glow-color);
-            color: white;
+        .rsvp-btn i, .details-btn i {
+            font-size: 0.9rem;
         }
         
         /* Improved carousel navigation */
@@ -1291,8 +1446,7 @@
         .event-card:nth-child(5) {
             animation-delay: 0.5s;
         }
-             
-        @media (max-width: 576px) {
+               @media (max-width: 576px) {
             .event-card {
                 flex: 0 0 260px;
                 min-height: 380px;
@@ -1304,61 +1458,70 @@
             
             .event-details h3 {
                 font-size: 1.1rem;
+                margin-bottom: 8px;
             }
             
             .event-description {
                 -webkit-line-clamp: 2;
+                line-clamp: 2;
                 font-size: 0.85rem;
+                margin: 8px 0;
             }
             
             .event-details { 
-            padding: 20px;
+                padding: 15px;
+            }
+            
+            .event-meta {
+                grid-template-columns: 1fr;
+                padding: 8px;
+                font-size: 0.8rem;
             }
         
-            .event-footer { 
-            flex-direction: column;
-            gap: 10px;
-            align-items: flex-start;
+            .event-stats {
+                padding: 6px;
+                margin-bottom: 10px;
             }
-        
-            .action-buttons { 
-            width: 100%;
-            justify-content: space-between;
+            
+            .details-btn,
+            .rsvp-btn {
+                padding: 8px 0;
+                font-size: 0.8rem;
             }
         
             .carousel-nav { 
-            width: 35px;
-            height: 35px;
+                width: 35px;
+                height: 35px;
             }
         }
 
         @font-face {
-        font-family: 'BlushAsliring';
-        src: url('static/fonts/BlushAsliring-Regular.otf') format('opentype');
+        font-family: 'PlayfairDisplay';
+        src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+             url('static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
         font-weight: normal;
         font-style: normal;
     }
     @font-face {
-        font-family: 'Retro Floral';
-        src: url('static/fonts/Retro Floral.otf') format('opentype'),
-             url('static/fonts/Retro Floral.ttf') format('truetype');
+        font-family: 'SourceSans3';
+        src: url('static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+             url('static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
         font-weight: normal;
         font-style: normal;
     }
 
-    /* Headings use BlushAsliring */
+    /* Headings use PlayfairDisplay */
     h1, h2, h3, h4, h5, h6, .heading {
-        font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'PlayfairDisplay', serif;
         letter-spacing: 0.5px;
-    }
-    /* Secondary text uses Retro Floral */
+    }    /* Secondary text uses SourceSans3 */
     .event-meta, .announcement-meta, .footer-description, .footer-links, .category-badge, .event-description, .description, .apres-ski, .secondary-text {
-        font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'SourceSans3', sans-serif;
         letter-spacing: 0.2px;
     }
-    /* BlushAsliring for nav links */
+    /* PlayfairDisplay for nav links */
     .nav-links li a {
-        font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif !important;
+        font-family: 'PlayfairDisplay', serif !important;
         letter-spacing: 0.5px;
     }
     </style>
@@ -1628,17 +1791,45 @@
                 }, 300);
             }, 3000);
         }
-        
           // Profile Dropdown Toggle
           const profileIconLink = document.getElementById('profileIconLink');
           const profileDropdown = document.getElementById('profileDropdown');
 
+          function updateProfileDropdown() {
+            const accessToken = localStorage.getItem('access_token');
+            const userType = localStorage.getItem('user_type');
+            profileDropdown.innerHTML = '';
+            if (accessToken) {
+              // User is logged in
+              profileDropdown.innerHTML = `
+                <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
+                <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
+                  <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
+                </a>
+                <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+              `;
+            } else {
+              // Not logged in
+              profileDropdown.innerHTML = `
+                <a href="login.html" role="menuitem"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="register.html" role="menuitem"><i class="fas fa-user-plus"></i> Register</a>
+              `;
+            }
+          }          // Initialize dropdown on page load
+          document.addEventListener('DOMContentLoaded', () => {
+            if (profileDropdown) {
+              updateProfileDropdown();
+            }
+          });
+
           if (profileIconLink && profileDropdown) {
+            updateProfileDropdown(); // Initialize immediately as well
             profileIconLink.addEventListener('click', (event) => {
                 event.preventDefault();
                 const isExpanded = profileIconLink.getAttribute('aria-expanded') === 'true' || false;
                 profileIconLink.setAttribute('aria-expanded', !isExpanded);
                 profileDropdown.classList.toggle('active');
+                updateProfileDropdown();
             });
 
             // Close dropdown if clicked outside
@@ -1658,16 +1849,21 @@
                     profileIconLink.setAttribute('aria-expanded', 'false');
                 }
             });
-          }
 
-          // Example Logout Functionality
-          const logoutBtnDropdown = document.getElementById('logoutBtnDropdown');
-          if (logoutBtnDropdown) {
-              logoutBtnDropdown.addEventListener('click', (event) => {
-                  event.preventDefault();
-                  alert('Logout clicked! Implement your actual logout logic here (e.g., clearing session, redirecting to login page).');
-                  // Example: window.location.href = 'login.html';
-              });
+            // Logout button logic (delegated)
+            profileDropdown.addEventListener('click', (event) => {
+              if (event.target.closest('#logoutBtnDropdown')) {
+                event.preventDefault();
+                // Remove tokens and user info
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user_type');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('join_code');
+                // Redirect to login page
+                window.location.href = 'login.html';
+              }
+            });
           }
           
     </script>

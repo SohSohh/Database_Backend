@@ -129,13 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     } else {
         console.error('Events container not found for RSVP delegation. RSVP functionality might not work.');
-    }
-
-    // Add Retro Floral font to event action buttons
+    }    // Add SourceSans3 font to event action buttons
     const style = document.createElement('style');
     style.textContent = `
       .details-btn, .rsvp-btn, .btn-primary, .btn-hero-primary {
-        font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif !important;
+        font-family: 'SourceSans3', sans-serif !important;
         letter-spacing: 0.2px;
       }
     `;
@@ -331,8 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 300)
     }, 3000)
   }
-  
-  // Improved event card creation with smaller, more modern design
+    // Improved event card creation with smaller, more modern design
   function createEventCard(event) {
     const card = document.createElement("div")
     card.className = "event-card"
@@ -370,21 +367,20 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="event-description">${shortDescription}</p>
         <div class="event-footer">
           <div class="event-stats">
-            <span><i class="fas fa-users"></i> <span class="count">${event.attendee_count || 0}</span></span>
-            ${event.average_rating ? `<span><i class="fas fa-star"></i> ${event.average_rating}</span>` : ""}
+            <span><i class="fas fa-users"></i> <span class="count">${event.attendee_count || 0}</span> attending</span>
+            ${event.average_rating ? `<span><i class="fas fa-star"></i> ${event.average_rating} rating</span>` : ""}
           </div>
           <div class="action-buttons">
-            <a href="announcement-details.html?id=${event.id}" class="details-btn">Details</a>
-            ${(() => {
-              if (event.is_attending) {
+            <a href="announcement-details.html?id=${event.id}" class="details-btn"><i class="fas fa-info-circle"></i> Details</a>
+            ${(() => {              if (event.is_attending) {
                 return `<button class="rsvp-btn rsvp-active" data-event-id="${event.id}" data-event-name="${event.name}">
-                          <i class="fas fa-star"></i>
+                          <i class="fas fa-check-circle"></i>
                           <span>RSVP'd</span>
                         </button>`
               } else {
                 return `<button class="rsvp-btn" data-event-id="${event.id}" data-event-name="${event.name}">
-                          <i class="far fa-star"></i>
-                          <span>RSVP Now</span>
+                          <i class="fas fa-calendar-check"></i>
+                          <span>RSVP</span>
                         </button>`
               }
             })()}
@@ -550,17 +546,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return Promise.reject(error); // Return rejected promise on error
     }
   }
-  
-  // Helper function to handle RSVP button state changes
+    // Helper function to handle RSVP button state changes
   function updateRSVPButton(button, isAttending) {
     console.log('Updating button state:', { buttonId: button.getAttribute('data-event-id'), isAttending });
     
     if (isAttending) {
       button.classList.add('rsvp-active');
-      button.innerHTML = '<i class="fas fa-star"></i><span>RSVP\'d</span>';
+      button.innerHTML = '<i class="fas fa-check-circle"></i><span>RSVP\'d</span>';
     } else {
       button.classList.remove('rsvp-active');
-      button.innerHTML = '<i class="far fa-star"></i><span>RSVP Now</span>';
+      button.innerHTML = '<i class="fas fa-calendar-check"></i><span>RSVP</span>';
     }
   }
 

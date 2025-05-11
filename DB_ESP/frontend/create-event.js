@@ -145,14 +145,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-    }
-
-    // Submit the form
+    }    // Submit the form
     function submitForm() {
         const form = document.getElementById('createEventForm');
         const submitBtn = document.getElementById('submitEventBtn');
         
-        if (!form || !submitBtn) return;
+        if (!form || !submitBtn) {
+            console.error('Form or submit button not found');
+            return;
+        }
+        
+        // Make sure all required fields exist
+        const requiredElements = [
+            'eventTitle', 'eventDescription', 'eventCategory', 
+            'eventDate', 'eventStartTime', 'eventEndTime', 'eventLocation'
+        ];
+        
+        const missingElements = requiredElements.filter(id => !document.getElementById(id));
+        
+        if (missingElements.length > 0) {
+            console.error('Missing form elements:', missingElements);
+            showError('Form is missing required fields. Please refresh the page and try again.');
+            return;
+        }
         
         // Display loading state
         const originalBtnText = submitBtn.innerHTML;
@@ -173,9 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const bannerInput = document.getElementById('eventBanner');
         if (bannerInput && bannerInput.files.length > 0) {
             formData.append('banner', bannerInput.files[0]);
-        }
-
-        // Send POST request to API
+        }        // Send POST request to API
+        console.log('Sending event creation request to API...');
+        
         fetch(`${window.baseUrl}/api/events/`, {
             method: 'POST',
             headers: {
@@ -183,15 +198,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Content-Type is automatically set by the browser for FormData
             },
             body: formData
-        })
-        .then(response => {
+        })        .then(response => {
+            console.log('API response received:', response.status);
+            
             if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(
-                        (typeof data === 'object' && data !== null)
-                            ? Object.entries(data).map(([key, value]) => `${key}: ${value}`).join(', ')
-                            : 'Failed to create event. Please try again.'
-                    );
+                // Handle error cases with more detailed logging
+                console.error('Error status:', response.status);
+                
+                return response.text().then(text => {
+                    let errorMsg = 'Failed to create event. Please try again.';
+                    
+                    // Try to parse as JSON, but don't fail if it's not valid JSON
+                    try {
+                        const data = JSON.parse(text);
+                        console.error('Error response data:', data);
+                        
+                        if (typeof data === 'object' && data !== null) {
+                            errorMsg = Object.entries(data).map(([key, value]) => `${key}: ${value}`).join(', ');
+                        }
+                    } catch (e) {
+                        console.error('Could not parse error response as JSON:', text);
+                        errorMsg = text || errorMsg;
+                    }
+                    
+                    throw new Error(errorMsg);
                 });
             }
             return response.json();
@@ -203,19 +233,30 @@ document.addEventListener('DOMContentLoaded', function() {
             // Redirect after a brief delay
             setTimeout(() => {
                 window.location.href = 'manage-events.html';
-            }, 1500);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError(`Error creating event: ${error.message}`);
+            }, 1500); // Increased timeout for better visibility of success message
+        })        .catch(error => {
+            console.error('Error creating event:', error);
+            
+            // More detailed error message
+            let errorMsg = error.message || 'Unknown error occurred';
+            showError(`Error creating event: ${errorMsg}`);
+            
+            // Log form data for debugging (excluding file content)
+            console.log('Form data that was submitted:');
+            for (let pair of formData.entries()) {
+                // Don't log file content as it's too large
+                if (pair[0] !== 'banner') {
+                    console.log(pair[0] + ': ' + pair[1]);
+                } else {
+                    console.log(pair[0] + ': [File object]');
+                }
+            }
             
             // Reset button state
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
         });
-    }
-
-    // Set up event handlers
+    }    // Set up event handlers
     function setupEventHandlers() {
         // Cancel button
         const cancelBtn = document.getElementById('cancelEventBtn');
@@ -223,6 +264,20 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelBtn.addEventListener('click', function() {
                 if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
                     window.location.href = 'handler-dashboard.html';
+                }
+            });
+        }
+        
+        // Submit button - adding a direct click handler as a backup
+        const submitBtn = document.getElementById('submitEventBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function(e) {
+                // The form's submit event should handle this, 
+                // but this is a backup in case there are issues
+                const form = document.getElementById('createEventForm');
+                if (form && e.target.type === 'submit') {
+                    // Don't call preventDefault() here as we want the form submit event to trigger
+                    console.log('Submit button clicked');
                 }
             });
         }

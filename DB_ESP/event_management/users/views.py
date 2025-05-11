@@ -6,7 +6,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Count
 from rest_framework.decorators import action
-from django.db.models import Subquery, OuterRef, Count
+from django.db.models import Subquery, OuterRef, Count, F, Value, CharField
+from django.db.models.functions import Concat
 from django.db import models
 from .models import CustomUser, Handler, Viewer, Membership
 from .serializers import (
@@ -16,7 +17,8 @@ from .serializers import (
     ViewerRegistrationSerializer,
     HandlerRegistrationSerializer,
     SocietyMembershipSerializer,
-    JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer
+    JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer,
+    ViewerProfileUpdateSerializer, HandlerWithRoleSerializer
 )
 from .permissions import IsHandler, IsViewer
 
@@ -266,11 +268,14 @@ class UserDetailView(generics.RetrieveUpdateAPIView):  # Changed to include Upda
     def get_object(self):
         pk = self.kwargs.get('pk') or self.kwargs.get('user_id') or None
         if pk is None or str(pk).lower() == 'me':
-            return self.request.user
+            # Fetch the user with comments count
+            return CustomUser.objects.filter(id=self.request.user.id) \
+                .annotate(total_comments=Count('comments')).first()
         # Only allow users to edit their own profile
         if pk != self.request.user.pk:
             raise permissions.exceptions.PermissionDenied("You can only edit your own profile")
-        return CustomUser.objects.get(pk=pk)
+        return CustomUser.objects.filter(pk=pk) \
+            .annotate(total_comments=Count('comments')).first()
 
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
@@ -286,11 +291,22 @@ class UserDetailView(generics.RetrieveUpdateAPIView):  # Changed to include Upda
 class UserSocietiesView(generics.ListAPIView):
     """List all societies (handlers) that the current user is a member of"""
     permission_classes = (permissions.IsAuthenticated, IsViewer)
-    serializer_class = HandlerSerializer
+    serializer_class = HandlerWithRoleSerializer
 
     def get_queryset(self):
+        viewer = self.request.user
+        
+        # Get handlers with member counts and role information for the current user
         return Handler.objects.filter(
-            viewer_memberships__viewer=self.request.user
+            viewer_memberships__viewer=viewer
         ).annotate(
-            member_count=Count('viewer_memberships')
+            member_count=Count('viewer_memberships'),
+            role=F('viewer_memberships__role'),
+            role_display=models.Case(
+                *[models.When(viewer_memberships__role=choice[0], then=models.Value(choice[1]))
+                  for choice in Membership.ROLE_CHOICES],
+                default=models.Value('Unknown'),
+                output_field=models.CharField(),
+            )
         )
+

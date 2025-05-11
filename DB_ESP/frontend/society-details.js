@@ -30,10 +30,15 @@ async function loadSocietyDetails(societyId) {
                 username: events[0].host_username,
                 eventCount: events.length,
                 averageRating: calculateAverageRating(events)
-            };
-
-            // Update UI with society info
-            document.getElementById('societyName').textContent = societyInfo.name;
+            };            // Update UI with society info
+            const societyNameElement = document.getElementById('societyName');
+            societyNameElement.textContent = societyInfo.name;
+            societyNameElement.style.opacity = '0';
+            setTimeout(() => {
+                societyNameElement.style.opacity = '1';
+                societyNameElement.style.transition = 'opacity 0.5s ease-in-out';
+            }, 100);
+            
             document.getElementById('societyUsername').textContent = societyInfo.username;
             document.getElementById('eventCount').textContent = societyInfo.eventCount;
             document.getElementById('averageRating').textContent = 

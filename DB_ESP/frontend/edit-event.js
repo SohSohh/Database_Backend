@@ -48,6 +48,11 @@ const api = {
 
             const response = await fetch(url, options);
             
+            // Handle 204 No Content response (for DELETE operations)
+            if (response.status === 204) {
+                return { success: true };
+            }
+            
             // Parse response
             let responseData;
             const contentType = response.headers.get('content-type');
@@ -92,6 +97,13 @@ const api = {
             );
         },
         
+        // Delete an event
+        async deleteEvent(eventId) {
+            return await api.request(
+                API_CONFIG.endpoints.eventDetails(eventId),
+                'DELETE'
+            );
+        },
         
         // Upload event banner image
         async uploadBanner(eventId, formData) {
@@ -189,6 +201,33 @@ async function handleSubmit(event) {
     }
 }
 
+// Function to handle event deletion
+async function handleDeleteEvent() {
+    showLoadingIndicator(true);
+    clearStatusMessages();
+    
+    try {
+        await api.events.deleteEvent(eventId);
+        showSuccessMessage('Event successfully deleted!');
+        setTimeout(() => {
+            window.location.href = 'manage-events.html';
+        }, 1500);
+    } catch (error) {
+        showErrorMessage(`Error deleting event: ${error.message || 'Unknown error'}`);
+        hideDeleteModal();
+    } finally {
+        showLoadingIndicator(false);
+    }
+}
+
+// Modal controls
+function showDeleteModal() {
+    document.getElementById('delete-modal').style.display = 'flex';
+}
+
+function hideDeleteModal() {
+    document.getElementById('delete-modal').style.display = 'none';
+}
 
 // Helper functions for UI feedback
 function showLoadingIndicator(show) {
@@ -262,58 +301,18 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.clear();
         window.location.href = 'login.html';
     });
+    
+    // Add event listeners for delete functionality
+    document.getElementById('delete-event-btn').addEventListener('click', showDeleteModal);
+    document.getElementById('cancel-delete').addEventListener('click', hideDeleteModal);
+    document.getElementById('confirm-delete').addEventListener('click', handleDeleteEvent);
+    document.querySelector('.close-modal').addEventListener('click', hideDeleteModal);
+    
+    // Close modal when clicking outside the modal content
+    window.addEventListener('click', (event) => {
+        const modal = document.getElementById('delete-modal');
+        if (event.target === modal) {
+            hideDeleteModal();
+        }
+    });
 });
-
-/*
-// --- DYNAMIC BACKEND INTEGRATION EXAMPLE ---
-// 1. Fetch event data from backend
-async function fetchEventData(eventId) {
-    try {
-        const response = await fetch(`/api/events/${eventId}`);
-        if (!response.ok) throw new Error('Event not found');
-        const event = await response.json();
-        populateEventForm({
-            eventName: event.name,
-            eventDescription: event.description,
-            eventDate: event.date,
-            eventTime: event.time,
-            eventLocation: event.location,
-            eventCapacity: event.capacity,
-            eventImage: event.imageUrl
-        });
-    } catch (error) {
-        alert('Event not found');
-        window.location.href = 'manage-events.html';
-    }
-}
-
-// 2. Submit updated event data to backend (with file upload)
-async function handleSubmit(event) {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append('name', document.getElementById('eventName').value);
-    formData.append('description', document.getElementById('eventDescription').value);
-    formData.append('date', document.getElementById('eventDate').value);
-    formData.append('time', document.getElementById('eventTime').value);
-    formData.append('location', document.getElementById('eventLocation').value);
-    formData.append('capacity', document.getElementById('eventCapacity').value);
-    const imageFile = document.getElementById('eventImage').files[0];
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
-    try {
-        const response = await fetch(`/api/events/${eventId}`, {
-            method: 'PUT', // or 'PATCH' depending on backend
-            body: formData
-        });
-        if (!response.ok) throw new Error('Failed to update event');
-        window.location.href = 'manage-events.html';
-    } catch (error) {
-        alert('Failed to update event');
-    }
-}
-
-// 3. Usage in DOMContentLoaded:
-// fetchEventData(eventId);
-// document.getElementById('editEventForm').addEventListener('submit', handleSubmit);
-*/ 

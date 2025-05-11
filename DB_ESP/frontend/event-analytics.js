@@ -26,58 +26,98 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 
 // Function to initialize category distribution chart (replacing attendance trend)
 async function initCategoryDistributionChart() {
-    const events = await apiCall('events/handler/');
-    const categories = await apiCall('events/categories/');
-    
-    // Count events per category
-    const categoryCount = {};
-    categories.forEach(cat => categoryCount[cat.name] = 0);
-    
-    events.forEach(event => {
-        const catName = event.category_name;
-        categoryCount[catName] = (categoryCount[catName] || 0) + 1;
-    });
-
-    const ctx = document.getElementById('categoryDistributionChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: Object.keys(categoryCount),
-            datasets: [{
-                label: 'Events per Category',
-                data: Object.values(categoryCount),
-                backgroundColor: 'rgba(92, 0, 0, 0.2)',
-                borderColor: '#5C0000',
-                borderWidth: 2,
-                pointBackgroundColor: '#5C0000',
-                pointRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+    try {
+        const events = await apiCall('events/handler/');
+        const categories = await apiCall('events/categories/');
+        
+        // Count events per category
+        const categoryCount = {};
+        categories.forEach(cat => categoryCount[cat.name] = 0);
+        
+        events.forEach(event => {
+            const catName = event.category_name;
+            categoryCount[catName] = (categoryCount[catName] || 0) + 1;
+        });
+        
+        // Sort categories by count for better visualization
+        const sortedCategories = Object.keys(categoryCount).sort((a, b) => 
+            categoryCount[b] - categoryCount[a]
+        );
+        
+        const sortedData = sortedCategories.map(cat => categoryCount[cat]);
+        
+        const ctx = document.getElementById('categoryDistributionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: sortedCategories,
+                datasets: [{
+                    label: 'Events per Category',
+                    data: sortedData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: '#4bc0c0',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#4bc0c0',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#6c757d'
+                        },
+                        pointLabels: {
+                            color: '#2c3e50',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 14
+                        },
+                        padding: 10,
+                        displayColors: false
                     }
                 }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Failed to initialize category distribution chart:', error);
+    }
 }
 
 // Function to initialize event performance chart
 async function initEventPerformanceChart() {
     const events = await apiCall('events/handler/');
+      const ctx = document.getElementById('eventPerformanceChart').getContext('2d');
     
-    const ctx = document.getElementById('eventPerformanceChart').getContext('2d');
+    // Create a gradient for the bars
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, '#3498db');
+    gradient.addColorStop(1, '#2980b9');
+    
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -85,10 +125,12 @@ async function initEventPerformanceChart() {
             datasets: [{
                 label: 'Number of Attendees',
                 data: events.map(event => event.attendee_count),
-                backgroundColor: '#5C0000'
+                backgroundColor: gradient,
+                borderRadius: 6,
+                borderWidth: 1,
+                borderColor: '#2980b9'
             }]
-        },
-        options: {
+        },        options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -96,7 +138,51 @@ async function initEventPerformanceChart() {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Number of Attendees'
+                        text: 'Number of Attendees',
+                        color: '#2c3e50',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        color: '#6c757d',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#2c3e50',
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            return tooltipItems[0].label;
+                        },
+                        label: function(context) {
+                            return `Attendees: ${context.parsed.y}`;
+                        }
+                    }
+                },
+                legend: {
+                    labels: {
+                        boxWidth: 12,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
                     }
                 }
             }
@@ -111,9 +197,7 @@ async function initDemographicsChart() {
         const role = member.role_display || member.role;
         acc[role] = (acc[role] || 0) + 1;
         return acc;
-    }, {});
-
-    const ctx = document.getElementById('demographicsChart').getContext('2d');
+    }, {});    const ctx = document.getElementById('demographicsChart').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -121,22 +205,47 @@ async function initDemographicsChart() {
             datasets: [{
                 data: Object.values(roleCount),
                 backgroundColor: [
-                    '#5C0000',
-                    '#8B0000',
-                    '#B22222',
-                    '#DC143C',
-                    '#FF0000',
-                    '#FF4500'
-                ]
+                    '#3498db',  // Blue
+                    '#2ecc71',  // Green
+                    '#9b59b6',  // Purple
+                    '#f1c40f',  // Yellow
+                    '#e74c3c',  // Red
+                    '#1abc9c'   // Teal
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                hoverOffset: 10
             }]
-        },
-        options: {
+        },        options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '65%',
             plugins: {
                 legend: {
-                    position: 'right'
+                    position: 'right',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12,
+                            family: "'Poppins', sans-serif"
+                        },
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    bodyFont: {
+                        size: 14,
+                        family: "'Poppins', sans-serif"
+                    },
+                    displayColors: true,
+                    padding: 10
                 }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
             }
         }
     });
@@ -155,9 +264,28 @@ async function initFeedbackChart() {
 
     allComments.flat().forEach(comment => {
         ratingDistribution[comment.rating]++;
+    });    const ctx = document.getElementById('feedbackChart').getContext('2d');
+    
+    // Create a colorful gradient for each rating level
+    const starColors = {
+        1: { start: '#ff7675', end: '#d63031' },  // Red gradient
+        2: '#fab1a0',                             // Salmon
+        3: '#ffeaa7',                             // Light yellow
+        4: '#55efc4',                             // Mint
+        5: { start: '#74b9ff', end: '#0984e3' }   // Blue gradient
+    };
+    
+    // Apply gradients where appropriate
+    const backgroundColors = Object.keys(ratingDistribution).map(rating => {
+        if (typeof starColors[rating] === 'object') {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, starColors[rating].start);
+            gradient.addColorStop(1, starColors[rating].end);
+            return gradient;
+        }
+        return starColors[rating];
     });
-
-    const ctx = document.getElementById('feedbackChart').getContext('2d');
+    
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -165,16 +293,12 @@ async function initFeedbackChart() {
             datasets: [{
                 label: 'Rating Distribution',
                 data: Object.values(ratingDistribution),
-                backgroundColor: [
-                    '#dc3545',
-                    '#ffc107',
-                    '#6c757d',
-                    '#28a745',
-                    '#5C0000'
-                ]
+                backgroundColor: backgroundColors,
+                borderWidth: 1,
+                borderRadius: 5,
+                borderColor: ['#d63031', '#e17055', '#fdcb6e', '#00b894', '#0984e3']
             }]
-        },
-        options: {
+        },        options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -182,7 +306,48 @@ async function initFeedbackChart() {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Number of Ratings'
+                        text: 'Number of Ratings',
+                        color: '#2c3e50',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        color: '#6c757d',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#2c3e50',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            return tooltipItems[0].label;
+                        },
+                        label: function(context) {
+                            return `Count: ${context.parsed.y}`;
+                        }
                     }
                 }
             }

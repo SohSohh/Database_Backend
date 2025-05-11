@@ -2,41 +2,41 @@
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 // Debug utilities
-const debugUtils = {
-    lastRequest: null,
-    lastResponse: null,
+// const debugUtils = {
+//     lastRequest: null,
+//     lastResponse: null,
     
-    updateRequestDebug(method, url, headers, body) {
-        this.lastRequest = {
-            method,
-            url,
-            headers,
-            body: body || null,
-            timestamp: new Date().toISOString()
-        };
+//     updateRequestDebug(method, url, headers, body) {
+//         this.lastRequest = {
+//             method,
+//             url,
+//             headers,
+//             body: body || null,
+//             timestamp: new Date().toISOString()
+//         };
         
-        document.getElementById('lastRequest').textContent = 
-            JSON.stringify(this.lastRequest, null, 2);
-    },
+//         document.getElementById('lastRequest').textContent = 
+//             JSON.stringify(this.lastRequest, null, 2);
+//     },
     
-    updateResponseDebug(status, data) {
-        this.lastResponse = {
-            status,
-            data,
-            timestamp: new Date().toISOString()
-        };
+//     updateResponseDebug(status, data) {
+//         this.lastResponse = {
+//             status,
+//             data,
+//             timestamp: new Date().toISOString()
+//         };
         
-        document.getElementById('lastResponse').textContent = 
-            JSON.stringify(this.lastResponse, null, 2);
-    },
+//         document.getElementById('lastResponse').textContent = 
+//             JSON.stringify(this.lastResponse, null, 2);
+//     },
     
-    clearDebug() {
-        this.lastRequest = null;
-        this.lastResponse = null;
-        document.getElementById('lastRequest').textContent = 'None';
-        document.getElementById('lastResponse').textContent = 'None';
-    }
-};
+//     clearDebug() {
+//         this.lastRequest = null;
+//         this.lastResponse = null;
+//         document.getElementById('lastRequest').textContent = 'None';
+//         document.getElementById('lastResponse').textContent = 'None';
+//     }
+// };
 
 // Society join codes (in a real app, these would come from the backend)
 const societyJoinCodes = {
@@ -81,7 +81,7 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
     }
     
     // Update debug info for request
-    debugUtils.updateRequestDebug(method, `${API_BASE_URL}/${cleanEndpoint}`, headers, body);
+    //debugUtils.updateRequestDebug(method, `${API_BASE_URL}/${cleanEndpoint}`, headers, body);
     
     try {
         const response = await fetch(`${API_BASE_URL}/${cleanEndpoint}`, requestOptions);
@@ -94,7 +94,7 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
         }
         
         // Update debug info for response
-        debugUtils.updateResponseDebug(response.status, data);
+       // debugUtils.updateResponseDebug(response.status, data);
         
         if (!response.ok) {
             throw new Error(data.message || `API request failed with status ${response.status}`);
@@ -102,7 +102,7 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
         
         return data;
     } catch (error) {
-        debugUtils.updateResponseDebug('ERROR', { error: error.message });
+        //debugUtils.updateResponseDebug('ERROR', { error: error.message });
         throw error;
     }
 }
@@ -209,15 +209,12 @@ function populateSocieties(societies) {
                 <div class="society-info">
                     <span class="member-role">
                         <i class="fas fa-user-tag"></i>
-                        ${society.user_type === 'handler' ? 'Owner' : 'Member'}
+                        ${society.role_display}
                     </span>
                 </div>
                 <div class="society-actions">
                     <button class="btn btn-primary" onclick="viewSociety(${society.id})">
                         <i class="fas fa-eye"></i> View Society
-                    </button>
-                    <button class="btn btn-secondary" onclick="viewSocietyEvents(${society.id})">
-                        <i class="fas fa-calendar"></i> View Events
                     </button>
                 </div>
             </div>
@@ -313,18 +310,19 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMySocieties();
 
     // Set up debug panel toggle
-    document.getElementById('toggleDebug').addEventListener('click', function() {
-        const debugContent = document.getElementById('debugContent');
-        const chevron = this.querySelector('.fa-chevron-down, .fa-chevron-up');
+//     document.getElementById('toggleDebug').addEventListener('click', function() {
+//         const debugContent = document.getElementById('debugContent');
+//         const chevron = this.querySelector('.fa-chevron-down, .fa-chevron-up');
         
-        if (debugContent.style.display === 'none' || !debugContent.style.display) {
-            debugContent.style.display = 'block';
-            chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
-        } else {
-            debugContent.style.display = 'none';
-            chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
-        }
-    });
+//         if (debugContent.style.display === 'none' || !debugContent.style.display) {
+//             debugContent.style.display = 'block';
+//             chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
+//         } else {
+//             debugContent.style.display = 'none';
+//             chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
+//         }
+//     }
+// );
 
     // Open join society modal
     document.getElementById('joinSocietyBtn').addEventListener('click', function() {
