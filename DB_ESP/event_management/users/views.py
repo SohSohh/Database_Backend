@@ -16,7 +16,8 @@ from .serializers import (
     ViewerRegistrationSerializer,
     HandlerRegistrationSerializer,
     SocietyMembershipSerializer,
-    JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer
+    JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer,
+    ViewerProfileUpdateSerializer
 )
 from .permissions import IsHandler, IsViewer
 
@@ -266,11 +267,14 @@ class UserDetailView(generics.RetrieveUpdateAPIView):  # Changed to include Upda
     def get_object(self):
         pk = self.kwargs.get('pk') or self.kwargs.get('user_id') or None
         if pk is None or str(pk).lower() == 'me':
-            return self.request.user
+            # Fetch the user with comments count
+            return CustomUser.objects.filter(id=self.request.user.id) \
+                .annotate(total_comments=Count('comments')).first()
         # Only allow users to edit their own profile
         if pk != self.request.user.pk:
             raise permissions.exceptions.PermissionDenied("You can only edit your own profile")
-        return CustomUser.objects.get(pk=pk)
+        return CustomUser.objects.filter(pk=pk) \
+            .annotate(total_comments=Count('comments')).first()
 
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
@@ -294,3 +298,4 @@ class UserSocietiesView(generics.ListAPIView):
         ).annotate(
             member_count=Count('viewer_memberships')
         )
+

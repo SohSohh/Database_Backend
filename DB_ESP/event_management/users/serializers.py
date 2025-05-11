@@ -37,6 +37,7 @@ class HandlerProfileUpdateSerializer(serializers.ModelSerializer):
         }
 class BaseUserSerializer(serializers.ModelSerializer):
     """Base serializer with dynamic field filtering"""
+    total_comments = serializers.IntegerField(read_only=True, required=False)
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', None)
@@ -54,15 +55,15 @@ class HandlerSerializer(BaseUserSerializer):
 
     class Meta:
         model = Handler
-        fields = ('id', 'username', 'email', 'user_type', 'society_name', 'join_code', 'member_count')
-        read_only_fields = ('email', 'user_type', 'join_code')
+        fields = ('id', 'username', 'email', 'user_type', 'society_name', 'join_code', 'member_count', 'total_comments')
+        read_only_fields = ('email', 'user_type', 'join_code', 'total_comments')
 
 
 class ViewerSerializer(BaseUserSerializer):
     class Meta:
         model = Viewer
-        fields = ('id', 'username', 'email', 'user_type', 'first_name', 'last_name')
-        read_only_fields = ('email', 'user_type')
+        fields = ('id', 'username', 'email', 'user_type', 'first_name', 'last_name', 'total_comments')
+        read_only_fields = ('email', 'user_type', 'total_comments')
 
 
 class ViewerRegistrationSerializer(serializers.ModelSerializer):

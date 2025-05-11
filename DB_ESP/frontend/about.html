@@ -281,11 +281,9 @@
             font-weight: 500;
             white-space: nowrap;
             transition: none; /* Removed hover/click transition effects */
-        }
-
-        .profile-dropdown-menu a:hover {
-            /* Removed background-color and color change on hover */
-            /* Links will retain their default appearance */
+        }        .profile-dropdown-menu a:hover {
+            background-color: rgba(var(--glow-color-rgb), 0.05);
+            color: var(--glow-color);
         }
 
         .profile-dropdown-menu a i {
@@ -294,23 +292,22 @@
             width: 20px;
             text-align: center;
             color: var(--apres-ski);
-            transition: none; /* Removed icon color transition on hover */
+            transition: color 0.2s ease;
         }
 
         .profile-dropdown-menu a:hover i {
-            /* Removed icon color change on hover */
+            color: var(--glow-color);
         }
 
         .profile-dropdown-menu a#logoutBtnDropdown {
             color: #e74c3c; /* Distinct color for logout */
-        }
-
-        .profile-dropdown-menu a#logoutBtnDropdown:hover {
-            /* Removed background-color and color change on hover for logout */
-            /* Logout button will retain its default appearance on hover */
+        }        .profile-dropdown-menu a#logoutBtnDropdown:hover {
+            background-color: rgba(231, 76, 60, 0.05);
+            color: #c0392b;
         }
         .profile-dropdown-menu a#logoutBtnDropdown:hover i {
-            /* Removed icon color change on hover for logout */        }
+            color: #c0392b;
+        }
 
         /* Hamburger Menu (existing styles) */
         /* Ensure profile/auth links don't interfere with hamburger */
@@ -2456,17 +2453,46 @@ h1.glitch-text {
           }
           
           createParticles();
-
+          
           // Profile Dropdown Toggle
           const profileIconLink = document.getElementById('profileIconLink');
           const profileDropdown = document.getElementById('profileDropdown');
 
+          function updateProfileDropdown() {
+            const accessToken = localStorage.getItem('access_token');
+            const userType = localStorage.getItem('user_type');
+            profileDropdown.innerHTML = '';
+            if (accessToken) {
+              // User is logged in
+              profileDropdown.innerHTML = `
+                <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
+                <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
+                  <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
+                </a>
+                <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+              `;
+            } else {
+              // Not logged in
+              profileDropdown.innerHTML = `
+                <a href="login.html" role="menuitem"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="register.html" role="menuitem"><i class="fas fa-user-plus"></i> Register</a>
+              `;
+            }
+          }          // Initialize dropdown on page load
+          document.addEventListener('DOMContentLoaded', () => {
+            if (profileDropdown) {
+              updateProfileDropdown();
+            }
+          });
+
           if (profileIconLink && profileDropdown) {
+            updateProfileDropdown(); // Initialize immediately as well
             profileIconLink.addEventListener('click', (event) => {
                 event.preventDefault();
                 const isExpanded = profileIconLink.getAttribute('aria-expanded') === 'true' || false;
                 profileIconLink.setAttribute('aria-expanded', !isExpanded);
                 profileDropdown.classList.toggle('active');
+                updateProfileDropdown();
             });
 
             // Close dropdown if clicked outside
@@ -2486,16 +2512,21 @@ h1.glitch-text {
                     profileIconLink.setAttribute('aria-expanded', 'false');
                 }
             });
-          }
 
-          // Example Logout Functionality
-          const logoutBtnDropdown = document.getElementById('logoutBtnDropdown');
-          if (logoutBtnDropdown) {
-              logoutBtnDropdown.addEventListener('click', (event) => {
-                  event.preventDefault();
-                  alert('Logout clicked! Implement your actual logout logic here (e.g., clearing session, redirecting to login page).');
-                  // Example: window.location.href = 'login.html';
-              });
+            // Logout button logic (delegated)
+            profileDropdown.addEventListener('click', (event) => {
+              if (event.target.closest('#logoutBtnDropdown')) {
+                event.preventDefault();
+                // Remove tokens and user info
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user_type');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('join_code');
+                // Redirect to login page
+                window.location.href = 'login.html';
+              }
+            });
           }
           
       </script>

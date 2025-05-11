@@ -167,7 +167,7 @@ async function updateStats() {
                 headers: { 'Authorization': `Bearer ${token}` }
             }),
             // Assuming there's an endpoint for user's comments, if not, remove this
-            fetch(`${window.baseUrl}/api/events/comments/`, {
+            fetch(`${window.baseUrl}/api/users/me/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
         ]);
@@ -186,7 +186,7 @@ async function updateStats() {
         statCards[0].textContent = events.length; // Registered Events
         statCards[1].textContent = societies.length; // Societies Joined - now using my-societies endpoint
         statCards[2].textContent = events.filter(e => new Date(e.date) < new Date()).length; // Past Events (attended)
-        statCards[3].textContent = comments.length; // Feedback Given
+        statCards[3].textContent = comments.total_comments; // Feedback Given
 
     } catch (error) {
         console.error('Failed to update stats:', error);
