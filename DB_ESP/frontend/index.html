@@ -475,7 +475,6 @@
             if (accessToken) {
               // User is logged in
               profileDropdown.innerHTML = `
-                <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
                 <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
                   <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
                 </a>
