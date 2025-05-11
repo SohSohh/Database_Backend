@@ -1,0 +1,127 @@
+/**
+ * Filigree Background Animation Styles
+ * 
+ * This stylesheet contains all styles related to the scrolling filigree background pattern.
+ * The animation is designed to be smooth, elegant, and add a subtle decorative element to the page.
+ */
+
+/* Make sure we have the variables available to the filigree elements */
+:root {
+    /* Only needed if not already in index.css */
+    --glow-color: #002366;      /* Primary accent - US Navy Blue */
+    --glow-color-rgb: 0, 35, 102;  /* RGB version for US Navy Blue */
+}
+
+.filigree-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.25; /* Increased opacity for better visibility */
+    overflow: hidden;
+}
+
+.filigree-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    stroke: var(--glow-color);
+    stroke-width: 1.5; /* Increased stroke width */
+    fill: none;
+    filter: drop-shadow(0 0 3px rgba(var(--glow-color-rgb), 0.5)); /* Stronger glow */
+}
+
+/* Base path styles */
+.filigree-path {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Different transition speeds for different elements */
+.filigree-path:nth-child(odd) {
+    transition-duration: 1.5s;
+}
+
+.filigree-path:nth-child(even) {
+    transition-duration: 1.8s;
+}
+
+/* Main path styles (the central design element) */
+.filigree-path.main-path {
+    stroke-dasharray: 3000;
+    stroke-dashoffset: 3000;
+    stroke-width: 1;
+    transition-duration: 2.5s;
+}
+
+/* Drawn state */
+.filigree-path.drawn {
+    stroke-dashoffset: 0;
+    animation: filigreeShimmer 4s ease-in-out infinite;
+}
+
+/* Add a subtle shimmer effect to drawn paths */
+@keyframes filigreeShimmer {
+    0% {
+        stroke-opacity: 0.8;
+        filter: drop-shadow(0 0 2px rgba(var(--glow-color-rgb), 0.4));
+    }
+    50% {
+        stroke-opacity: 1;
+        filter: drop-shadow(0 0 4px rgba(var(--glow-color-rgb), 0.7));
+    }
+    100% {
+        stroke-opacity: 0.8;
+        filter: drop-shadow(0 0 2px rgba(var(--glow-color-rgb), 0.4));
+    }
+}
+
+/* Different animation timing for different elements */
+.filigree-path.drawn:nth-child(odd) {
+    animation-delay: 0.5s;
+}
+
+.filigree-path.drawn:nth-child(even) {
+    animation-delay: 1s;
+}
+
+/* Create different styles for different sections */
+.filigree-ornate {
+    stroke: rgba(var(--glow-color-rgb), 0.9);
+    filter: drop-shadow(0 0 3px rgba(var(--glow-color-rgb), 0.5));
+}
+
+.filigree-connector {
+    stroke-width: 0.6;
+    stroke: rgba(var(--glow-color-rgb), 0.7);
+}
+
+.filigree-flourish {
+    stroke-width: 0.9;
+    filter: drop-shadow(0 0 2px rgba(var(--glow-color-rgb), 0.4));
+}
+
+.filigree-corner {
+    stroke-width: 1.1;
+}
+
+/* Media queries for responsive adjustments */
+@media (max-width: 768px) {
+    .filigree-container {
+        opacity: 0.1; /* Slightly less visible on small screens */
+    }
+    
+    .filigree-path {
+        stroke-width: 0.7; /* Slightly thinner on mobile */
+    }
+    
+    .filigree-path.main-path {
+        stroke-width: 0.9;
+    }
+}
