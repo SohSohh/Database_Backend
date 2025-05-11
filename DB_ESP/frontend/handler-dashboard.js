@@ -53,12 +53,12 @@ const societyData = {
     id: "CS001"
 };
 
-// Function to populate recent event (single)
+// Function to populate all hosted events
 function populateRecentEvent() {
     const eventsGrid = document.getElementById('recentEvents');
-    eventsGrid.innerHTML = '';
+    eventsGrid.innerHTML = '<p>Loading events...</p>';
 
-    // Get the most recent event
+    // Get all events for the handler
     fetch(`${window.baseUrl}/api/events/handler?ordering=date/`,
         {
             method: "GET",
@@ -67,64 +67,18 @@ function populateRecentEvent() {
                 'Authorization': `Bearer ${token}`,
             }
         }
-    ).then(response => response.json()).then(data => {
-        const recentEvent = data[0];
-        const eventCard = document.createElement('div');
-            eventCard.className = 'event-card';
-            // Make the entire card clickable
-            eventCard.style.cursor = 'pointer';
-            eventCard.addEventListener('click', () => {
-                window.location.href = `event-details.html?id=${recentEvent.id}`;
-            });
-            
-            eventCard.innerHTML = `
-                <div class="event-image">
-                    <img src="${recentEvent.banner || '/static/images/placeholder.png'}" 
-                        alt="${recentEvent.name}" 
-                        onerror="this.onerror=null;this.src='/static/images/placeholder.png';">
-                </div>
-                <div class="event-details">
-                    <h3>${recentEvent.name}</h3>
-                    <p class="event-date">
-                        <i class="fas fa-calendar"></i> ${new Date(recentEvent.date).toLocaleDateString()}
-                        <i class="fas fa-clock"></i> ${recentEvent.start_time}
-                    </p>
-                    <p class="event-location">
-                        <i class="fas fa-map-marker-alt"></i> ${recentEvent.location}
-                    </p>
-                    <p class="event-description">${recentEvent.description}</p>
-                    <div class="event-stats">
-                        <span class="event-capacity">
-                            <i class="fas fa-users"></i> ${recentEvent.attendee_count} attendees
-                        </span>
-                    </div>
-                    <div class="event-actions">
-                        <button class="btn btn-primary event-manage-btn" data-event-id="${recentEvent.id}">
-                            <i class="fas fa-edit"></i> Manage
-                        </button>
-                    </div>
-                </div>
-            `;
-            eventsGrid.appendChild(eventCard);
-    });
-}
-
-// Function to populate all events
-function populateAllEvents() {
-    const eventsGrid = document.getElementById('allEvents');
-    eventsGrid.innerHTML = '';
-    
-    fetch(`${window.baseUrl}/api/events/handler?ordering=date/`,
-        {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${token}`,
-            }
+    ).then(response => response.json())
+    .then(data => {
+        eventsGrid.innerHTML = '';
+        
+        if (data.length === 0) {
+            eventsGrid.innerHTML = '<p>No events found. Create your first event!</p>';
+            return;
         }
-    ).then(response => response.json()).then(data => {
-    data.forEach(event => {
-        const eventCard = document.createElement('div');
+        
+        // Loop through all events and create cards for each
+        data.forEach(event => {
+            const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             // Make the entire card clickable
             eventCard.style.cursor = 'pointer';
@@ -141,17 +95,20 @@ function populateAllEvents() {
                 <div class="event-details">
                     <h3>${event.name}</h3>
                     <p class="event-date">
-                        <i class="fas fa-calendar"></i> ${new Date(event.date).toLocaleDateString()}
-                        <i class="fas fa-clock"></i> ${event.start_time}
+                        <i class="fas fa-calendar"></i> ${formatEventDateTime(event.date, event.start_time)}
                     </p>
                     <p class="event-location">
-                        <i class="fas fa-map-marker-alt"></i> ${event.location}
+                        <i class="fas fa-map-marker-alt"></i> ${event.location || 'TBD'}
                     </p>
-                    <p class="event-description">${event.description}</p>
+                    <p class="event-description">${truncateText(event.description, 120)}</p>
                     <div class="event-stats">
                         <span class="event-capacity">
-                            <i class="fas fa-users"></i> ${event.attendee_count} attendees
+                            <i class="fas fa-users"></i> ${event.attendee_count || 0} attendees
                         </span>
+                        ${event.average_rating ? 
+                          `<span class="event-rating">
+                              <i class="fas fa-star"></i> ${parseFloat(event.average_rating).toFixed(1)}
+                           </span>` : ''}
                     </div>
                     <div class="event-actions">
                         <button class="btn btn-primary event-manage-btn" data-event-id="${event.id}">
@@ -161,19 +118,32 @@ function populateAllEvents() {
                 </div>
             `;
             eventsGrid.appendChild(eventCard);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching events:', error);
+        eventsGrid.innerHTML = '<p>Failed to load events. Please try again later.</p>';
     });
-})
 }
 
-// Function to toggle all events section
-function toggleAllEvents() {
-    const allEventsSection = document.getElementById('allEventsSection');
-    if (allEventsSection.style.display === 'none') {
-        allEventsSection.style.display = 'block';
-        populateAllEvents();
-    } else {
-        allEventsSection.style.display = 'none';
-    }
+// Helper function to format date and time for event display
+function formatEventDateTime(date, time) {
+    if (!date) return 'TBD';
+    
+    const eventDate = new Date(date);
+    const formattedDate = eventDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    return time ? `${formattedDate} at ${time}` : formattedDate;
+}
+
+// Helper function to truncate text if it's too long
+function truncateText(text, maxLength) {
+    if (!text) return 'No description available';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 }
 
 // Function to populate upcoming tasks
@@ -249,36 +219,14 @@ function generateStarRating(rating) {
     return stars;
 }
 
-// Function to populate society events
-async function populateSocietyEvents() {
-    const eventsGrid = document.getElementById('societyEvents');
-    eventsGrid.innerHTML = '<p>Loading events...</p>';
-
-    try {
-        const response = await fetch(`${window.baseUrl}/api/events/handler/`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            }
-        });
-        
-        if (!response.ok) throw new Error('Failed to fetch events');
-        
-        const events = await response.json();
-        renderEvents(events, eventsGrid);
-        
-    } catch (error) {
-        eventsGrid.innerHTML = '<p class="error">Failed to load events</p>';
-    }
+// Function to handle managing a specific event
+function handleEventManage(eventId) {
+    window.location.href = `edit-event.html?id=${eventId}`;
 }
 
-// Function to show society events section
-function showSocietyEvents() {
-    const societyEventsSection = document.getElementById('societyEventsSection');
-    societyEventsSection.style.display = 'block'; // Make sure this is working
-    populateSocietyEvents();
-    
-    // Scroll to the section
-    societyEventsSection.scrollIntoView({ behavior: 'smooth' });
+// Function to handle viewing event details
+function viewEventDetails(eventId) {
+    window.location.href = `event-details.html?id=${eventId}`;
 }
 
 // Function to initialize the dashboard
@@ -299,21 +247,66 @@ function initializeDashboard() {
 
 // Function to fetch and update dashboard stats
 async function updateDashboardStats() {
+    console.log('Starting updateDashboardStats...');
     try {
-        const response = await fetch(`${window.baseUrl}/api/events/handler/events/`, {
+        // Double check that the elements exist before we try to fetch data
+        const activeEventsEl = document.getElementById('activeEventsCount');
+        const totalAttendeesEl = document.getElementById('totalAttendeesCount');
+        const avgRatingEl = document.getElementById('averageRatingValue');
+        
+        if (!activeEventsEl) console.error('activeEventsCount element not found');
+        if (!totalAttendeesEl) console.error('totalAttendeesCount element not found');
+        if (!avgRatingEl) console.error('averageRatingValue element not found');
+        
+        // Get token and verify it exists
+        const token = localStorage.getItem('access_token');
+        console.log('Using token:', token ? 'Token exists' : 'Token missing');
+        
+        const response = await fetch(`${window.baseUrl}/api/events/handler/`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                'Authorization': `Bearer ${token}`
             }
         });
         
-        if (!response.ok) throw new Error('Failed to fetch stats');
+        console.log('API Response status:', response.status);
+        if (!response.ok) throw new Error(`Failed to fetch stats: ${response.status}`);
         
         const events = await response.json();
-        updateStats({
-            activeEvents: events.length,
-            totalAttendees: events.reduce((sum, e) => sum + e.attendee_count, 0),
-            averageRating: calculateAverageRating(events)
+        console.log(`Got ${events.length} events from API`);
+        
+        // Update the stats in the UI
+        if (activeEventsEl) {
+            activeEventsEl.textContent = events.length;
+            console.log(`Updated active events count to ${events.length}`);
+        }
+        
+        // Calculate total attendees
+        const totalAttendees = events.reduce((sum, event) => {
+            console.log(`Event ${event.name}: ${event.attendee_count || 0} attendees`);
+            return sum + (event.attendee_count || 0);
+        }, 0);
+        
+        if (totalAttendeesEl) {
+            totalAttendeesEl.textContent = totalAttendees;
+            console.log(`Updated total attendees to ${totalAttendees}`);
+        }
+        
+        // Calculate average rating if available
+        let avgRating = 0;
+        let ratedEvents = 0;
+        events.forEach(event => {
+            if (event.average_rating) {
+                avgRating += parseFloat(event.average_rating);
+                ratedEvents++;
+                console.log(`Event ${event.name} rating: ${event.average_rating}`);
+            }
         });
+        
+        const finalRating = ratedEvents > 0 ? (avgRating / ratedEvents).toFixed(1) : 'N/A';
+        if (avgRatingEl) {
+            avgRatingEl.textContent = finalRating;
+            console.log(`Updated average rating to ${finalRating}`);
+        }
         
     } catch (error) {
         console.error('Failed to update stats:', error);
@@ -322,25 +315,34 @@ async function updateDashboardStats() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    initializeDashboard();
-
-    // Populate sections
-    populateSocietyEvents();
-    populateRecentEvent();
+    // Test direct DOM update
+    
+    // Load user data and initialize the dashboard
+    initializeDashboard();    // Populate sections with dynamic data
+    populateRecentEvent(); // Now shows all hosted events
     populateUpcomingTasks();
-    populateRecentFeedback();
-    updateDashboardStats();
+    updateDashboardStats(); // Updates the stats dynamically
+    // Add event listeners for the manage buttons after content is loaded
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('event-manage-btn') || e.target.parentElement.classList.contains('event-manage-btn')) {
+            const button = e.target.classList.contains('event-manage-btn') ? e.target : e.target.parentElement;
+            const eventId = button.dataset.eventId;
+            window.location.href = `edit-event.html?id=${eventId}`;
+            e.stopPropagation(); // Prevent the card click from triggering
+        }
+    });
 
     // Add logout handler
     document.getElementById('logout-btn').addEventListener('click', () => {
         // Clear any stored auth data
-        sessionStorage.clear();
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_type');
+        localStorage.removeItem('user_id');
+        
         // Redirect to login page
         window.location.href = 'login.html';
-    });
-
-    // Check if we need to show society events
-    if (window.location.hash === '#society-events') {
-        showSocietyEvents();
     }
+    
+    );
 });

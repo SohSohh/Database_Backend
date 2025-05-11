@@ -216,6 +216,7 @@ const relatedAnnouncements = [
 // DOM elements
 const elements = {
     title: document.getElementById('announcement-title'),
+    banner: document.getElementById('announcement-banner'),
     category: document.getElementById('category-badge'),
     postDate: document.getElementById('post-date'),
     metaInfo: document.querySelector('.meta-info'), // Added for animation
@@ -288,6 +289,14 @@ async function loadAnnouncementDetails() {
 
         // Update UI with event details
         elements.title.textContent = event.name;
+        
+        // Set banner image if available
+        if (event.image_url) {
+            document.getElementById('announcement-banner').style.backgroundImage = `url(${event.image_url})`;
+        } else {
+            // Use a default banner if no image is provided
+            document.getElementById('announcement-banner').style.backgroundImage = `url('static/images/placeholder.png')`;
+        }
         
         // Set category badge text directly from the API response
         elements.category.textContent = event.category_name;

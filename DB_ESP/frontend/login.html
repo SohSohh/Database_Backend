@@ -39,7 +39,7 @@
         }
         
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Source Sans 3', 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--midnight); 
             color: var(--arctic);
             line-height: 1.6;
@@ -241,6 +241,7 @@
             margin-bottom: 1rem;
             line-height: 1.2;
             color: var(--arctic);
+            font-family: 'Playfair Display', 'Inter', system-ui, -apple-system, sans-serif;
         }
         #welcome-heading .char {
             display: inline-block;
@@ -333,6 +334,7 @@
             font-weight: 700;
             color: var(--arctic);
             margin-bottom: 0.5rem;
+            font-family: 'Playfair Display', 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         .form-container .subtitle {
@@ -577,6 +579,21 @@
                 transform: translateY(-100vh) scale(0.3);
                 opacity: 0;
             }
+        }
+
+        @font-face {
+            font-family: 'Playfair Display';
+            src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+                 url('static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Source Sans 3';
+            src: url('static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+                 url('static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
         }
 
         /* Responsive adjustments */

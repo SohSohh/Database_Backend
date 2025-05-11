@@ -48,16 +48,10 @@
                         Analytics
                     </a>
                 </li>
-                <!-- <li class="nav-item">
+                <li class="nav-item">
                     <a href="society-members.html" class="nav-link">
                         <i class="fas fa-users"></i>
                         Members
-                    </a>
-                </li> -->
-                <li class="nav-item">
-                    <a href="event-feedback.html" class="nav-link">
-                        <i class="fas fa-comment-alt"></i>
-                        Feedback
                     </a>
                 </li>
                 <li class="nav-item">
@@ -114,18 +108,19 @@
                         <p class="stat-number" id="averageRatingValue">0.0</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Hosted Events Section -->
+            </div>            <!-- Hosted Events Section -->
             <div class="content-section">
                 <div class="section-header">
-                    <h2><i class="fas fa-calendar"></i> Hosted Events</h2>
+                    <h2><i class="fas fa-calendar"></i> All Hosted Events</h2>
                     <button class="btn btn-primary" onclick="window.location.href='create-event.html'">
                         <i class="fas fa-plus"></i> Create Event
                     </button>
                 </div>
                 <div class="events-grid" id="recentEvents">
                     <!-- Events will be populated here -->
+                    <div class="loading-indicator">
+                        <i class="fas fa-spinner fa-spin"></i> Loading events...
+                    </div>
                 </div>
             </div>
         </div>

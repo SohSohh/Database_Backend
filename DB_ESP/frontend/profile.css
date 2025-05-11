@@ -71,7 +71,7 @@
   font-size: 2rem;
   color: var(--arctic);
   margin-bottom: 0.5rem;
-  font-family: "BlushAsliring", "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Playfair Display", "Inter", system-ui, -apple-system, sans-serif;
   letter-spacing: 0.5px;
   position: relative;
   display: inline-block;
@@ -96,7 +96,7 @@
 .profile-info p {
   color: var(--apres-ski);
   font-size: 1.1rem;
-  font-family: "Retro Floral", "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Source Sans 3", "Inter", system-ui, -apple-system, sans-serif;
   letter-spacing: 0.2px;
 }
 
@@ -108,7 +108,7 @@
   border-radius: 20px;
   font-size: 0.9rem;
   color: var(--glow-color);
-  font-family: "Retro Floral", "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Source Sans 3", "Inter", system-ui, -apple-system, sans-serif;
 }
 
 /* Profile Details */
@@ -157,7 +157,7 @@
   font-size: 0.9rem;
   color: var(--apres-ski);
   margin-bottom: 0.5rem;
-  font-family: "Retro Floral", "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Source Sans 3", "Inter", system-ui, -apple-system, sans-serif;
   letter-spacing: 0.2px;
   position: relative;
   z-index: 1;
@@ -167,7 +167,7 @@
   font-size: 1.2rem;
   color: var(--arctic);
   font-weight: 500;
-  font-family: "BlushAsliring", "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Playfair Display", "Inter", system-ui, -apple-system, sans-serif;
   letter-spacing: 0.5px;
   position: relative;
   z-index: 1;
@@ -241,14 +241,16 @@
 
 /* Font Faces */
 @font-face {
-  font-family: "BlushAsliring";
-  src: url("static/fonts/BlushAsliring-Regular.otf") format("opentype");
+  font-family: "Playfair Display";
+  src: url("static/fonts/PlayfairDisplay-VariableFont_wght.ttf") format("truetype"),
+       url("static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: "Retro Floral";
-  src: url("static/fonts/Retro Floral.otf") format("opentype"), url("static/fonts/Retro Floral.ttf") format("truetype");
+  font-family: "Source Sans 3";
+  src: url("static/fonts/SourceSans3-VariableFont_wght.ttf") format("truetype"),
+       url("static/fonts/SourceSans3-Italic-VariableFont_wght.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }

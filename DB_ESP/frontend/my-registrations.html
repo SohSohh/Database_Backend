@@ -92,7 +92,7 @@
   margin-bottom: 1rem;
   letter-spacing: 0.5px;
   line-height: 1.3;
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Playfair Display', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .event-date, .event-location {
@@ -148,27 +148,112 @@
   font-weight: 500;
   font-size: 0.9rem;
   letter-spacing: 0.2px;
-  font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Source Sans 3', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .attendee-count i, 
 .event-rating i {
   color: var(--glow-color);
   font-size: 1rem;
+  margin-right: 0.25rem;
 }
 
-/* Move button to its own line with proper spacing */
+/* Event actions with improved layout */
 .event-actions {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  align-items: center;
+}
+
+/* Meta information in the left column */
+.event-meta {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   justify-content: center;
+}
+
+/* Event status indicators */
+.event-status {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.event-status.active {
+  background-color: rgba(var(--glow-color-rgb), 0.1);
+  color: var(--glow-color);
+  border: 1px solid rgba(var(--glow-color-rgb), 0.2);
+}
+
+.event-status.upcoming {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+.event-status.past {
+  background-color: rgba(96, 125, 139, 0.1);
+  color: #607D8B;
+  border: 1px solid rgba(96, 125, 139, 0.2);
+}
+
+/* Button container in the right column */
+.event-button {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Button group layout for multiple buttons */
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Cancel button style */
+.event-actions .btn-cancel {
+  background: transparent;
+  color: #e53935;
+  border: 1px solid #e53935;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-actions .btn-cancel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: #e53935;
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.event-actions .btn-cancel:hover {
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+}
+
+.event-actions .btn-cancel:hover::before {
   width: 100%;
 }
 
 .event-actions .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.25rem;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -181,7 +266,8 @@
   position: relative;
   z-index: 10;
   pointer-events: auto;
-  width: 100%;
+  width: auto;
+  min-width: 140px;
 }
 
 .event-actions .btn-primary {
@@ -222,6 +308,40 @@
   transform: translateX(5px);
 }
 
+/* Enhance event card interaction */
+.event-card:hover .event-actions {
+  transform: translateY(-5px);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-status {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Success and error message styling */
+.success-message, .error-message {
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.3s ease forwards;
+  color: white;
+}
+
+.success-message {
+  background-color: #4CAF50;
+}
+
+.error-message {
+  background-color: #F44336;
+}
+
+.success-message i, .error-message i {
+  font-size: 1.2rem;
+}
+
 /* Animations */
 @keyframes fadeInUp {
   from {
@@ -232,6 +352,63 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .event-actions {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .event-meta {
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+  }
+  
+  .event-button {
+    justify-content: flex-start;
+  }
+  
+  .button-group {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-button .btn {
+    width: 100%;
+  }
+  
+  .button-group {
+    width: 100%;
+    flex-direction: column;
+  }
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+       url('static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+       url('static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
     </style>
 </head>
@@ -273,12 +450,6 @@
                     <a href="my-registrations.html" class="nav-link active">
                         <i class="fas fa-ticket-alt"></i>
                         My Registrations
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-feedback.html" class="nav-link">
-                        <i class="fas fa-comment"></i>
-                        My Feedback
                     </a>
                 </li>
                 <li class="nav-item">
@@ -326,19 +497,27 @@
                         <div class="society-name">
                           <i class="fas fa-users"></i> BLM229
                         </div>
-                        <p class="event-description">Short description of the event goes here.</p>
-                        <div class="event-stats">
+                        <p class="event-description">Short description of the event goes here.</p>                        <div class="event-stats">
                           <span class="attendee-count">
                             <i class="fas fa-user"></i> 1 attending
                           </span>
                           <span class="event-rating">
                             <i class="fas fa-star"></i> Rating:3
                           </span>
-                        </div>
-                        <div class="event-actions">
-                          <button class="btn btn-primary">
-                            <i class="fas fa-info-circle"></i> View Details
-                          </button>
+                        </div>                        <div class="event-actions">
+                          <div class="event-meta">
+                            <span class="event-status active">Registration Active</span>
+                          </div>
+                          <div class="event-button">
+                            <div class="button-group">
+                              <button class="btn btn-primary">
+                                <i class="fas fa-info-circle"></i> View Details
+                              </button>
+                              <button class="btn btn-cancel">
+                                <i class="fas fa-times-circle"></i> Cancel
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

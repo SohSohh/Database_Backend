@@ -63,11 +63,58 @@
             color: #6c757d;
             font-size: 0.9rem;
             margin-top: 10px;
-        }
-        .role-select {
+        }        .role-select {
             padding: 5px;
             border-radius: 4px;
             border: 1px solid #ddd;
+        }
+          /* Notification styles and animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Hide notification from document flow */
+        #notification-container {
+            pointer-events: none; /* Let clicks pass through container but not notifications */
+            max-width: 320px;
+            z-index: 9999;
+        }
+        
+        #notification-container .notification {
+            pointer-events: auto; /* Enable clicks on the actual notifications */
+            border-left-width: 4px;
+            transform-origin: top right;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.18);
+            margin-bottom: 15px;
+            animation: slideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+            max-height: 200px;
+            transition: max-height 0.5s ease, margin 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        #notification-container .notification.closing {
+            max-height: 0;
+            margin-bottom: 0;
+            opacity: 0;
+            transform: translateX(100%);
         }
     </style>
 </head>
@@ -116,9 +163,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="event-feedback.html" class="nav-link">
-                        <i class="fas fa-comment"></i>
-                        Feedback
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Settings
                     </a>
                 </li>
                 <li class="nav-item">

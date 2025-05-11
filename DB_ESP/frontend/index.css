@@ -1,15 +1,15 @@
-        /* Custom Fonts */
-        @font-face {
-            font-family: 'BlushAsliring';
-            src: url('./static/fonts/BlushAsliring-Regular.otf') format('opentype');
+        /* Custom Fonts */        @font-face {
+            font-family: 'PlayfairDisplay';
+            src: url('./static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+                 url('./static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
         }
         @font-face {
-            font-family: 'Retro Floral';
-            src: url('./static/fonts/Retro Floral.otf') format('opentype'),
-                 url('./static/fonts/Retro Floral.ttf') format('truetype');
+            font-family: 'SourceSans3';
+            src: url('./static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+                 url('./static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
@@ -371,24 +371,20 @@
             margin: 0 auto;
             position: relative;
             z-index: 2;
-        }
-
-        /* Typography */
+        }        /* Typography */
         h1, h2, h3, h4, h5, h6 {
             color: var(--arctic);
             font-weight: 700;
-            font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'PlayfairDisplay', 'Inter', system-ui, -apple-system, sans-serif;
         }
         h1 { font-size: 3rem; margin-bottom: 1.5rem; line-height: 1.2; }
         h2 { font-size: 2.5rem; margin-bottom: 1rem; text-align: center;}
         h3 { font-size: 1.5rem; margin-bottom: 0.75rem; }
         h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
         h5 { font-size: 1rem; margin-bottom: 0.5rem; }
-        h6 { font-size: 0.85rem; margin-bottom: 0.5rem; }
-
-        /* Secondary text: p, span, small, label, li */
+        h6 { font-size: 0.85rem; margin-bottom: 0.5rem; }        /* Secondary text: p, span, small, label, li */
         p, span, small, label, li {
-            font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'SourceSans3', 'Inter', system-ui, -apple-system, sans-serif;
         }
         p { color: var(--apres-ski); margin-bottom: 1rem; }
 

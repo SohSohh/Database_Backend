@@ -1,5 +1,22 @@
 /* Announcement Details CSS - Enhanced Version */
 
+/* Font Faces - Defined once */
+@font-face {
+    font-family: 'PlayfairDisplay';
+    src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+         url('static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SourceSans3';
+    src: url('static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+         url('static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* Root Variables - Using your existing color scheme */
 :root {
   /* Keeping your color palette */
@@ -22,20 +39,58 @@
   --transition-smooth: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* ===== Announcement Banner ===== */
+.announcement-banner {
+  height: 300px;
+  width: 100%;
+  background-color: var(--card-bg-light);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 1rem 1rem 0 0;
+  position: relative;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+.announcement-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+}
+
+.banner-actions {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 2; /* Make sure it's above the banner::after overlay */
+}
+
 /* ===== Announcement Container ===== */
 .announcement-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
+  max-width: 1500px; /* Increased width for wider content */
+  width: 95%; /* Add width to ensure it fills the space properly */
+  margin: 0 auto; /* Center the container */
+  padding: 0; /* Remove padding to allow banner to extend fully */
   animation: fadeIn 0.8s ease forwards;
+  background-color: var(--midnight);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
 }
 
 /* ===== Announcement Header ===== */
 .announcement-header {
   margin-bottom: 2rem;
   position: relative;
-  padding-bottom: 1.5rem;
+  padding: 2rem 1.5rem 1.5rem;
   border-bottom: 1px solid var(--border-color-light);
+  text-align: center; /* Center the header content */
+  background-color: var(--midnight);
 }
 
 .announcement-header::after {
@@ -49,7 +104,7 @@
 }
 
 .announcement-title {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 3rem;
   font-weight: 800;
   color: var(--arctic);
@@ -71,6 +126,7 @@
   animation: fadeInUp 0.6s ease forwards;
   animation-delay: 0.2s;
   opacity: 0;
+  justify-content: center; /* Center the meta info items */
 }
 
 .category-badge {
@@ -84,7 +140,7 @@
   letter-spacing: 0.5px;
   box-shadow: 0 4px 10px rgba(var(--glow-color-rgb), 0.3);
   transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
-  font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'SourceSans3', sans-serif;
 }
 
 .category-badge:hover {
@@ -98,7 +154,7 @@
   gap: 0.5rem;
   color: var(--apres-ski);
   font-size: 0.95rem;
-  font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'SourceSans3', sans-serif;
 }
 
 .meta-item i {
@@ -109,10 +165,10 @@
 .announcement-actions {
   display: flex;
   gap: 1rem;
-  margin: 2rem 0;
   animation: fadeInUp 0.6s ease forwards;
   animation-delay: 0.3s;
   opacity: 0;
+  justify-content: center; /* Center the action buttons */
 }
 
 .action-btn {
@@ -207,15 +263,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  text-align: center; /* Center all text in detail item */
 }
 
 .detail-label {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center the label items */
   gap: 0.5rem;
   color: var(--apres-ski);
   font-size: 0.95rem;
-  font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'SourceSans3', sans-serif;
 }
 
 .detail-label i {
@@ -226,7 +284,8 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--arctic);
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
+  text-align: center; /* Ensure value is centered */
 }
 
 /* ===== Announcement Content ===== */
@@ -255,19 +314,21 @@
 }
 
 .announcement-content h2 {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 1.8rem;
   color: var(--arctic);
   margin-bottom: 1.2rem;
   position: relative;
   padding-bottom: 0.5rem;
+  text-align: center; /* Center headings */
 }
 
 .announcement-content h2::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 50%; /* Center the underline */
+  transform: translateX(-50%); /* Ensure it's perfectly centered */
   width: 60px;
   height: 3px;
   background-color: var(--glow-color);
@@ -337,7 +398,7 @@
 }
 
 .comments-header h2 {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 1.5rem;
   color: var(--arctic);
   display: flex;
@@ -400,7 +461,7 @@
 .comment-author {
   font-weight: 600;
   color: var(--arctic);
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
 }
 
 .comment-date {
@@ -438,7 +499,7 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--arctic);
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
 }
 
 .form-group textarea {
@@ -496,7 +557,7 @@
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Changed from flex-end to center */
 }
 
 /* ===== Related Section ===== */
@@ -512,7 +573,7 @@
 }
 
 .related-section h2 {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 1.5rem;
   color: var(--arctic);
   margin-bottom: 1.5rem;
@@ -615,7 +676,7 @@
 }
 
 .event-title {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 1.3rem;
   color: var(--arctic);
   margin-bottom: 1rem;
@@ -764,7 +825,7 @@
 }
 
 .modal-header h3 {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 1.5rem;
   color: var(--arctic);
 }
@@ -830,7 +891,7 @@
 }
 
 #rsvpModal .modal-header h3 {
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
   font-size: 1.8rem;
   color: var(--arctic);
   position: relative;
@@ -1022,7 +1083,7 @@
   margin-bottom: 1rem;
   letter-spacing: 0.5px;
   line-height: 1.3;
-  font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'PlayfairDisplay', serif;
 }
 
 .event-date, .event-location, .society-name {
@@ -1041,7 +1102,7 @@
 }
 
 .event-description {
-  color: var(--apres-ski);
+  color: var (--apres-ski);
   font-size: 0.95rem;
   margin: 1rem 0;
   line-height: 1.5;

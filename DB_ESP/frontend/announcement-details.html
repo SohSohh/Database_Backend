@@ -12,69 +12,28 @@
 </head>
 <body>
     <!-- Mobile Menu Toggle -->
-    <button class="menu-toggle">
+    <button class="menu-toggle" style="display:none;">
         <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="index.html" class="brand-link">
-                <h1>EventHub</h1>
-            </a>
-            <h2>Event Viewer</h2>
-        </div>
-        <nav class="nav-menu">
-            <ul>
-                <li class="nav-item">
-                    <a href="viewer-dashboard.html" class="nav-link">
-                        <i class="fas fa-home"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="profile.html" class="nav-link">
-                        <i class="fas fa-user"></i>
-                        My Profile
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-societies.html" class="nav-link">
-                        <i class="fas fa-users"></i>
-                        My Societies
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-registrations.html" class="nav-link">
-                        <i class="fas fa-ticket-alt"></i>
-                        My Registrations
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-feedback.html" class="nav-link">
-                        <i class="fas fa-comment"></i>
-                        My Feedback
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="settings.html" class="nav-link">
-                        <i class="fas fa-cog"></i>
-                        Settings
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" id="logout-btn" class="nav-link">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
+    </button>    <!-- Main Content -->
+    <div class="main-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:100vh;margin-left: 0px;">
         <div class="announcement-container">
+            <!-- Banner Background -->
+            <div class="announcement-banner" id="announcement-banner">
+                <!-- The background image will be set via JS -->
+                
+                <!-- Action Buttons positioned over the banner -->
+                <div class="banner-actions">
+                    <div class="announcement-actions">
+                        <button id="rsvp-button" class="action-btn rsvp-btn">
+                            <i class="fas fa-calendar-check"></i> RSVP
+                        </button>
+                        <button id="share-button" class="action-btn share-btn">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Announcement Header -->
             <div class="announcement-header">
                 <h1 id="announcement-title" class="announcement-title">Loading announcement...</h1>
@@ -87,16 +46,6 @@
                         <i class="fas fa-user"></i> by: Loading...
                     </span>
                 </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="announcement-actions">
-                <button id="rsvp-button" class="action-btn rsvp-btn">
-                    <i class="fas fa-calendar-check"></i> RSVP
-                </button>
-                <button id="share-button" class="action-btn share-btn">
-                    <i class="fas fa-share-alt"></i> Share
-                </button>
             </div>
 
             <!-- Event Details Box -->

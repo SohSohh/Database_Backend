@@ -37,16 +37,17 @@
 
 /* Font Faces - Defined once */
 @font-face {
-    font-family: 'BlushAsliring';
-    src: url('static/fonts/BlushAsliring-Regular.otf') format('opentype');
+    font-family: 'PlayfairDisplay';
+    src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+         url('static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'Retro Floral';
-    src: url('static/fonts/Retro Floral.otf') format('opentype'),
-         url('static/fonts/Retro Floral.ttf') format('truetype');
+    font-family: 'SourceSans3';
+    src: url('static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+         url('static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -56,7 +57,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'SourceSans3', sans-serif;
 }
 
 body {
@@ -1590,7 +1591,7 @@ body {
     margin-bottom: 1rem;
     letter-spacing: 0.5px;
     line-height: 1.3;
-    font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'PlayfairDisplay', serif;
 }
 
 .society-description {
@@ -1856,7 +1857,7 @@ body {
     font-weight: 600;
     color: var(--arctic);
     margin: 0;
-    font-family: 'BlushAsliring', 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'PlayfairDisplay', serif;
     letter-spacing: 0.5px;
 }
 
