@@ -1933,7 +1933,6 @@ h1.glitch-text {
                     <i class="fas fa-user"></i>
                 </a>
                 <div class="profile-dropdown-menu" role="menu" id="profileDropdown">
-                    <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
                     <a href="handler-dashboard.html" role="menuitem"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                     <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
@@ -2367,7 +2366,7 @@ h1.glitch-text {
                       <li><a href="announcements.html">Browse Events</a></li>
                       <li><a href="about.html">About Us</a></li>
                       <li><a href="contact.html">Contact</a></li>
-                      <li><a href="faq.html">FAQ</a></li>
+                      <li><a href="index.html#faq-section">FAQ</a></li>
                   </ul>
               </div>
               
@@ -2483,7 +2482,6 @@ h1.glitch-text {
             if (accessToken) {
               // User is logged in
               profileDropdown.innerHTML = `
-                <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
                 <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
                   <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
                 </a>

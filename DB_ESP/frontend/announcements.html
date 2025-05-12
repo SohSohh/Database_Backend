@@ -1507,7 +1507,7 @@
                     <i class="fas fa-user"></i>
                 </a>
                 <div class="profile-dropdown-menu" role="menu" id="profileDropdown">
-                    <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
+                   
                     <a href="handler-dashboard.html" role="menuitem"><i class="fas fa-tachometer-alt"></i> Handler Dashboard</a>
                     <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
@@ -1589,7 +1589,7 @@
                     <li><a href="announcements.html">Events</a></li>
                     <li><a href="about.html">About Us</a></li>
                     <li><a href="about.html#contact">Contact</a></li>
-                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="index.html#faq-section">FAQ</a></li>
                 </ul>
             </div>
             
@@ -1762,7 +1762,6 @@
             if (accessToken) {
               // User is logged in
               profileDropdown.innerHTML = `
-                <a href="profile.html" role="menuitem"><i class="fas fa-user-circle"></i> My Profile</a>
                 <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
                   <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
                 </a>

@@ -253,8 +253,8 @@ async function loadAnnouncementDetails() {
         elements.title.textContent = event.name;
         
         // Set banner image if available
-        if (event.image_url) {
-            document.getElementById('announcement-banner').style.backgroundImage = `url(${event.image_url})`;
+        if (event.banner) {
+            document.getElementById('announcement-banner').style.backgroundImage = `url(${event.banner})`;
         } else {
             // Use a default banner if no image is provided
             document.getElementById('announcement-banner').style.backgroundImage = `url('static/images/placeholder.png')`;
@@ -268,11 +268,21 @@ async function loadAnnouncementDetails() {
         elements.category.style.borderRadius = '16px';
         elements.category.style.fontSize = '0.875rem';
         elements.category.style.fontWeight = '500';
-        elements.category.style.fontFamily = 'Retro Floral';
+        elements.category.style.fontFamily = 'Retro Floral';        elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;
         
+        // Make the host name clickable - direct link to society details
+        if (event.host_id && event.host_username) {
+            elements.author.innerHTML = `by <a href="society-details.html?id=${event.host_id}" class="host-link">${event.host_username}</a>`;
+            console.log(`Created link to society profile: ${event.host_id}`);
+        } else if (event.host_username) {
+            elements.author.textContent = `by ${event.host_username}`;
+            console.log("Host username present but no ID available for link");
+        } else {
+            elements.author.textContent = `by Unknown Host`;
+            console.log("No host information available");
+        }
         
-        elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;
-        elements.author.textContent = `by ${event.host_username}`;        // Format and enhance the description content        // Process the description to add better formatting
+        // Format and enhance the description content// Process the description to add better formatting
         let formattedContent = event.description;
         
         // Set start/end time if available
@@ -610,10 +620,9 @@ function setupEventListeners() {
         }, 2000);
         
         showSuccessMessage('Link copied to clipboard!');
-    });
-
-    // Close modals when clicking outside
+    });    // Close modals when clicking outside
     window.addEventListener('click', function(event) {
+        // Close modals when clicking outside
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
         }

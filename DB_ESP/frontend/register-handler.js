@@ -4,8 +4,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const registerForm = document.getElementById("registerHandlerForm");
 
   if (registerForm) {
+    // Get the submit button for updating its state
+    const submitButton = registerForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton ? submitButton.textContent : 'Register';
+    
     registerForm.addEventListener("submit", async function (e) {
-      e.preventDefault();
+      e.preventDefault();      // Disable the button and show loading state
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.classList.remove('success', 'error');  // Clear any previous states
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      }
 
       const formData = {
         email: document.getElementById('email').value,
@@ -13,9 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         password: document.getElementById('password').value,
         password2: document.getElementById('confirmPassword').value,  // Important: Match backend expectation
         society_name: document.getElementById('handlerName').value
-      };
-
-      try {
+      };      try {
         const response = await fetch(`${API_BASE_URL}/api/users/register/handler/`, {
           method: 'POST',
           headers: {
@@ -27,20 +34,65 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
 
         if (response.ok) {
-          showSuccess(registerForm, "Registration successful! Redirecting to dashboard...");
+          // Show success in button
+          if (submitButton) {
+            submitButton.innerHTML = '<i class="fas fa-check"></i> Success! Redirecting...';
+            submitButton.classList.add('success');
+            submitButton.classList.remove('error'); // Remove error class if it existed
+          }
+          
+          // Show success message
+          showSuccess(registerForm, "Registration successful! Redirecting to login page...");
+            // Short delay before redirect to show success state
           setTimeout(() => {
-            window.location.href = 'login.html';
-          }, 2000);
-        } else {
-          const message = data.detail || Object.values(data)[0]?.[0] || 'Registration failed';
+            // Create a smooth transition effect before redirecting
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            // After fade-out effect, redirect to login page
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 500);
+          }, 800);
+        } else {          // Show error in button
+          if (submitButton) {
+            submitButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Registration Failed';
+            submitButton.classList.add('error');
+            submitButton.classList.remove('success'); // Remove success class if it existed
+            
+            // Reset button after a delay
+            setTimeout(() => {
+              submitButton.disabled = false;
+              submitButton.innerHTML = originalButtonText;
+              submitButton.classList.remove('error');
+            }, 2000);
+          }
+          
+          const message = getErrorMessage(data);
           showError(registerForm, message);
         }
       } catch (error) {
+        console.error("Registration error:", error);
+          // Reset button state on error
+        if (submitButton) {
+          submitButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Connection Error';
+          submitButton.classList.add('error');
+          submitButton.classList.remove('success');
+          
+          // Reset button after a delay
+          setTimeout(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+            submitButton.classList.remove('error');
+          }, 2000);
+        }
+        
         showError(registerForm, "Registration failed. Please try again.");
       }
     });
   }
 
+  // Use the existing getErrorMessage function for more detailed error handling
   function getErrorMessage(errorData) {
     // Handle different types of API error responses
     if (!errorData) {
@@ -72,40 +124,66 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // If we can't identify specific errors, show the full error as JSON
     return `API Error: ${JSON.stringify(errorData)}`;
-  }
-
-  function showError(form, message) {
-    let errorElement = form.querySelector(".error-message");
+  }  function showError(form, message) {
+    // Check if status-messages container exists, if not create it
+    let messagesContainer = form.querySelector("#status-messages");
+    if (!messagesContainer) {
+      messagesContainer = document.createElement("div");
+      messagesContainer.id = "status-messages";
+      form.prepend(messagesContainer);
+    }
+    
+    let errorElement = messagesContainer.querySelector(".error-message");
     if (!errorElement) {
       errorElement = document.createElement("div");
       errorElement.className = "error-message";
-      form.appendChild(errorElement);
+      messagesContainer.appendChild(errorElement);
     }
-    errorElement.textContent = message;
+    
+    // Make container visible
+    messagesContainer.style.display = "block";
+    
+    // Add icon to error message
+    errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
     errorElement.style.display = "block";
     
     // Hide any success message
-    const successElement = form.querySelector(".success-message");
+    const successElement = messagesContainer.querySelector(".success-message");
     if (successElement) successElement.style.display = "none";
     
     // Auto-hide after 5 seconds
     setTimeout(() => {
       errorElement.style.display = "none";
+      if (!successElement || successElement.style.display === "none") {
+        messagesContainer.style.display = "none";
+      }
     }, 5000);
   }
-
   function showSuccess(form, message) {
-    let successElement = form.querySelector(".success-message");
+    // Check if status-messages container exists, if not create it
+    let messagesContainer = form.querySelector("#status-messages");
+    if (!messagesContainer) {
+      messagesContainer = document.createElement("div");
+      messagesContainer.id = "status-messages";
+      form.prepend(messagesContainer);
+    }
+    
+    let successElement = messagesContainer.querySelector(".success-message");
     if (!successElement) {
       successElement = document.createElement("div");
       successElement.className = "success-message";
-      form.appendChild(successElement);
+      messagesContainer.appendChild(successElement);
     }
-    successElement.textContent = message;
+    
+    // Make container visible
+    messagesContainer.style.display = "block";
+    
+    // Add icon to success message
+    successElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
     successElement.style.display = "block";
     
     // Hide any error message
-    const errorElement = form.querySelector(".error-message");
+    const errorElement = messagesContainer.querySelector(".error-message");
     if (errorElement) errorElement.style.display = "none";
   }
 });

@@ -101,11 +101,11 @@ class EventAttendanceView(generics.GenericAPIView):
             action = serializer.validated_data['action']
             user = request.user
 
-            # Check if user is a viewer (consistent with user model)
+            # Enforce that only viewers can attend events
             if user.user_type != 'viewer':
                 return Response(
                     {"error": "Only viewers can attend events"},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_403_FORBIDDEN
                 )
 
             if action == 'attend':
