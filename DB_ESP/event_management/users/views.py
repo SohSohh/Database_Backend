@@ -9,18 +9,57 @@ from rest_framework.decorators import action
 from django.db.models import Subquery, OuterRef, Count, F, Value, CharField
 from django.db.models.functions import Concat
 from django.db import models
-from .models import CustomUser, Handler, Viewer, Membership
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import CustomUser, Handler, Viewer, Membership, HandlerApplication
 from .serializers import (
     HandlerSerializer,
     ViewerSerializer,
     CustomTokenObtainPairSerializer,
     ViewerRegistrationSerializer,
     HandlerRegistrationSerializer,
+    HandlerApplicationSerializer,
     SocietyMembershipSerializer,
     JoinCodeSerializer, MemberWithRoleSerializer, HandlerProfileUpdateSerializer,
     ViewerProfileUpdateSerializer, HandlerWithRoleSerializer
 )
 from .permissions import IsHandler, IsViewer
+
+
+def send_application_email(application, is_approved):
+    """Send email notification for handler application status"""
+    subject = f"Handler Application for {application.society_name} - {'Approved' if is_approved else 'Denied'}"
+    
+    if is_approved:
+        message = f"""
+        Hello {application.username},
+        
+        We are pleased to inform you that your application to register {application.society_name} as a handler has been approved.
+        
+        You can now log in using your email address {application.email} and the password you provided during registration.
+        
+        Thank you for joining our platform!
+        """
+    else:
+        message = f"""
+        Hello {application.username},
+        
+        We regret to inform you that your application to register {application.society_name} as a handler has been denied.
+        
+        If you believe this is an error or would like more information, please contact our support team.
+        
+        Thank you for your interest in our platform.
+        """
+    
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [application.email]
+    
+    try:
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        return False
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -33,11 +72,30 @@ class ViewerRegistrationView(generics.CreateAPIView):
     serializer_class = ViewerRegistrationSerializer
 
 
-class HandlerRegistrationView(generics.CreateAPIView):
-    queryset = Handler.objects.all()
+class HandlerApplicationView(generics.CreateAPIView):
+    """
+    View for submitting applications to become a handler
+    Replaces direct handler registration with an application process
+    """
+    queryset = HandlerApplication.objects.all()
     permission_classes = (permissions.AllowAny,)
-    serializer_class = HandlerRegistrationSerializer
+    serializer_class = HandlerApplicationSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({
+            "detail": "Your application has been submitted and is pending review. You will be notified by email when it's processed."
+        }, status=status.HTTP_201_CREATED)
+
+
+class HandlerApplicationListView(generics.ListAPIView):
+    """View for admin users to list handler applications"""
+    queryset = HandlerApplication.objects.filter(status=HandlerApplication.STATUS_PENDING)
+    serializer_class = HandlerApplicationSerializer
+    permission_classes = (permissions.IsAdminUser,)
+    
 
 class SocietyListView(generics.ListAPIView):
     serializer_class = HandlerSerializer
@@ -309,4 +367,68 @@ class UserSocietiesView(generics.ListAPIView):
                 output_field=models.CharField(),
             )
         )
+
+
+class AdminDashboardView(generics.GenericAPIView):
+    """
+    Admin dashboard view that displays pending handler applications
+    and provides functionality to approve/deny them
+    """
+    permission_classes = (permissions.IsAdminUser,)
+    
+    def get(self, request, *args, **kwargs):
+        applications = HandlerApplication.objects.filter(status=HandlerApplication.STATUS_PENDING)
+        serializer = HandlerApplicationSerializer(applications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'])
+    def approve_application(self, request, pk=None):
+        """Approve a handler application"""
+        try:
+            application = HandlerApplication.objects.get(pk=pk, status=HandlerApplication.STATUS_PENDING)
+            
+            # Create the handler user
+            handler = Handler.objects.create_user(
+                username=application.username,
+                email=application.email,
+                password=application.password,
+                society_name=application.society_name
+            )
+            
+            # Generate join code
+            handler.generate_code()
+            
+            # Update application status
+            application.status = HandlerApplication.STATUS_APPROVED
+            application.save()
+            
+            # Send approval email
+            send_application_email(application, is_approved=True)
+            
+            return Response({"detail": f"Application for {application.society_name} approved."}, status=status.HTTP_200_OK)
+            
+        except HandlerApplication.DoesNotExist:
+            return Response({"error": "Application not found or already processed."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"Error approving application: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['post'])
+    def deny_application(self, request, pk=None):
+        """Deny a handler application"""
+        try:
+            application = HandlerApplication.objects.get(pk=pk, status=HandlerApplication.STATUS_PENDING)
+            
+            # Update application status
+            application.status = HandlerApplication.STATUS_DENIED
+            application.save()
+            
+            # Send denial email
+            send_application_email(application, is_approved=False)
+            
+            return Response({"detail": f"Application for {application.society_name} denied."}, status=status.HTTP_200_OK)
+            
+        except HandlerApplication.DoesNotExist:
+            return Response({"error": "Application not found or already processed."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"Error denying application: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 

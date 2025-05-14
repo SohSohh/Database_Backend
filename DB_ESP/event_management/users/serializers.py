@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Handler, Viewer, Membership
+from .models import Handler, Viewer, Membership, HandlerApplication
 
 User = get_user_model()
 
@@ -169,4 +169,35 @@ class SocietyMembershipSerializer(serializers.Serializer):
 
 class JoinCodeSerializer(serializers.Serializer):
     join_code = serializers.CharField(read_only=True)
+
+
+class HandlerApplicationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+    
+    class Meta:
+        model = HandlerApplication
+        fields = ('username', 'email', 'password', 'password2', 'society_name')
+        extra_kwargs = {
+            'email': {'required': True},
+            'society_name': {'required': True}
+        }
+    
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        
+        # Check if email is already in use by an existing user
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError({"email": "This email is already in use."})
+        
+        # Check if username is already in use by an existing user
+        if User.objects.filter(username=attrs['username']).exists():
+            raise serializers.ValidationError({"username": "This username is already in use."})
+        
+        return attrs
+    
+    def create(self, validated_data):
+        validated_data.pop('password2')
+        return HandlerApplication.objects.create(**validated_data)
 
