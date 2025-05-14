@@ -9,12 +9,293 @@
     <link rel="stylesheet" href="announcements-details.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Cursor Styles */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--glow-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999; 
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+        }
+        
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(var(--glow-color-rgb), 0.1);
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.15s ease-out, background 0.3s ease;
+        }
+        
+        .cursor-hover {
+            width: 30px;
+            height: 30px;
+            border-color: var(--highlight-color);
+        }
+        
+        .follower-hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: rgba(var(--glow-color-rgb), 0.2);
+        }
+
+        /* Header and Navigation Styles */
+        header {
+            padding: 1rem;
+            background-color: rgba(242, 239, 233, 0.85);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(38, 38, 38, 0.08);
+        }
+        
+        header.scrolled {
+            padding: 0.7rem 1rem;
+            background-color: rgba(242, 239, 233, 0.95);
+            box-shadow: 0 8px 20px rgba(38, 38, 38, 0.15);
+        }
+        
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .logo a {
+            color: var(--arctic);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+        
+        .logo a::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--glow-color);
+            transform: translateX(-100%);
+            transition: all 0.3s ease;
+        }
+        
+        .logo a:hover::before {
+            transform: translateX(0);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        .nav-links li a {
+            color: var(--apres-ski);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links li a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--glow-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-links li a:hover, .nav-links li a.active {
+            color: var(--glow-color);
+        }
+        
+        .nav-links li a:hover::after, .nav-links li a.active::after {
+            width: 100%;
+        }
+
+        /* Profile Dropdown Menu */
+        .profile-icon {
+            position: relative;
+        }
+        
+        .profile-icon a {
+            color: var(--apres-ski);
+            font-size: 1.5rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-icon a i {
+            font-size: 2rem;
+            color: var(--apres-ski);
+            transition: color 0.3s ease;
+        }
+        
+        .profile-icon a:hover {
+            color: var(--glow-color);
+            transform: scale(1.1);
+        }
+        
+        .profile-icon a:hover i {
+            color: var(--glow-color);
+        }
+
+        .profile-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background-color: var(--card-bg-light, #FFFFFF);
+            border: 1px solid var(--border-color-light, #BFBFBD);
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(38, 38, 38, 0.08);
+            z-index: 101;
+            min-width: 220px;
+            padding: 0.5rem 0;
+        }
+
+        .profile-dropdown-menu.active {
+            display: block;
+        }
+
+        .profile-dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.5rem;
+            color: var(--arctic, #262626);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .profile-dropdown-menu a i {
+            margin-right: 12px;
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+            color: var(--apres-ski, #8C8C8C);
+        }
+
+        .profile-dropdown-menu a#logoutBtnDropdown {
+            color: #e74c3c;
+        }
+
+        /* Hamburger Menu */
+        #hamburger-menu {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 2rem;
+            height: 2rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+
+        #hamburger-menu span {
+            width: 2rem;
+            height: 0.25rem;
+            background: var(--arctic, #262626);
+            border-radius: 10px;
+            transition: all 0.3s linear;
+            position: relative;
+            transform-origin: 1px;
+        }
+        
+        /* Adjust main content to account for fixed header */
+        .main-content {
+            padding-top: 80px !important;
+        }
+
+        @media screen and (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: var(--midnight, #F2EFE9);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: right 0.3s ease;
+                z-index: 99;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            #hamburger-menu {
+                display: flex;
+                z-index: 100;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Mobile Menu Toggle -->
-    <button class="menu-toggle" style="display:none;">
-        <i class="fas fa-bars"></i>
-    </button>    <!-- Main Content -->
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Header from index page -->
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <a href="index.html">EventHub</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="announcements.html" class="active">Events</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="about.html#contact">Contact</a></li>
+            </ul>
+            <div class="profile-icon">
+                <a href="#" id="profileIconLink" aria-haspopup="true" aria-expanded="false" title="Profile menu">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="profile-dropdown-menu" role="menu" id="profileDropdown">
+                    <!-- Dropdown content will be populated by JS -->
+                </div>
+            </div>
+            <button id="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
     <div class="main-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:100vh;margin-left: 0px;">
         <div class="announcement-container">
             <!-- Banner Background -->
@@ -134,37 +415,6 @@
         </div>
     </div>
 
-    <!-- RSVP Modal -->
-    <div id="rsvpModal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <div class="modal-header">
-                <h3>Will you attend this event?</h3>
-            </div>
-            <form id="rsvpForm">
-                <div class="rsvp-options">
-                    <div class="rsvp-option" data-value="yes">
-                        <i class="fas fa-check-circle"></i>
-                        <div>Yes</div>
-                    </div>
-                    <div class="rsvp-option" data-value="maybe">
-                        <i class="fas fa-question-circle"></i>
-                        <div>Maybe</div>
-                    </div>
-                    <div class="rsvp-option" data-value="no">
-                        <i class="fas fa-times-circle"></i>
-                        <div>No</div>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="action-btn rsvp-btn">
-                        <i class="fas fa-check"></i> Confirm
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Share Modal -->
     <div id="shareModal" class="modal">
         <div class="modal-content">
@@ -196,5 +446,144 @@
     </div>
 
     <script src="announcement-details.js"></script>
+    
+    <!-- Additional script for header functionality -->
+    <script>
+        // Cursor Effect
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                follower.style.left = e.clientX + 'px';
+                follower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('cursor-hover');
+            follower.classList.add('follower-hover');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('cursor-hover');
+            follower.classList.remove('follower-hover');
+        });
+        
+        const links = document.querySelectorAll('a, button, .btn-primary, .btn-outline, .action-btn, .share-option, .close-modal');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursor.classList.add('cursor-hover');
+                follower.classList.add('follower-hover');
+            });
+            
+            link.addEventListener('mouseleave', () => {
+                cursor.classList.remove('cursor-hover');
+                follower.classList.remove('follower-hover');
+            });
+        });
+        
+        // Sticky Header
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Mobile Navigation
+        const hamburger = document.getElementById('hamburger-menu');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (hamburger && navLinks) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('open');
+                navLinks.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking a link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('open');
+                    navLinks.classList.remove('active');
+                });
+            });
+        }
+        
+        // Profile Dropdown
+        const profileIconLink = document.getElementById('profileIconLink');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        function updateProfileDropdown() {
+            const accessToken = localStorage.getItem('access_token');
+            const userType = localStorage.getItem('user_type');
+            profileDropdown.innerHTML = '';
+            
+            if (accessToken) {
+                // User is logged in
+                profileDropdown.innerHTML = `
+                <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
+                    <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
+                </a>
+                <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                `;
+            } else {
+                // Not logged in
+                profileDropdown.innerHTML = `
+                <a href="login.html" role="menuitem"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="register.html" role="menuitem"><i class="fas fa-user-plus"></i> Register</a>
+                `;
+            }
+        }
+
+        if (profileIconLink && profileDropdown) {
+            updateProfileDropdown();
+            profileIconLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                const isExpanded = profileIconLink.getAttribute('aria-expanded') === 'true' || false;
+                profileIconLink.setAttribute('aria-expanded', !isExpanded);
+                profileDropdown.classList.toggle('active');
+                updateProfileDropdown();
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!profileIconLink.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    if (profileDropdown.classList.contains('active')) {
+                        profileDropdown.classList.remove('active');
+                        profileIconLink.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+
+            // Close dropdown with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && profileDropdown.classList.contains('active')) {
+                    profileDropdown.classList.remove('active');
+                    profileIconLink.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Logout button logic (delegated)
+            profileDropdown.addEventListener('click', (event) => {
+                if (event.target.closest('#logoutBtnDropdown')) {
+                    event.preventDefault();
+                    // Remove tokens and user info
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    localStorage.removeItem('user_type');
+                    localStorage.removeItem('user_id');
+                    localStorage.removeItem('join_code');
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+    </script>
 </body>
 </html>
