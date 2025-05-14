@@ -580,42 +580,80 @@ function setupEventListeners() {
             showError('Failed to update attendance status');
         }
     });
-    
-    // RSVP option selection
-    elements.rsvpOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            // Remove selected class from all options
-            elements.rsvpOptions.forEach(opt => opt.classList.remove('selected'));
-            // Add selected class to clicked option
-            this.classList.add('selected');
+
+    // Share button click
+    elements.shareButton.addEventListener('click', function() {
+        console.log('Share button clicked');
+        if (elements.shareModal) {
+            elements.shareModal.style.display = 'block';
+            // Add the active class after a small delay to trigger the animation
+            setTimeout(() => {
+                elements.shareModal.classList.add('active');
+            }, 10);
+            elements.shareLink.value = window.location.href;
+        } else {
+            console.error('Share modal element not found');
+        }
+    });
+
+    // Copy link button click
+    if (elements.copyLinkBtn) {
+        elements.copyLinkBtn.addEventListener('click', function() {
+            elements.shareLink.select();
+            document.execCommand('copy');
+            
+            // Show copy success message
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                this.innerHTML = originalText;
+            }, 2000);
+            
+            showSuccessMessage('Link copied to clipboard!');
+        });
+    }
+
+    // Close modal when clicking close button
+    document.querySelectorAll('.close-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                modal.classList.remove('active');
+                // Hide the modal after the animation completes
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
         });
     });
 
-    // RSVP form submission
-    elements.rsvpForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const selectedOption = document.querySelector('.rsvp-option.selected');
-        if (!selectedOption) {
-            alert('Please select your attendance status');
-            return;
-        }
-
-        const value = selectedOption.dataset.value;
-        try {
-            // Only send attendance request if user selects "yes"
-            if (value === 'yes') {
-                await handleAttendance('attend');
-            } else if (currentAttendanceStatus) {
-                // If user was attending and now selects "no" or "maybe", unattend
-                await handleAttendance('unattend');
+    // Share options click handlers
+    document.querySelectorAll('.share-option').forEach(button => {
+        button.addEventListener('click', function() {
+            const platform = this.classList[1];
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(document.getElementById('announcement-title').textContent);
+            
+            let shareUrl;
+            switch (platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+                    break;
+                case 'email':
+                    shareUrl = `mailto:?subject=${title}&body=Check out this event: ${window.location.href}`;
+                    break;
             }
             
-            elements.rsvpModal.style.display = 'none';
-            document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-            showRSVPSuccessMessage();
-        } catch (error) {
-            showError('Failed to update attendance status');
-        }
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+            }
+        });
     });
 
     // Feedback form submission
@@ -642,85 +680,20 @@ function setupEventListeners() {
         document.querySelector('input[name="rating"]:checked').checked = false;
     });
 
-    // Share button click
-    elements.shareButton.addEventListener('click', function() {
-        elements.shareModal.style.display = 'block';
-        elements.shareLink.value = window.location.href;
-    });
-
-    // Share options click handlers
-    document.querySelectorAll('.share-option').forEach(button => {
-        button.addEventListener('click', function() {
-            const platform = this.classList[1];
-            const url = encodeURIComponent(window.location.href);
-            const title = encodeURIComponent(demoAnnouncement.title);
-            
-            let shareUrl;
-            switch (platform) {
-                case 'facebook':
-                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-                    break;
-                case 'twitter':
-                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
-                    break;
-                case 'linkedin':
-                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-                    break;
-                case 'email':
-                    shareUrl = `mailto:?subject=${title}&body=Check out this event: ${window.location.href}`;
-                    break;
-            }
-            
-            if (shareUrl) {
-                window.open(shareUrl, '_blank', 'width=600,height=400');
-            }
-        });
-    });
-
-    // Copy link button click
-    elements.copyLinkBtn.addEventListener('click', function() {
-        elements.shareLink.select();
-        document.execCommand('copy');
-        
-        // Show copy success message
-        const originalText = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-check"></i>';
-        setTimeout(() => {
-            this.innerHTML = originalText;
-        }, 2000);
-        
-        showSuccessMessage('Link copied to clipboard!');
-    });    // Close modals when clicking outside
+    // Close modals when clicking outside
     window.addEventListener('click', function(event) {
-        // Close modals when clicking outside
         if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
-            // Reset RSVP form if it's the RSVP modal
-            if (event.target === elements.rsvpModal) {
-                elements.rsvpForm.reset();
-                document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-            }
+            event.target.classList.remove('active');
+            setTimeout(() => {
+                event.target.style.display = 'none';
+            }, 300);
         }
-    });
-
-    // Close modal when clicking close button
-    document.querySelectorAll('.close-modal').forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            modal.style.display = 'none';
-            // Reset RSVP form if it's the RSVP modal
-            if (modal === elements.rsvpModal) {
-                elements.rsvpForm.reset();
-                document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
-            }
-        });
     });
 }
 
 // On page load or after RSVP, update the UI:
 function updateRSVPCounters() {
     document.getElementById('attending-count').textContent = demoAnnouncement.rsvp.attending;
-    document.getElementById('pending-count').textContent = demoAnnouncement.rsvp.pending;
     document.getElementById('not-attending-count').textContent = demoAnnouncement.rsvp.notAttending;
 }
 
@@ -732,11 +705,11 @@ function updateAttendanceButton(isAttending) {
     const rsvpButton = elements.rsvpButton;
     
     if (isAttending) {
-        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> Attending';
+        rsvpButton.innerHTML = '<i class="fas fa-check-circle"></i> Attending';
         rsvpButton.classList.add('attending');
-        rsvpButton.style.backgroundColor = '#4CAF50'; // Green for attending
+        rsvpButton.style.backgroundColor = '002366'; // dark blue for attending
     } else {
-        rsvpButton.innerHTML = '<i class="fas fa-calendar-plus"></i> RSVP';
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> RSVP';
         rsvpButton.classList.remove('attending');
         rsvpButton.style.backgroundColor = ''; // Reset to default color
     }
