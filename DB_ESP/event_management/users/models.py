@@ -100,3 +100,35 @@ class Membership(models.Model):
 
     class Meta:
         unique_together = ('viewer', 'handler')
+
+
+class HandlerApplication(models.Model):
+    """Application for creating a handler account"""
+    # Status choices
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_DENIED = 'denied'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_DENIED, 'Denied'),
+    ]
+
+    username = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)  # Will store the raw password temporarily
+    society_name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING,
+    )
+
+    def __str__(self):
+        return f"{self.society_name} Application ({self.get_status_display()})"
+
+    class Meta:
+        verbose_name = "Handler Application"
+        verbose_name_plural = "Handler Applications"
+        ordering = ['-created_at']

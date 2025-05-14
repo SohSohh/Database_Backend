@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         password2: document.getElementById('confirmPassword').value,  // Important: Match backend expectation
         society_name: document.getElementById('handlerName').value
       };      try {
-        const response = await fetch(`${API_BASE_URL}/api/users/register/handler/`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/apply/handler/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           
           // Show success message
-          showSuccess(registerForm, "Registration successful! Redirecting to login page...");
+          showSuccess(registerForm, "Application Sent! Your application will be reviewed by our team.");
             // Short delay before redirect to show success state
           setTimeout(() => {
             // Create a smooth transition effect before redirecting
@@ -51,8 +51,8 @@ document.addEventListener("DOMContentLoaded", function () {
             
             // After fade-out effect, redirect to login page
             setTimeout(() => {
-              window.location.href = 'login.html';
-            }, 500);
+              window.location.href = 'index.html';
+            }, 1000);
           }, 800);
         } else {          // Show error in button
           if (submitButton) {

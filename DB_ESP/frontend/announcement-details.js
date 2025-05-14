@@ -121,7 +121,49 @@ function showSuccessMessage(message = 'Operation completed successfully') {
         position: fixed;
         top: 20px;
         right: 20px;
+<<<<<<< HEAD
         background: var(--glow-color, #002366);
+=======
+        background: var(--primary-color);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    `;
+
+    document.body.appendChild(successMessage);
+
+    // Animate in
+    setTimeout(() => {
+        successMessage.style.opacity = '1';
+        successMessage.style.transform = 'translateY(0)';
+    }, 100);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        successMessage.style.opacity = '0';
+        successMessage.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            document.body.removeChild(successMessage);
+        }, 300);
+    }, 3000);
+}
+
+// Show success message for RSVP
+function showRSVPSuccessMessage(message = 'Thank you for your RSVP!') {
+    const successMessage = document.createElement('div');
+    successMessage.className = 'success-message';
+    successMessage.textContent = message;
+    successMessage.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--primary-color);
+>>>>>>> e8175f28b104c7e93cac912f9615aa3c195039fe
         color: white;
         padding: 15px 25px;
         border-radius: 8px;
@@ -197,11 +239,6 @@ const elements = {
     shareModal: document.getElementById('shareModal'),
     shareLink: document.getElementById('shareLink'),
     copyLinkBtn: document.getElementById('copyLinkBtn'),
-    
-    // RSVP Modal
-    rsvpModal: document.getElementById('rsvpModal'),
-    rsvpForm: document.getElementById('rsvpForm'),
-    rsvpOptions: document.querySelectorAll('.rsvp-option')
 };
 
 // Initialize page
@@ -402,6 +439,14 @@ async function loadFeedbacks(eventId) {
 // Handle attendance
 async function handleAttendance(action) {
     const eventId = new URLSearchParams(window.location.search).get('id');
+    const isAttending = action === 'attend';
+    
+    // Get current attendee count
+    const currentCount = parseInt(document.getElementById('attending-count').textContent) || 0;
+    
+    // Update UI immediately for responsive feel
+    updateAttendanceButton(isAttending);
+    updateAttendeeCount(isAttending ? currentCount + 1 : currentCount - 1);
     
     try {
         const response = await fetch(`${API_BASE_URL}/events/${eventId}/attendance/`, {
@@ -413,19 +458,27 @@ async function handleAttendance(action) {
             body: JSON.stringify({ action })
         });
         
-        if (!response.ok) throw new Error('Failed to update attendance');
+        if (!response.ok) {
+            throw new Error('Failed to update attendance');
+        }
         
         const result = await response.json();
-        updateAttendanceButton(action === 'attend');
+        // Update with the accurate count from server
         updateAttendeeCount(result.attendee_count);
+<<<<<<< HEAD
         
         // Show appropriate success message
         const message = action === 'attend' 
             ? `You have successfully RSVP'd to this event!`
             : `You have canceled your RSVP for this event.`;
         showSuccessMessage(message);
+=======
+>>>>>>> e8175f28b104c7e93cac912f9615aa3c195039fe
         
     } catch (error) {
+        // Revert UI changes if the API call fails
+        updateAttendanceButton(!isAttending);
+        updateAttendeeCount(isAttending ? currentCount : currentCount + 1);
         showError('Failed to update attendance');
         throw error;
     }
@@ -521,6 +574,7 @@ function showError(message) {
 
 // Setup event listeners
 function setupEventListeners() {
+<<<<<<< HEAD
     // Replace RSVP button click handler to directly toggle attendance
     elements.rsvpButton.addEventListener('click', async function() {
         // Check if user is logged in
@@ -545,6 +599,25 @@ function setupEventListeners() {
             console.error('Failed to update RSVP status:', error);
             elements.rsvpButton.disabled = false;
             elements.rsvpButton.style.opacity = '1';
+=======
+    // RSVP button click - changed to toggle functionality
+    elements.rsvpButton.addEventListener('click', async function() {
+        const eventId = new URLSearchParams(window.location.search).get('id');
+        
+        try {
+            // Toggle attendance status
+            if (currentAttendanceStatus) {
+                // If already attending, unattend
+                await handleAttendance('unattend');
+                showRSVPSuccessMessage('You\'re no longer attending this event');
+            } else {
+                // If not attending, attend
+                await handleAttendance('attend');
+                showRSVPSuccessMessage('You\'re now attending this event!');
+            }
+        } catch (error) {
+            showError('Failed to update attendance status');
+>>>>>>> e8175f28b104c7e93cac912f9615aa3c195039fe
         }
     });
     
@@ -725,12 +798,28 @@ function updateAttendanceButton(isAttending) {
     const rsvpButton = elements.rsvpButton;
     
     if (isAttending) {
+<<<<<<< HEAD
         rsvpButton.classList.add('rsvp-active');
         rsvpButton.innerHTML = '<i class="fas fa-check-circle"></i><span>RSVP\'d</span>';
     } else {
         rsvpButton.classList.remove('rsvp-active');
         rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i><span>RSVP</span>';
+=======
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> Attending';
+        rsvpButton.classList.add('attending');
+        rsvpButton.style.backgroundColor = '#4CAF50'; // Green for attending
+    } else {
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-plus"></i> RSVP';
+        rsvpButton.classList.remove('attending');
+        rsvpButton.style.backgroundColor = ''; // Reset to default color
+>>>>>>> e8175f28b104c7e93cac912f9615aa3c195039fe
     }
+    
+    // Add subtle animation
+    rsvpButton.classList.add('button-pulse');
+    setTimeout(() => {
+        rsvpButton.classList.remove('button-pulse');
+    }, 300);
 }
 
 function updateAttendeeCount(count) {

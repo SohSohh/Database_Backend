@@ -7,18 +7,21 @@ from .views import (
     UserListView,
     UserDetailView,
     ViewerRegistrationView,
-    HandlerRegistrationView,
+    HandlerApplicationView,
+    HandlerApplicationListView,
     SocietyListView,
     MembershipView,
     SocietyMembersViewSet,
     RegenerateJoinCodeView,
-    UserSocietiesView
+    UserSocietiesView,
+    AdminDashboardView
 )
 
 urlpatterns = [
     # Authentication endpoints with separate registration routes
     path('register/viewer/', ViewerRegistrationView.as_view(), name='register_viewer'),
-    path('register/handler/', HandlerRegistrationView.as_view(), name='register_handler'),
+    path('apply/handler/', HandlerApplicationView.as_view(), name='apply_handler'),
+    path('applications/', HandlerApplicationListView.as_view(), name='handler_applications'),
     path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', UserLogoutView.as_view(), name='logout'),

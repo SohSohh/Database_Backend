@@ -47,6 +47,16 @@ LOGGING = {
         },
     },
 }
+# For production with a real email service
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # For Gmail; adjust as needed for your provider
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sohaibmubashir6@gmail.com'
+EMAIL_HOST_PASSWORD = 'otjc zdpl vwal sehx'  # For Gmail, use an App Password
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'sohaibmubashir6@gmail.com'
+
+
 
 # Application definition
 
