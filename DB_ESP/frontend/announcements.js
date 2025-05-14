@@ -559,15 +559,99 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Handle RSVP requests
-  async function handleRSVP(eventId, eventName, unattend = false) {
+  // Simple and reliable toast notification function
+function showSuccessToast(message, isUnattend = false, isError = false) {
+    // Remove any existing toasts first
+    const existingToasts = document.querySelectorAll('.success-message');
+    existingToasts.forEach(toast => {
+        if (document.body.contains(toast)) {
+            document.body.removeChild(toast);
+        }
+    });
+    
+    // Create new toast element
+    const toast = document.createElement('div');
+    toast.className = 'success-message';
+    
+    // Determine the toast type and set properties accordingly
+    let icon, title, bgColor;
+    
+    if (isError === true) {
+        // Error toast
+        icon = 'fa-exclamation-circle';
+        title = 'Notification';
+        bgColor = '#e74c3c'; // Red
+    } else if (isUnattend === true) {
+        // Unattend toast (navy blue)
+        icon = 'fa-calendar-minus';
+        title = 'RSVP Canceled';
+        bgColor = '#002366'; // Navy blue (matching glow-color)
+    } else {
+        // Attend toast (green)
+        icon = 'fa-calendar-check';
+        title = 'Success!';
+        bgColor = '#117a00'; // Green
+    }
+    
+    // Set the toast HTML content
+    toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <div class="message-content">
+            <div class="message-title">${title}</div>
+            <div class="message-text">${message}</div>
+        </div>
+        <button class="close-toast" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Set background color explicitly
+    toast.style.backgroundColor = bgColor;
+    
+    // Add to DOM
+    document.body.appendChild(toast);
+    
+    // Show toast with animation
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    // Add close button functionality
+    const closeBtn = toast.querySelector('.close-toast');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            toast.classList.add('hide');
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 400);
+        });
+    }
+    
+    // Auto-hide after delay
+    setTimeout(() => {
+        if (document.body.contains(toast)) {
+            toast.classList.add('hide');
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 400);
+        }
+    }, 3000);
+}
+
+// Update the handleRSVP function to correctly use the toast function
+async function handleRSVP(eventId, eventName, unattend = false) {
     const button = document.querySelector(`.rsvp-btn[data-event-id="${eventId}"]`);
-    // Button disabling is handled by the caller (delegated event listener)
+    
     try {
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
-            showSuccessToast("Please log in to RSVP.", true);
-            if (button) { // Re-enable if disabled by caller
+            // Error case - not logged in
+            showSuccessToast("Please log in to RSVP.", false, true);
+            if (button) {
                 button.disabled = false;
                 button.style.opacity = '1';
             }
@@ -588,273 +672,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await response.json();
 
-        if (response.ok) {            
-            // If 'unattend' is true, the action was to "unattend".
-            // If 'unattend' is false, the action was to "attend".
-            showSuccessToast(unattend ? `You have canceled your RSVP for ${eventName}.` : `You have successfully RSVP'd to ${eventName}!`);
+        if (response.ok) {
+            // Success case - show correct message with color based on action
+            if (unattend) {
+                // Navy blue toast for cancellation
+                showSuccessToast(`You have canceled your RSVP for ${eventName}.`, true, false);
+            } else {
+                // Green toast for attending
+                showSuccessToast(`You have successfully RSVP'd to ${eventName}!`, false, false);
+            }
 
-            // Instead of reloading all events, update the UI directly
             if (button) {
-                // The new 'isAttending' state is the opposite of the 'unattend' action flag
-                // If unattend is true (action was to unattend), new state is not attending (false)
-                // If unattend is false (action was to attend), new state is attending (true)
-                updateRSVPButton(button, !unattend); 
+                updateRSVPButton(button, !unattend);
                 
-                // Update attendee count
                 const countElement = button.closest('.event-footer')?.querySelector('.count');
                 if (countElement) {
                     let currentCount = parseInt(countElement.textContent);
-                    // If the action was 'unattend', decrease count.
-                    // If the action was 'attend' (i.e., !unattend was true), increase count.
                     countElement.textContent = unattend ? Math.max(0, currentCount - 1) : currentCount + 1;
                 }
-                // Re-enable the button after successful UI update
-                button.disabled = false;
-                button.style.opacity = '1';
             }
         } else {
+            // Error case - API returned an error
             const errorMsg = data.detail || data.message || "Failed to update RSVP status.";
-            showSuccessToast(errorMsg, true);
-            if (button) { // Re-enable button on API error
-                button.disabled = false;
-                button.style.opacity = '1';
-            }
+            showSuccessToast(errorMsg, false, true);
         }
     } catch (error) {
+        // Error case - exception occurred
         console.error("Error updating RSVP:", error);
-        // Ensure button is re-enabled if an error occurs before response handling
+        showSuccessToast("Failed to update RSVP status. Please try again.", false, true);
+    } finally {
+        // Always re-enable the button
         if (button) {
             button.disabled = false;
             button.style.opacity = '1';
         }
-        throw error; // Propagate error to be handled by the click handler
     }
-  }
-  
-  function showSuccessToast(message, isError = false) {
-    const existingToast = document.querySelector('.success-toast');
-    if (existingToast) {
-        existingToast.remove();
-    }
-
-    const toast = document.createElement('div');
-    toast.className = 'success-toast';
-    if (isError) {
-        toast.style.backgroundColor = '#dc3545'; // Red color for errors
-    }
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        toast.classList.add('hide');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
-  }
-  
-  // Fix the initializeHorizontalScroll function to remove syntax errors
-  function initializeHorizontalScroll() {
-    const eventsGrid = document.querySelector(".events-grid")
-    if (!eventsGrid) return
-  
-    // Add wheel event listener for horizontal scrolling
-    eventsGrid.addEventListener("wheel", (e) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault()
-  
-        // Smoother scrolling with animation
-        eventsGrid.scrollBy({
-          left: e.deltaY * 2,
-          behavior: "smooth",
-        })
-      }
-    })
-  
-    // Add drag scrolling functionality
-    let isDown = false
-    let startX
-    let scrollLeft
-    let velocity = 0
-    let lastPageX
-    let requestId
-  
-    eventsGrid.addEventListener("mousedown", (e) => {
-      isDown = true
-      eventsGrid.style.cursor = "grabbing"
-      startX = e.pageX - eventsGrid.offsetLeft
-      scrollLeft = eventsGrid.scrollLeft
-      lastPageX = e.pageX
-  
-      // Cancel any ongoing momentum scrolling
-      cancelAnimationFrame(requestId)
-    })
-  
-    eventsGrid.addEventListener("mouseleave", () => {
-      if (isDown) {
-        isDown = false
-        eventsGrid.style.cursor = "grab"
-  
-        // Start momentum scrolling
-        startMomentumScroll()
-      }
-    })
-  
-    eventsGrid.addEventListener("mouseup", () => {
-      if (isDown) {
-        isDown = false
-        eventsGrid.style.cursor = "grab"
-  
-        // Start momentum scrolling
-        startMomentumScroll()
-      }
-    })
-  
-    eventsGrid.addEventListener("mousemove", (e) => {
-      if (!isDown) return
-      e.preventDefault()
-  
-      const x = e.pageX - eventsGrid.offsetLeft
-      const walk = (x - startX) * 2 // Adjust scrolling speed
-      eventsGrid.scrollLeft = scrollLeft - walk
-  
-      // Calculate velocity for momentum
-      velocity = (lastPageX - e.pageX) * 0.1
-      lastPageX = e.pageX
-    })
-  
-    // Momentum scrolling function
-    function startMomentumScroll() {
-      // Apply momentum with decay
-      function momentumScroll() {
-        if (Math.abs(velocity) > 0.1) {
-          eventsGrid.scrollLeft += velocity
-          velocity *= 0.95 // Decay factor
-          requestId = requestAnimationFrame(momentumScroll)
-        }
-      }
-  
-      requestId = requestAnimationFrame(momentumScroll)
-    }
-  
-    // Add touch events for mobile
-    eventsGrid.addEventListener(
-      "touchstart",
-      (e) => {
-        isDown = true
-        startX = e.touches[0].pageX - eventsGrid.offsetLeft
-        scrollLeft = eventsGrid.scrollLeft
-        lastPageX = e.touches[0].pageX
-  
-        // Cancel any ongoing momentum scrolling
-        cancelAnimationFrame(requestId)
-      },
-      { passive: false },
-    )
-  
-    eventsGrid.addEventListener(
-      "touchend",
-      () => {
-        if (isDown) {
-          isDown = false
-  
-          // Start momentum scrolling
-          startMomentumScroll()
-        }
-      },
-      { passive: false },
-    )
-  
-    eventsGrid.addEventListener(
-      "touchmove",
-      (e) => {
-        if (!isDown) return
-  
-        const x = e.touches[0].pageX - eventsGrid.offsetLeft
-        const walk = (x - startX) * 2
-        eventsGrid.scrollLeft = scrollLeft - walk
-  
-        // Calculate velocity for momentum
-        velocity = (lastPageX - e.touches[0].pageX) * 0.1
-        lastPageX = e.touches[0].pageX
-  
-        // Prevent page scrolling
-        if (Math.abs(velocity) > 0.1) {
-          e.preventDefault()
-        }
-      },
-      { passive: false },
-    )
-  
-    // Set initial grab cursor
-    eventsGrid.style.cursor = "grab"
-  }
-  
-  // Add navigation buttons for the events carousel
-  function addCarouselNavigation() {
-    const eventsContainer = document.querySelector(".events-container")
-    if (!eventsContainer) return
-  
-    // Remove existing navigation buttons if any
-    const existingButtons = eventsContainer.querySelectorAll(".carousel-nav")
-    existingButtons.forEach((button) => button.remove())
-  
-    const prevBtn = document.createElement("button")
-    prevBtn.className = "carousel-nav prev-btn"
-    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>'
-    prevBtn.setAttribute("aria-label", "Previous events")
-  
-    const nextBtn = document.createElement("button")
-    nextBtn.className = "carousel-nav next-btn"
-    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>'
-    nextBtn.setAttribute("aria-label", "Next events")
-  
-    eventsContainer.appendChild(prevBtn)
-    eventsContainer.appendChild(nextBtn)
-  
-    const eventsGrid = document.querySelector(".events-grid")
-    if (!eventsGrid) return
-  
-    prevBtn.addEventListener("click", () => {
-      eventsGrid.scrollBy({
-        left: -400,
-        behavior: "smooth",
-      })
-    })
-  
-    nextBtn.addEventListener("click", () => {
-      eventsGrid.scrollBy({
-        left: 400,
-        behavior: "smooth",
-      })
-    })
-  
-    // Show/hide buttons based on scroll position
-    function updateButtonVisibility() {
-      if (eventsGrid.scrollLeft > 20) {
-        prevBtn.style.opacity = "1"
-        prevBtn.style.pointerEvents = "auto"
-      } else {
-        prevBtn.style.opacity = "0.5"
-        prevBtn.style.pointerEvents = "none"
-      }
-  
-      if (eventsGrid.scrollLeft < eventsGrid.scrollWidth - eventsGrid.clientWidth - 20) {
-        nextBtn.style.opacity = "1"
-        nextBtn.style.pointerEvents = "auto"
-      } else {
-        nextBtn.style.opacity = "0.5"
-        nextBtn.style.pointerEvents = "none"
-      }
-    }
-  
-    eventsGrid.addEventListener("scroll", updateButtonVisibility)
-  
-    // Initial check
-    updateButtonVisibility()
-  }
+}

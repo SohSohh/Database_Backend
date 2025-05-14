@@ -1384,7 +1384,7 @@
         /* Footer */
         footer {
             background: var(--mountainside); /* Very light gray footer */
-            padding: 4rem 2rem 2rem;
+            padding: 4rem 2rem 1rem;
             position: relative;
             overflow: hidden;
         }
@@ -1496,11 +1496,12 @@
         
         .footer-bottom {
             text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
+            padding-top: 1.5rem; /* Reduced top padding from 2rem to 1.5rem */
+            margin-top: 1.5rem; /* Reduced top margin from 2rem to 1.5rem */
             border-top: 1px solid var(--border-color-light);
             color: var(--apres-ski);
             font-size: 0.9rem;
+            padding-bottom: 1rem; /* Added bottom padding to create space below copyright text */
         }
 
         /* Animations */

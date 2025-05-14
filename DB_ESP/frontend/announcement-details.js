@@ -150,41 +150,63 @@ function showSuccessMessage() {
     }, 3000);
 }
 
-// Show success message for RSVP
-function showRSVPSuccessMessage(message = 'Thank you for your RSVP!') {
+// Enhanced showRSVPSuccessMessage function
+function showRSVPSuccessMessage(message = 'Thank you for your RSVP!', isAttending = false) {
+    // Remove any existing toast messages
+    const existingToasts = document.querySelectorAll('.success-message');
+    existingToasts.forEach(toast => {
+        if (document.body.contains(toast)) {
+            document.body.removeChild(toast);
+        }
+    });
+    
+    // Create new toast message
     const successMessage = document.createElement('div');
-    successMessage.className = 'success-message';
-    successMessage.textContent = message;
-    successMessage.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--primary-color);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        z-index: 1000;
+    successMessage.className = `success-message ${isAttending ? 'attending' : ''}`;
+    
+    // Add icon and message content with title
+    const icon = isAttending ? 'fa-calendar-check' : 'fa-calendar-plus';
+    const title = isAttending ? 'Success!' : 'RSVP Updated';
+    
+    successMessage.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <div class="message-content">
+            <div class="message-title">${title}</div>
+            <div class="message-text">${message}</div>
+        </div>
+        <button class="close-toast" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
     `;
-
+    
     document.body.appendChild(successMessage);
-
-    // Animate in
+    
+    // Add show class after a brief delay for transition
     setTimeout(() => {
-        successMessage.style.opacity = '1';
-        successMessage.style.transform = 'translateY(0)';
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        successMessage.style.opacity = '0';
-        successMessage.style.transform = 'translateY(-10px)';
+        successMessage.classList.add('show');
+    }, 10);
+    
+    // Close button functionality
+    const closeButton = successMessage.querySelector('.close-toast');
+    closeButton.addEventListener('click', () => {
+        successMessage.classList.add('hide');
         setTimeout(() => {
-            document.body.removeChild(successMessage);
-        }, 300);
+            if (document.body.contains(successMessage)) {
+                document.body.removeChild(successMessage);
+            }
+        }, 400);
+    });
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (document.body.contains(successMessage)) {
+            successMessage.classList.add('hide');
+            setTimeout(() => {
+                if (document.body.contains(successMessage)) {
+                    document.body.removeChild(successMessage);
+                }
+            }, 400);
+        }
     }, 3000);
 }
 
@@ -570,11 +592,11 @@ function setupEventListeners() {
             if (currentAttendanceStatus) {
                 // If already attending, unattend
                 await handleAttendance('unattend');
-                showRSVPSuccessMessage('You\'re no longer attending this event');
+                showRSVPSuccessMessage('You\'re no longer attending this event', false);
             } else {
                 // If not attending, attend
                 await handleAttendance('attend');
-                showRSVPSuccessMessage('You\'re now attending this event!');
+                showRSVPSuccessMessage('You\'re now attending this event!', true);
             }
         } catch (error) {
             showError('Failed to update attendance status');
