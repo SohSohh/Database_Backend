@@ -102,17 +102,13 @@ class SocietyListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        # Use a subquery to correctly count how many viewers have this handler in their memberships
-        subquery = CustomUser.objects.filter(
-            society_memberships=OuterRef('pk'),
-            user_type='viewer'
-        ).values('id')
-
-        return Handler.objects.annotate(
-            member_count=Count(
-                Subquery(subquery),
-                distinct=True
-            )
+        # Only return Handler users, exclude superusers and staff/admins
+        return Handler.objects.filter(
+            user_type=Handler.HANDLER,
+            is_superuser=False,
+            is_staff=False
+        ).annotate(
+            member_count=Count('viewer_memberships', distinct=True)
         )
 
 
@@ -431,4 +427,6 @@ class AdminDashboardView(generics.GenericAPIView):
             return Response({"error": "Application not found or already processed."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": f"Error denying application: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
