@@ -1,5 +1,7 @@
-// Base URL for API calls
-const API_BASE_URL = 'http://localhost:8000/api';
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 // Function to get auth token from localStorage
 function getAuthToken() {
@@ -47,7 +49,7 @@ async function cancelRegistration(eventId, e) {
     cancelButton.disabled = true;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/events/${eventId}/unregister/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/${eventId}/unregister/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${getAuthToken()}`,
@@ -94,7 +96,7 @@ async function populateRegistrations() {
     registrationsGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading events...</div>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/events/attending/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/attending/`, {
             headers: {
                 'Authorization': `Bearer ${getAuthToken()}`,
                 'Content-Type': 'application/json'

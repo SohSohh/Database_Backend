@@ -3,7 +3,10 @@
  * Handles all API requests to the backend
  */
 
-const API_BASE_URL = 'http://localhost:8000'; // Update this with your actual API URL
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 const api = {
     /**
@@ -19,7 +22,7 @@ const api = {
          */
         login: async (credentials) => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/users/login/`, {
+                const response = await fetch(`${window.API_BASE_URL}/api/users/login/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -84,7 +87,7 @@ const api = {
             headers['Authorization'] = `Bearer ${tokens.access}`;
         }
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(`${window.API_BASE_URL}${endpoint}`, {
             ...options,
             headers
         });

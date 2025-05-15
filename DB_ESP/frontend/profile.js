@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the global API_BASE_URL is loaded
+    if (!window.API_BASE_URL) {
+        throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+    }
+
     // DOM Elements for profile information
     const userNameHeader = document.getElementById('userNameHeader');
     const userEmail = document.getElementById('userEmail');
@@ -38,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        fetch('http://localhost:8000/api/users/me/', {
+        fetch(`${window.API_BASE_URL}/users/me/`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'

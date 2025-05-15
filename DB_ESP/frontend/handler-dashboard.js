@@ -1,5 +1,7 @@
 // Global variables
-window.baseUrl = "http://localhost:8000";
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 const token = localStorage.getItem('access_token');
 
 // Demo data for tasks
@@ -59,7 +61,7 @@ function populateRecentEvent() {
     eventsGrid.innerHTML = '<p>Loading events...</p>';
 
     // Get all events for the handler
-    fetch(`${window.baseUrl}/api/events/handler?ordering=date/`,
+    fetch(`${window.API_BASE_URL}/events/handler?ordering=date/`,
         {
             method: "GET",
             headers: {
@@ -232,7 +234,7 @@ function viewEventDetails(eventId) {
 // Function to initialize the dashboard
 function initializeDashboard() {
     // Set society name in the welcome message
-    fetch(`${window.baseUrl}/api/users/me/`,
+    fetch(`${window.API_BASE_URL}/users/me/`,
         {
             method: "GET",
             headers: {
@@ -262,7 +264,7 @@ async function updateDashboardStats() {
         const token = localStorage.getItem('access_token');
         console.log('Using token:', token ? 'Token exists' : 'Token missing');
         
-        const response = await fetch(`${window.baseUrl}/api/events/handler/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/handler/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

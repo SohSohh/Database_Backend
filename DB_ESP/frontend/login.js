@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './config.js';
+const API_BASE_URL = window.API_BASE_URL;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Check and display logout message if needed
@@ -26,12 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             console.log('Sending login request:', {
-                url: `${API_BASE_URL}/api/users/login/`,
+                url: `${API_BASE_URL}/users/login/`,
                 method: 'POST',
                 body: { ...formData, password: '[HIDDEN]' }
             });
 
-            const response = await fetch(`${API_BASE_URL}/api/users/login/`, {
+            const response = await fetch(`${API_BASE_URL}/users/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,7 +39,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(formData)
             });
 
-            const data = await response.json();
+            // Fix: handle non-JSON (HTML) error responses gracefully
+            const dataText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(dataText);
+            } catch (jsonErr) {
+                console.error('Login response is not valid JSON:', dataText);
+                throw new Error('Login failed. Please try again.');
+            }
             console.log('Response status:', response.status);
             console.log('Response data:', {
                 ...data,

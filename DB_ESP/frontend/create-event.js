@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Set your API base URL
-    window.baseUrl = "http://localhost:8000";
+    // Ensure the global API_BASE_URL is loaded
+    if (!window.API_BASE_URL) {
+        throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+    }
     
     // Get auth token from localStorage, fallback to hardcoded token for development
     const token = localStorage.getItem('access_token');
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const categorySelect = document.getElementById('eventCategory');
         
         showLoading();
-        fetch(`${window.baseUrl}/api/events/categories/`, {
+        fetch(`${window.API_BASE_URL}/events/categories/`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -191,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }        // Send POST request to API
         console.log('Sending event creation request to API...');
         
-        fetch(`${window.baseUrl}/api/events/`, {
+        fetch(`${window.API_BASE_URL}/events/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
