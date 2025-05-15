@@ -165,18 +165,38 @@
 .host-link {
   color: var(--glow-color);
   font-weight: 500;
-  text-decoration: none;
   transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
   position: relative;
-  padding: 2px 4px;
-  margin: -2px -4px;
-  border-radius: 3px;
+  padding: 3px 25px 3px 8px;
+  margin: -3px -8px;
+  border-radius: 4px;
+  background-color: rgba(0, 35, 102, 0.05);
+  cursor: pointer;
+}
+
+.host-link:after {
+  content: '\f0d7';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75em;
+  opacity: 0.7;
+  transition: all 0.3s ease;
 }
 
 .host-link:hover {
-  background-color: rgba(0, 35, 102, 0.08);
+  background-color: rgba(0, 35, 102, 0.1);
   color: var(--hover-color, #001a4d);
-  text-decoration: underline;
+}
+
+.host-link:hover:after {
+  opacity: 1;
+  transform: translateY(-50%) rotate(-180deg);
 }
 
 .host-info {
@@ -286,7 +306,7 @@
 /* ===== Action Buttons ===== */
 .announcement-actions {
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
   animation: fadeInUp 0.6s ease forwards;
   animation-delay: 0.3s;
   opacity: 0;
@@ -299,41 +319,20 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 0.9rem 1.8rem;
-  border-radius: 30px;
+  border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all var(--transition-smooth);
   border: none;
   position: relative;
   overflow: hidden;
-  font-family: 'SourceSans3', sans-serif;
-  letter-spacing: 0.5px;
-  min-width: 140px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .rsvp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 9px 16px;
-  border-radius: 30px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  font-family: 'SourceSans3', sans-serif;
-  letter-spacing: 0.5px;
-  background-color: var(--midnight);
-  color: var(--glow-color);
-  border: 2px solid var(--glow-color);
-  box-shadow: 0 4px 15px rgba(var(--glow-color-rgb), 0.1);
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
+  background-color: var(--glow-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--glow-color-rgb), 0.3);
 }
 
 .rsvp-btn::before {
@@ -342,16 +341,18 @@
   top: 0;
   left: -100%;
   width: 100%;
-  height: 100%;;
-  transition: left 0.6s ease;
-  z-index: -1;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+  transition: left 0.8s ease;
 }
 
 .rsvp-btn:hover {
-  background-color: var(--glow-color);
-  color: white;
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(var(--glow-color-rgb), 0.5);
+  background-color: var(--hover-color);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.4);
 }
 
 .rsvp-btn:hover::before {
@@ -359,79 +360,29 @@
 }
 
 .rsvp-btn.attending {
-  background-color: #117a00; /* Green background when attending */
-  color: #ffffff;
-  border-color: #0e6500;
-  box-shadow: 0 4px 15px rgba(17, 122, 0, 0.35);
-}
-
-.rsvp-btn.attending:hover {
-  background-color: #0e6500; /* Darker green on hover */
-  border-color: #0e6500;
-  box-shadow: 0 8px 25px rgba(17, 122, 0, 0.5);
-}
-
-.button-pulse {
-  animation: pulse 0.4s cubic-bezier(0.11, 0, 0.5, 0);
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  background-color: #228B22; /* Success green */
 }
 
 .share-btn {
-  background-color: var(--midnight);
+  background-color: var(--card-bg-light);
   color: var(--glow-color);
   border: 2px solid var(--glow-color);
-  box-shadow: 0 4px 15px rgba(var(--glow-color-rgb), 0.1);
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.share-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 100%;
-  background-color: var(--glow-color);
-  transition: width 0.3s ease;
-  z-index: -1;
+  box-shadow: 0 4px 12px rgba(var(--glow-color-rgb), 0.1);
 }
 
 .share-btn:hover {
-  color: white;
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.25);
-}
-
-.share-btn:hover::before {
-  width: 100%;
+  background-color: rgba(var(--glow-color-rgb), 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.2);
 }
 
 .action-btn i {
   font-size: 1.2rem;
   transition: transform 0.3s ease;
-  position: relative;
 }
 
 .action-btn:hover i {
   transform: scale(1.2);
-}
-
-/* Add icon rotation for share button */
-.share-btn:hover i {
-  animation: shareIconAnimation 0.5s ease forwards;
-}
-
-@keyframes shareIconAnimation {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3) rotate(15deg); }
-  100% { transform: scale(1.2); }
 }
 
 /* ===== Event Details Box ===== */
@@ -673,315 +624,6 @@
   font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ===== Modal Styles ===== */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(5px);
-}
-
-.modal.active {
-    opacity: 1;
-}
-
-.modal-content {
-    background-color: var(--midnight);
-    margin: 10% auto;
-    padding: 30px;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    transform: translateY(-20px);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid rgba(var(--glow-color-rgb), 0.1);
-}
-
-.modal.active .modal-content {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 24px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--arctic);
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.close-modal:hover {
-    background-color: rgba(var(--glow-color-rgb), 0.08);
-    color: var(--glow-color);
-    transform: rotate(90deg);
-}
-
-.modal-header {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    position: relative;
-}
-
-.modal-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: var(--glow-color);
-    border-radius: 3px;
-}
-
-.modal-header h3 {
-    font-family: 'PlayfairDisplay', serif;
-    font-size: 1.6rem;
-    color: var(--arctic);
-    font-weight: 700;
-}
-
-.share-options {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 30px 0;
-}
-
-.share-option {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.share-option::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-}
-
-.share-option:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.share-option:hover::before {
-    transform: translateY(0);
-}
-
-.share-option i {
-    font-size: 1.2rem;
-    position: relative;
-    z-index: 2;
-}
-
-.facebook {
-    background-color: #3b5998;
-    color: white;
-}
-
-.twitter {
-    background-color: #1da1f2;
-    color: white;
-}
-
-.linkedin {
-    background-color: #0077b5;
-    color: white;
-}
-
-.email {
-    background-color: #ea4335;
-    color: white;
-}
-
-.share-link-container {
-    display: flex;
-    margin-top: 25px;
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(var(--glow-color-rgb), 0.1);
-}
-
-#shareLink {
-    flex-grow: 1;
-    padding: 15px;
-    border: none;
-    background-color: var(--mountainside);
-    color: var(--arctic);
-    font-family: 'SourceSans3', sans-serif;
-}
-
-#shareLink:focus {
-    outline: none;
-    background-color: white;
-}
-
-.copy-link-btn {
-    padding: 0 20px;
-    background-color: var(--glow-color);
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 60px;
-}
-
-.copy-link-btn:hover {
-    background-color: var(--hover-color);
-}
-
-.copy-link-btn i {
-    font-size: 1.1rem;
-}
-
-/* Enhanced Toast Notification Styling - With SOLID Background */
-.success-message {
-  position: fixed;
-  top: 30px;
-  right: 30px;
-  background: var(--glow-color); /* Use single 'background' property for solid color */
-  color: white;
-  padding: 16px 24px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(var(--glow-color-rgb), 0.3);
-  opacity: 0;
-  transform: translateY(-20px) scale(0.95);
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  z-index: 1050;
-  font-family: 'SourceSans3', sans-serif;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-width: 350px;
-  border-left: 5px solid rgba(255, 255, 255, 0.4);
-}
-
-.success-message.attending {
-  background: #117a00; /* Solid green background for attending state */
-  box-shadow: 0 10px 30px rgba(17, 122, 0, 0.25);
-}
-
-/* Rest of your toast styling remains the same */
-.success-message i {
-  font-size: 22px;
-}
-
-.success-message .message-content {
-  flex: 1;
-}
-
-.success-message .message-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 2px;
-  letter-spacing: 0.3px;
-}
-
-.success-message .message-text {
-  font-size: 14px;
-  opacity: 0.9;
-  line-height: 1.3;
-}
-
-.success-message .close-toast {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: white;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-  font-size: 14px;
-  margin-left: 8px;
-}
-
-.success-message .close-toast:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
-
-.success-message.show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.success-message.hide {
-  opacity: 0;
-  transform: translateY(-20px) scale(0.95);
-}
-
-@keyframes progress {
-  0% { width: 100%; }
-  100% { width: 0%; }
-}
-
-.success-message::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 0 0 12px 12px;
-  animation: progress 3s linear forwards;
-}
-
-/* Animation for modal appearance */
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 /* ===== Comment Form ===== */
 .comment-form {
   background-color: var(--midnight);
@@ -1277,6 +919,231 @@
   transform: translateX(5px);
 }
 
+/* ===== Modals ===== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: var(--card-bg-light);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.4s ease forwards;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--apres-ski);
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.close-modal:hover {
+  color: var(--arctic);
+  transform: rotate(90deg);
+}
+
+.modal-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.modal-header h3 {
+  font-family: 'PlayfairDisplay', serif;
+  font-size: 1.5rem;
+  color: var(--arctic);
+}
+
+/* ===== RSVP Modal Styling - Fixed and Centered ===== */
+#rsvpModal {
+  display: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+#rsvpModal.active {
+  display: flex;
+}
+
+#rsvpModal .modal-content {
+  background-color: var(--card-bg-light);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.4s ease forwards;
+  border: 1px solid var(--border-color-light);
+}
+
+#rsvpModal .close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--apres-ski);
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(var(--midnight-rgb), 0.5);
+}
+
+#rsvpModal .close-modal:hover {
+  color: var(--arctic);
+  transform: rotate(90deg);
+  background-color: var(--mountainside);
+}
+
+#rsvpModal .modal-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+#rsvpModal .modal-header h3 {
+  font-family: 'PlayfairDisplay', serif;
+  font-size: 1.8rem;
+  color: var(--arctic);
+  position: relative;
+  display: inline-block;
+}
+
+#rsvpModal .modal-header h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--glow-color);
+  border-radius: 3px;
+}
+
+#rsvpModal .rsvp-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin: 2rem 0;
+  align-items: center;
+}
+
+#rsvpModal .rsvp-option {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.2rem 2rem;
+  background-color: var(--midnight);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid transparent;
+  width: 80%;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+#rsvpModal .rsvp-option:hover {
+  background-color: rgba(var(--glow-color-rgb), 0.05);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.1);
+}
+
+#rsvpModal .rsvp-option.selected {
+  border-color: var(--glow-color);
+  background-color: rgba(var(--glow-color-rgb), 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(var(--glow-color-rgb), 0.15);
+}
+
+#rsvpModal .rsvp-option i {
+  font-size: 2rem;
+  color: var(--glow-color);
+  transition: transform 0.3s ease;
+}
+
+#rsvpModal .rsvp-option:hover i,
+#rsvpModal .rsvp-option.selected i {
+  transform: scale(1.2);
+}
+
+#rsvpModal .rsvp-option div {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--arctic);
+  font-family: 'Retro Floral', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+#rsvpModal .form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+#rsvpModal .form-actions button {
+  padding: 1rem 2.5rem;
+  width: 80%;
+  background-color: var(--glow-color);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  box-shadow: 0 4px 15px rgba(var(--glow-color-rgb), 0.3);
+}
+
+#rsvpModal .form-actions button:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(var(--glow-color-rgb), 0.4);
+}
+
+#rsvpModal .form-actions button i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+#rsvpModal .form-actions button:hover i {
+  transform: scale(1.2);
+}
 
 /* ===== Event Cards for My Registrations Page ===== */
 .events-grid {
@@ -1699,6 +1566,19 @@
     justify-content: center;
   }
   
+  #rsvpModal .modal-content {
+    padding: 2rem;
+    width: 95%;
+  }
+  
+  #rsvpModal .rsvp-option {
+    width: 100%;
+    padding: 1rem 1.5rem;
+  }
+  
+  #rsvpModal .form-actions button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 576px) {
@@ -1710,4 +1590,19 @@
     height: 160px;
   }
   
+  #rsvpModal .modal-header h3 {
+    font-size: 1.5rem;
+  }
+  
+  #rsvpModal .rsvp-option {
+    padding: 0.8rem 1rem;
+  }
+  
+  #rsvpModal .rsvp-option i {
+    font-size: 1.5rem;
+  }
+  
+  #rsvpModal .rsvp-option div {
+    font-size: 1rem;
+  }
 }

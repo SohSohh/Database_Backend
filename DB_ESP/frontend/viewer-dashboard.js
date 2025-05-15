@@ -1,5 +1,7 @@
-// Set base URL for API requests
-window.baseUrl = "http://localhost:8000";
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 // Get token from localStorage
 const token = localStorage.getItem('access_token');
@@ -19,7 +21,7 @@ function debugApiCall(method, url, response, data) {
 // Function to fetch current user data
 async function fetchCurrentUser() {
     try {
-        const response = await fetch(`${window.baseUrl}/api/users/me/`, {
+        const response = await fetch(`${window.API_BASE_URL}/users/me/`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ async function fetchCurrentUser() {
         });
         
         const data = await response.json();
-        debugApiCall('GET', '/api/users/me/', response, data);
+        debugApiCall('GET', '/users/me/', response, data);
         
         if (!response.ok) throw new Error(data.detail || 'Failed to fetch user data');
         
@@ -48,7 +50,7 @@ async function populateUpcomingEvents() {
     eventsGrid.innerHTML = '<p>Loading events...</p>';
 
     try {
-        const response = await fetch(`${window.baseUrl}/api/events/attending/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/attending/`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -160,14 +162,14 @@ async function updateStats() {
     try {
         // Fetch all required stats in parallel
         const [eventsResponse, societiesResponse, commentsResponse] = await Promise.all([
-            fetch(`${window.baseUrl}/api/events/attending/`, {
+            fetch(`${window.API_BASE_URL}/events/attending/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }),
-            fetch(`${window.baseUrl}/api/users/my-societies/`, {  // Changed endpoint to my-societies
+            fetch(`${window.API_BASE_URL}/users/my-societies/`, {  // Changed endpoint to my-societies
                 headers: { 'Authorization': `Bearer ${token}` }
             }),
             // Assuming there's an endpoint for user's comments, if not, remove this
-            fetch(`${window.baseUrl}/api/users/me/`, {
+            fetch(`${window.API_BASE_URL}/users/me/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
         ]);

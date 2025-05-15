@@ -1,5 +1,7 @@
-// Ensure baseUrl is set (set this to your actual API base URL)
-window.baseUrl = "http://localhost:8000"
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+  throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 const token = localStorage.getItem("access_token")
 if (!token) {
   console.error("Missing access token. Redirecting to login...")
@@ -10,7 +12,7 @@ function populateSocietyEvents() {
   const eventsGrid = document.getElementById("societyEvents")
   eventsGrid.innerHTML = "<p>Loading events...</p>"
 
-  fetch(`${window.baseUrl}/api/events/handler?ordering=date/`, {
+  fetch(`${window.API_BASE_URL}/events/handler?ordering=date/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

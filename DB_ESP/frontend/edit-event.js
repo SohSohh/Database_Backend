@@ -1,21 +1,24 @@
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
+
 // Get event ID from URL
 
 const token = localStorage.getItem('access_token');
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get('id');
 
-// API Configuration - You can adjust these to match your API
+// API Configuration - Use global API_BASE_URL
 const API_CONFIG = {
-    baseUrl: "http://localhost:8000/api", // Change this to your API base URL
+    baseUrl: window.API_BASE_URL,
     endpoints: {
         events: "/events/",
         eventDetails: (id) => `/events/${id}/`,
         eventBanner: (id) => `/events/${id}/banner/`
     },
     headers: {
-        // Default headers for API requests
         "Content-Type": "application/json",
-        // You may need to include auth headers here, for example:
         "Authorization": `Bearer ${token}`,
     }
 };

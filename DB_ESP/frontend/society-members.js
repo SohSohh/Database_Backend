@@ -1,8 +1,10 @@
-// API configuration
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 const token = localStorage.getItem('access_token');
-
 const API_CONFIG = {
-    baseUrl: 'http://127.0.0.1:8000/api',
+    baseUrl: window.API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`

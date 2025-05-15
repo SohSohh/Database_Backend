@@ -1,5 +1,7 @@
-// Base URL for API calls
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 // Debug utilities
 // const debugUtils = {
@@ -81,10 +83,10 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
     }
     
     // Update debug info for request
-    //debugUtils.updateRequestDebug(method, `${API_BASE_URL}/${cleanEndpoint}`, headers, body);
+    //debugUtils.updateRequestDebug(method, `${window.API_BASE_URL}/${cleanEndpoint}`, headers, body);
     
     try {
-        const response = await fetch(`${API_BASE_URL}/${cleanEndpoint}`, requestOptions);
+        const response = await fetch(`${window.API_BASE_URL}/${cleanEndpoint}`, requestOptions);
         let data;
         
         try {

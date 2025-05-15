@@ -1,5 +1,7 @@
-// Global Constants
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 document.addEventListener("DOMContentLoaded", () => {
       // Initial Setup
@@ -203,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading announcements...</div>'
   
     try {
-      const url = `${API_BASE_URL}/events/?ordering=date&category=announcement`
+      const url = `${window.API_BASE_URL}/events/?ordering=date&category=announcement`
       const options = {
         method: "GET",
       }
@@ -394,7 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   async function loadCategories() {
     try {
-      const url = `${API_BASE_URL}/events/categories/`
+      const url = `${window.API_BASE_URL}/events/categories/`
       const options = {
         method: "GET",
         headers: {
@@ -489,7 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     try {
       console.log("Started loading events..."); // Debug log
-      let url = `${API_BASE_URL}/events/?ordering=date`
+      let url = `${window.API_BASE_URL}/events/?ordering=date`
       const accessToken = localStorage.getItem("access_token")
       if (categoryId && categoryId !== "all") {
         url += `&category=${categoryId}`
@@ -658,7 +660,7 @@ async function handleRSVP(eventId, eventName, unattend = false) {
             return;
         }
 
-        const url = `${API_BASE_URL}/events/${eventId}/attendance/`;
+        const url = `${window.API_BASE_URL}/events/${eventId}/attendance/`;
         const response = await fetch(url, {
             method: "POST",
             headers: {

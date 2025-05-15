@@ -1,5 +1,7 @@
-// Add this at the top of the file
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 let currentAttendanceStatus = false;
 
@@ -89,7 +91,7 @@ async function addNewFeedback(rating, text) {
     const eventId = new URLSearchParams(window.location.search).get('id');
     
     try {
-        const response = await fetch(`${API_BASE_URL}/events/${eventId}/comments/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/${eventId}/comments/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -150,63 +152,41 @@ function showSuccessMessage() {
     }, 3000);
 }
 
-// Enhanced showRSVPSuccessMessage function
-function showRSVPSuccessMessage(message = 'Thank you for your RSVP!', isAttending = false) {
-    // Remove any existing toast messages
-    const existingToasts = document.querySelectorAll('.success-message');
-    existingToasts.forEach(toast => {
-        if (document.body.contains(toast)) {
-            document.body.removeChild(toast);
-        }
-    });
-    
-    // Create new toast message
+// Show success message for RSVP
+function showRSVPSuccessMessage() {
     const successMessage = document.createElement('div');
-    successMessage.className = `success-message ${isAttending ? 'attending' : ''}`;
-    
-    // Add icon and message content with title
-    const icon = isAttending ? 'fa-calendar-check' : 'fa-calendar-plus';
-    const title = isAttending ? 'Success!' : 'RSVP Updated';
-    
-    successMessage.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <div class="message-content">
-            <div class="message-title">${title}</div>
-            <div class="message-text">${message}</div>
-        </div>
-        <button class="close-toast" aria-label="Close">
-            <i class="fas fa-times"></i>
-        </button>
+    successMessage.className = 'success-message';
+    successMessage.textContent = 'Thank you for your RSVP!';
+    successMessage.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--primary-color);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 1000;
     `;
-    
+
     document.body.appendChild(successMessage);
-    
-    // Add show class after a brief delay for transition
+
+    // Animate in
     setTimeout(() => {
-        successMessage.classList.add('show');
-    }, 10);
-    
-    // Close button functionality
-    const closeButton = successMessage.querySelector('.close-toast');
-    closeButton.addEventListener('click', () => {
-        successMessage.classList.add('hide');
+        successMessage.style.opacity = '1';
+        successMessage.style.transform = 'translateY(0)';
+    }, 100);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        successMessage.style.opacity = '0';
+        successMessage.style.transform = 'translateY(-10px)';
         setTimeout(() => {
-            if (document.body.contains(successMessage)) {
-                document.body.removeChild(successMessage);
-            }
-        }, 400);
-    });
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        if (document.body.contains(successMessage)) {
-            successMessage.classList.add('hide');
-            setTimeout(() => {
-                if (document.body.contains(successMessage)) {
-                    document.body.removeChild(successMessage);
-                }
-            }, 400);
-        }
+            document.body.removeChild(successMessage);
+        }, 300);
     }, 3000);
 }
 
@@ -257,6 +237,11 @@ const elements = {
     shareModal: document.getElementById('shareModal'),
     shareLink: document.getElementById('shareLink'),
     copyLinkBtn: document.getElementById('copyLinkBtn'),
+    
+    // RSVP Modal
+    rsvpModal: document.getElementById('rsvpModal'),
+    rsvpForm: document.getElementById('rsvpForm'),
+    rsvpOptions: document.querySelectorAll('.rsvp-option')
 };
 
 // Initialize page
@@ -284,7 +269,7 @@ async function loadAnnouncementDetails() {
 
     try {
         // First, fetch available categories
-        const categoriesResponse = await fetch(`${API_BASE_URL}/events/categories/`, {
+        const categoriesResponse = await fetch(`${window.API_BASE_URL}/events/categories/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 'Content-Type': 'application/json'
@@ -294,7 +279,7 @@ async function loadAnnouncementDetails() {
         const categories = await categoriesResponse.json();
         
         // Then fetch event details
-        const response = await fetch(`${API_BASE_URL}/events/${eventId}/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/${eventId}/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 'Content-Type': 'application/json'
@@ -323,19 +308,44 @@ async function loadAnnouncementDetails() {
         elements.category.style.borderRadius = '16px';
         elements.category.style.fontSize = '0.875rem';
         elements.category.style.fontWeight = '500';
-        elements.category.style.fontFamily = 'Retro Floral';        elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;
+        elements.category.style.fontFamily = 'Retro Floral';
         
-        // Make the host name clickable - direct link to society details
+          elements.postDate.textContent = `Posted on ${new Date(event.created_at).toLocaleDateString()}`;        // Make the host name clickable with selectable menu option
         if (event.host_id && event.host_username) {
-            elements.author.innerHTML = `by <a href="society-details.html?id=${event.host_id}" class="host-link">${event.host_username}</a>`;
-            console.log(`Created link to society profile: ${event.host_id}`);
+            // Create a more interactive and obvious clickable host section
+            elements.author.innerHTML = `by <div class="host-info">
+                <span class="host-link">${event.host_username}</span>
+                <div class="host-options">
+                    <a href="society-details.html?id=${event.host_id}" class="view-host-btn">
+                        <i class="fas fa-building"></i> View Society Profile
+                    </a>
+                    <a href="events.html?host=${event.host_id}" class="view-host-btn">
+                        <i class="fas fa-calendar-alt"></i> View All Events
+                    </a>
+                </div>
+            </div>`;
+            
+            console.log(`Created interactive host element for society ID: ${event.host_id}`);
+            
+            // Add click event to toggle options visibility
+            setTimeout(() => {
+                const hostLink = document.querySelector('.host-link');
+                if (hostLink) {
+                    hostLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const hostOptions = e.currentTarget.parentNode.querySelector('.host-options');
+                        hostOptions.classList.toggle('active');
+                    });
+                }
+            }, 100);
         } else if (event.host_username) {
             elements.author.textContent = `by ${event.host_username}`;
             console.log("Host username present but no ID available for link");
         } else {
             elements.author.textContent = `by Unknown Host`;
             console.log("No host information available");
-        }
+        }        
         
         // Format and enhance the description content// Process the description to add better formatting
         let formattedContent = event.description;
@@ -408,7 +418,7 @@ async function loadAnnouncementDetails() {
 // Load feedbacks (comments)
 async function loadFeedbacks(eventId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/events/${eventId}/comments/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/${eventId}/comments/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 'Content-Type': 'application/json'
@@ -436,7 +446,7 @@ async function loadFeedbacks(eventId) {
         });
 
         // Update overall rating
-        const ratingResponse = await fetch(`${API_BASE_URL}/events/${eventId}/rating/`, {
+        const ratingResponse = await fetch(`${window.API_BASE_URL}/events/${eventId}/rating/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 'Content-Type': 'application/json'
@@ -457,17 +467,9 @@ async function loadFeedbacks(eventId) {
 // Handle attendance
 async function handleAttendance(action) {
     const eventId = new URLSearchParams(window.location.search).get('id');
-    const isAttending = action === 'attend';
-    
-    // Get current attendee count
-    const currentCount = parseInt(document.getElementById('attending-count').textContent) || 0;
-    
-    // Update UI immediately for responsive feel
-    updateAttendanceButton(isAttending);
-    updateAttendeeCount(isAttending ? currentCount + 1 : currentCount - 1);
     
     try {
-        const response = await fetch(`${API_BASE_URL}/events/${eventId}/attendance/`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/${eventId}/attendance/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -476,20 +478,15 @@ async function handleAttendance(action) {
             body: JSON.stringify({ action })
         });
         
-        if (!response.ok) {
-            throw new Error('Failed to update attendance');
-        }
+        if (!response.ok) throw new Error('Failed to update attendance');
         
         const result = await response.json();
-        // Update with the accurate count from server
+        updateAttendanceButton(action === 'attend');
         updateAttendeeCount(result.attendee_count);
+        showRSVPSuccessMessage();
         
     } catch (error) {
-        // Revert UI changes if the API call fails
-        updateAttendanceButton(!isAttending);
-        updateAttendeeCount(isAttending ? currentCount : currentCount + 1);
         showError('Failed to update attendance');
-        throw error;
     }
 }
 
@@ -497,7 +494,7 @@ async function handleAttendance(action) {
 async function loadRelatedAnnouncements() {
     try {
         const currentEventId = new URLSearchParams(window.location.search).get('id');
-        const response = await fetch(`${API_BASE_URL}/events/?ordering=date`, {
+        const response = await fetch(`${window.API_BASE_URL}/events/?ordering=date`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 'Content-Type': 'application/json'
@@ -583,99 +580,51 @@ function showError(message) {
 
 // Setup event listeners
 function setupEventListeners() {
-    // RSVP button click - changed to toggle functionality
-    elements.rsvpButton.addEventListener('click', async function() {
-        const eventId = new URLSearchParams(window.location.search).get('id');
-        
+    // RSVP button click
+    elements.rsvpButton.addEventListener('click', function() {
+        if (demoAnnouncement.category.toLowerCase() === 'event') {
+            // Show RSVP modal
+            elements.rsvpModal.style.display = 'block';
+        } else {
+            showSuccessMessage('Thank you for your interest!');
+        }
+    });
+    
+    // RSVP option selection
+    elements.rsvpOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            elements.rsvpOptions.forEach(opt => opt.classList.remove('selected'));
+            // Add selected class to clicked option
+            this.classList.add('selected');
+        });
+    });
+
+    // RSVP form submission
+    elements.rsvpForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const selectedOption = document.querySelector('.rsvp-option.selected');
+        if (!selectedOption) {
+            alert('Please select your attendance status');
+            return;
+        }
+
+        const value = selectedOption.dataset.value;
         try {
-            // Toggle attendance status
-            if (currentAttendanceStatus) {
-                // If already attending, unattend
-                await handleAttendance('unattend');
-                showRSVPSuccessMessage('You\'re no longer attending this event', false);
-            } else {
-                // If not attending, attend
+            // Only send attendance request if user selects "yes"
+            if (value === 'yes') {
                 await handleAttendance('attend');
-                showRSVPSuccessMessage('You\'re now attending this event!', true);
+            } else if (currentAttendanceStatus) {
+                // If user was attending and now selects "no" or "maybe", unattend
+                await handleAttendance('unattend');
             }
+            
+            elements.rsvpModal.style.display = 'none';
+            document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+            showRSVPSuccessMessage();
         } catch (error) {
             showError('Failed to update attendance status');
         }
-    });
-
-    // Share button click
-    elements.shareButton.addEventListener('click', function() {
-        console.log('Share button clicked');
-        if (elements.shareModal) {
-            elements.shareModal.style.display = 'block';
-            // Add the active class after a small delay to trigger the animation
-            setTimeout(() => {
-                elements.shareModal.classList.add('active');
-            }, 10);
-            elements.shareLink.value = window.location.href;
-        } else {
-            console.error('Share modal element not found');
-        }
-    });
-
-    // Copy link button click
-    if (elements.copyLinkBtn) {
-        elements.copyLinkBtn.addEventListener('click', function() {
-            elements.shareLink.select();
-            document.execCommand('copy');
-            
-            // Show copy success message
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-check"></i>';
-            setTimeout(() => {
-                this.innerHTML = originalText;
-            }, 2000);
-            
-            showSuccessMessage('Link copied to clipboard!');
-        });
-    }
-
-    // Close modal when clicking close button
-    document.querySelectorAll('.close-modal').forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            if (modal) {
-                modal.classList.remove('active');
-                // Hide the modal after the animation completes
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 300);
-            }
-        });
-    });
-
-    // Share options click handlers
-    document.querySelectorAll('.share-option').forEach(button => {
-        button.addEventListener('click', function() {
-            const platform = this.classList[1];
-            const url = encodeURIComponent(window.location.href);
-            const title = encodeURIComponent(document.getElementById('announcement-title').textContent);
-            
-            let shareUrl;
-            switch (platform) {
-                case 'facebook':
-                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-                    break;
-                case 'twitter':
-                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
-                    break;
-                case 'linkedin':
-                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-                    break;
-                case 'email':
-                    shareUrl = `mailto:?subject=${title}&body=Check out this event: ${window.location.href}`;
-                    break;
-            }
-            
-            if (shareUrl) {
-                window.open(shareUrl, '_blank', 'width=600,height=400');
-            }
-        });
     });
 
     // Feedback form submission
@@ -702,20 +651,91 @@ function setupEventListeners() {
         document.querySelector('input[name="rating"]:checked').checked = false;
     });
 
-    // Close modals when clicking outside
+    // Share button click
+    elements.shareButton.addEventListener('click', function() {
+        elements.shareModal.style.display = 'block';
+        elements.shareLink.value = window.location.href;
+    });
+
+    // Share options click handlers
+    document.querySelectorAll('.share-option').forEach(button => {
+        button.addEventListener('click', function() {
+            const platform = this.classList[1];
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(demoAnnouncement.title);
+            
+            let shareUrl;
+            switch (platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+                    break;
+                case 'email':
+                    shareUrl = `mailto:?subject=${title}&body=Check out this event: ${window.location.href}`;
+                    break;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+            }
+        });
+    });
+
+    // Copy link button click
+    elements.copyLinkBtn.addEventListener('click', function() {
+        elements.shareLink.select();
+        document.execCommand('copy');
+        
+        // Show copy success message
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+            this.innerHTML = originalText;
+        }, 2000);
+        
+        showSuccessMessage('Link copied to clipboard!');
+    });    // Close host options and modals when clicking outside
     window.addEventListener('click', function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.classList.remove('active');
-            setTimeout(() => {
-                event.target.style.display = 'none';
-            }, 300);
+        // Close host options dropdown when clicking elsewhere
+        const hostOptions = document.querySelector('.host-options.active');
+        if (hostOptions && !event.target.closest('.host-info')) {
+            hostOptions.classList.remove('active');
         }
+        
+        // Close modals when clicking outside
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+            // Reset RSVP form if it's the RSVP modal
+            if (event.target === elements.rsvpModal) {
+                elements.rsvpForm.reset();
+                document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+            }
+        }
+    });
+
+    // Close modal when clicking close button
+    document.querySelectorAll('.close-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            modal.style.display = 'none';
+            // Reset RSVP form if it's the RSVP modal
+            if (modal === elements.rsvpModal) {
+                elements.rsvpForm.reset();
+                document.querySelector('.rsvp-option.selected')?.classList.remove('selected');
+            }
+        });
     });
 }
 
 // On page load or after RSVP, update the UI:
 function updateRSVPCounters() {
     document.getElementById('attending-count').textContent = demoAnnouncement.rsvp.attending;
+    document.getElementById('pending-count').textContent = demoAnnouncement.rsvp.pending;
     document.getElementById('not-attending-count').textContent = demoAnnouncement.rsvp.notAttending;
 }
 
@@ -725,22 +745,13 @@ document.addEventListener('DOMContentLoaded', initPage);
 function updateAttendanceButton(isAttending) {
     currentAttendanceStatus = isAttending;
     const rsvpButton = elements.rsvpButton;
-    
     if (isAttending) {
-        rsvpButton.innerHTML = '<i class="fas fa-check-circle"></i> Attending';
+        rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> Attending';
         rsvpButton.classList.add('attending');
-        rsvpButton.style.backgroundColor = '002366'; // dark blue for attending
     } else {
         rsvpButton.innerHTML = '<i class="fas fa-calendar-check"></i> RSVP';
         rsvpButton.classList.remove('attending');
-        rsvpButton.style.backgroundColor = ''; // Reset to default color
     }
-    
-    // Add subtle animation
-    rsvpButton.classList.add('button-pulse');
-    setTimeout(() => {
-        rsvpButton.classList.remove('button-pulse');
-    }, 300);
 }
 
 function updateAttendeeCount(count) {
