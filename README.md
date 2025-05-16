@@ -69,10 +69,10 @@ This will download all necessary dependencies.
 ## Running the server
 In the events_management folder where "manage.py" is located, run the following command:  
 `python manage.py runserver`  
-This will start the backend locally and a link to it will be provided. Information regarding the endpoints is in the document.  
+This will start the backend locally and a link to it will be provided.
 
 ## Running HTTP Server
-Along with runing the backend, you'll need to run a HTTP server too to bypass CORS:  
+Along with runing the backend, you'll need to run a HTTP server too to create a web environment.
 Open the command terminal in the "frontend" folder and type in the following command:  
 `python -m http.server 8080`  
 Then, go to: http://localhost:8080/index.html
