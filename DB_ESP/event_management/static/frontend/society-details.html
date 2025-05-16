@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Details - EventHub</title>
+    <link rel="stylesheet" href="handler-dashboard.css">
+    <link rel="stylesheet" href="society-details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-content">
+        <div class="society-container">            <!-- Society Header -->
+            <div class="society-header">                <div class="society-banner">
+                    <div class="society-info">
+                        <h1 id="societyName">Loading...</h1>
+                        <div class="society-meta">
+                            <span class="society-username">
+                                <i class="fas fa-user"></i>
+                                <span id="societyUsername">Loading...</span>
+                            </span>
+                            <span class="event-count">
+                                <i class="fas fa-calendar"></i>
+                                <span id="eventCount">0</span> events hosted
+                            </span>
+                            <span class="average-rating">
+                                <i class="fas fa-star"></i>
+                                <span id="averageRating">0</span> average rating
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Society Events -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar"></i> Society Events</h2>
+                </div>
+                <div id="eventsGrid" class="events-grid">
+                    <!-- Events will be populated here -->
+                    <div class="loading-message">Loading events...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+
+    <script src="society-details.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+/* Settings page specific styles */
+
+/* Form Styles */
+.settings-form {
+    background-color: var(--card-bg-dark);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--arctic);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.form-group:focus-within label {
+    color: var(--glow-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--arctic);
+    letter-spacing: 0.2px;
+    transition: all 0.3s ease;
+    background-color: var(--midnight);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--glow-color);
+    box-shadow: 0 0 0 3px rgba(var(--glow-color-rgb), 0.1);
+    transform: translateY(-2px);
+}
+
+.form-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    background-color: var(--border-color-light);
+    border-radius: 24px;
+    margin-right: 0.75rem;
+    transition: 0.4s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: var(--glow-color);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Password Strength Meter */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 6px;
+    background-color: #eee;
+    border-radius: 3px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    width: 0;
+}
+
+.strength-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--apres-ski);
+}
+
+/* Privacy and Notification Sections */
+.privacy-group,
+.notification-group {
+    margin-bottom: 1.5rem;
+}
+
+.privacy-group h3,
+.notification-group h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--arctic);
+}
+
+/* Danger Zone */
+.danger-zone {
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    border-radius: 12px;
+}
+
+.danger-actions {
+    padding: 1.5rem;
+}
+
+.danger-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.danger-info h3 {
+    color: var(--danger-color);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.danger-info p {
+    color: var(--apres-ski);
+    font-size: 0.9rem;
+    max-width: 500px;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    border: none;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #ff1a1a;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 1000;
+    animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.notification.success {
+    background-color: #28a745;
+    color: white;
+}
+
+.notification.error {
+    background-color: #dc3545;
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .danger-action {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .form-actions {
+        justify-content: center;
+    }
+    
+    .notification {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+    }
+}

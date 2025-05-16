@@ -1,0 +1,54 @@
+/* Manage Events Page Specific Styles */
+.event-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.2rem;
+  justify-content: flex-start;
+}
+
+.event-actions .btn {
+  flex: 1;
+  justify-content: center;
+  min-width: 120px;
+  max-width: 150px;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: auto;
+}
+
+.event-actions .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(79, 70, 229, 0.2);
+}
+
+.event-actions .event-details-btn {
+  background-color: #F2EFE9;
+  color: rgb(7, 1, 45);
+}
+
+.event-actions .event-details-btn:hover {
+  background-color: #F2EFE9;
+  color:white;
+}
+
+.event-actions .event-manage-btn {
+  background-color: #F2EFE9;
+  color: rgb(1, 3, 46);
+}
+
+.event-actions .event-manage-btn:hover {
+  background-color: #F2EFE9;
+  color:white;
+}
+
+@media (max-width: 576px) {
+  .event-actions {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .event-actions .btn {
+    max-width: none;
+  }
+}

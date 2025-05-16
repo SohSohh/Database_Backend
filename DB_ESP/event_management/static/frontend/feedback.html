@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Feedback</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav id="main-nav">
+            <div class="logo">
+                <a href="index.html"><h1>EventHub</h1></a>
+            </div>
+            <ul class="nav-links" id="nav-menu">
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="announcements.html">Announcements</a></li>
+                <li><a href="viewer-dashboard.html">Viewer Dashboard</a></li>
+                <li><a href="handler-dashboard.html">Handler Dashboard</a></li>
+            </ul>
+            <div class="profile-icon">
+                <a href="register.html" id="profileLink">
+                    <i class="fas fa-user-circle" style="color: var(--light-color);"></i>
+                </a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+    <!-- Include navbar -->
+    <div id="navbar-placeholder"></div>
+
+    <main class="container">
+        <h1>Event Feedback</h1>
+        
+        <section class="event-selector">
+            <h2>Select Event</h2>
+            <select id="eventSelector" onchange="loadFeedback()">
+                <option value="" selected disabled>Choose an event</option>
+                <option value="1">Annual Conference 2025</option>
+                <option value="2">Workshop on Web Development</option>
+                <option value="3">Career Fair</option>
+                <!-- More events will be loaded dynamically -->
+            </select>
+        </section>
+
+        <section class="feedback-container" id="feedbackDisplay">
+            <h2>Feedback for <span id="selectedEventName">Selected Event</span></h2>
+            
+            <div class="feedback-list" id="feedbackList">
+                <!-- Feedback items will be loaded here dynamically -->
+                <p class="empty-state">Select an event to view feedback</p>
+            </div>
+
+            <section class="add-feedback">
+                <h3>Add Your Feedback</h3>
+                <form id="feedbackForm">
+                    <div class="form-group">
+                        <label for="rating">Rating:</label>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5">
+                            <label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1">★</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="comment">Your Comments:</label>
+                        <textarea id="comment" name="comment" rows="4" required placeholder="Share your thoughts about this event..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn primary-btn">Submit Feedback</button>
+                </form>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Event Platform. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Load navbar
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-placeholder').innerHTML = data;
+            });
+            
+        // Sample function to load feedback for selected event
+        function loadFeedback() {
+            const eventId = document.getElementById('eventSelector').value;
+            const eventName = document.getElementById('eventSelector').options[document.getElementById('eventSelector').selectedIndex].text;
+            
+            document.getElementById('selectedEventName').textContent = eventName;
+            
+            // This would be replaced with actual API call to get feedback
+            const feedbackList = document.getElementById('feedbackList');
+            
+            // Clear existing feedback
+            feedbackList.innerHTML = '';
+            
+            if (eventId === "") {
+                feedbackList.innerHTML = '<p class="empty-state">Select an event to view feedback</p>';
+                return;
+            }
+            
+            // Sample feedback data (would come from backend)
+            const sampleFeedback = [
+                { name: "John Doe", rating: 5, comment: "This event was amazing! I learned so much and met great people.", date: "2025-03-15" },
+                { name: "Jane Smith", rating: 4, comment: "Very informative session. Would recommend to others.", date: "2025-03-14" },
+                { name: "Alex Johnson", rating: 3, comment: "Good content but the venue was a bit cramped.", date: "2025-03-12" }
+            ];
+            
+            // Display feedback
+            sampleFeedback.forEach(item => {
+                const stars = "★".repeat(item.rating) + "☆".repeat(5 - item.rating);
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-header">
+                        <span class="user-name">${item.name}</span>
+                        <span class="rating">${stars}</span>
+                        <span class="date">${item.date}</span>
+                    </div>
+                    <p class="comment">${item.comment}</p>
+                `;
+                
+                feedbackList.appendChild(feedbackItem);
+            });
+        }
+        
+        // Handle form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const rating = document.querySelector('input[name="rating"]:checked')?.value;
+            const comment = document.getElementById('comment').value;
+            
+            if (!rating) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            // This would submit to backend in a real implementation
+            alert('Thank you for your feedback!');
+            
+            // Reset form
+            document.getElementById('comment').value = '';
+            document.querySelector('input[name="rating"]:checked').checked = false;
+            
+            // Reload feedback to show the newly added one
+            loadFeedback();
+        });
+    </script>
+</body>
+</html>
