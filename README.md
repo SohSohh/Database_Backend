@@ -8,9 +8,8 @@ You may create a viewer account. For the handler account, use the following cred
 Email: testsociety@example.com  
 Password: Test1234!  
 
-Frontend was developed by @AzkaHafeez and @Sanehaakhtar  
-Backend was developed by @SohSohh
-
+### Frontend was developed by @AzkaHafeez and @Sanehaakhtar  
+### Backend was developed by @SohSohh
 ---
 
 ## Key Features
