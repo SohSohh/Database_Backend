@@ -17,7 +17,8 @@
         apiHost = hostname;
     }
 
-    const API_BASE_URL = `http://${apiHost}:${port}/api`;
+    // const API_BASE_URL = `http://${apiHost}:${port}/api`;
+    const API_BASE_URL = 'https://database-backend-stbj.onrender.com';
 
     // Define main configuration object on window
     window.AppConfig = {
