@@ -56,7 +56,9 @@ EMAIL_HOST_PASSWORD = 'otjc zdpl vwal sehx'  # For Gmail, use an App Password
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'sohaibmubashir6@gmail.com'
 
-
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Already default in many setups
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Application definition
 
@@ -116,6 +118,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

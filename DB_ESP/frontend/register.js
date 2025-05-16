@@ -1,4 +1,7 @@
-import { API_BASE_URL } from './config.js';
+// Ensure the global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API_BASE_URL is not defined. Make sure config.js is loaded before this script.');
+}
 
 document.addEventListener("DOMContentLoaded", function () {
   const registerForm = document.getElementById("registerForm");
@@ -105,12 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         console.log('Sending registration request:', {
-          url: `${API_BASE_URL}/api/users/register/viewer/`,
+          url: `${window.API_BASE_URL}/users/register/viewer/`,
           method: 'POST',
           body: { ...formData, password: '[HIDDEN]', password2: '[HIDDEN]' }
         });
 
-        const response = await fetch(`${API_BASE_URL}/api/users/register/viewer/`, {
+        const response = await fetch(`${window.API_BASE_URL}/users/register/viewer/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

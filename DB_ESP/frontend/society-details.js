@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+// Ensure global API_BASE_URL is loaded
+if (!window.API_BASE_URL) {
+    throw new Error('API base URL not defined. Make sure config.js is loaded before this script.');
+}
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadSocietyDetails(societyId) {
     try {
         // Fetch events for this society
-        const eventsResponse = await fetch(`${API_BASE_URL}/events/handler/?user_id=${societyId}`, {
+        const eventsResponse = await fetch(`${window.API_BASE_URL}/events/handler/?user_id=${societyId}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
@@ -115,7 +118,7 @@ function renderEvents(events) {
 
 async function handleJoinSociety(societyId, joinCode) {
     try {
-        const response = await fetch(`${API_BASE_URL}/users/membership/`, {
+        const response = await fetch(`${window.API_BASE_URL}/users/membership/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
