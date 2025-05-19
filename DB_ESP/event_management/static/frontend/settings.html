@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Settings - EventHub</title>
+    <!-- Include both stylesheets, we'll apply the correct one via JavaScript -->
+    <link rel="stylesheet" id="dashboard-style" href="handler-dashboard.css">
+    <!-- Include settings-specific CSS -->
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>    <!-- Sidebar - Will be populated dynamically based on user type -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="brand-link">
+                <h1>EventHub</h1>
+            </a>
+            <h2>User</h2>  <!-- This will be replaced by JS -->
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <!-- Navigation items will be populated by JS -->
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <!-- Account Settings -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-shield-alt"></i> Account Security</h2>
+                </div>
+                <div class="settings-form">
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" required>
+                            <div class="password-strength">
+                                <div class="strength-bar" id="strengthBar"></div>
+                                <span class="strength-text" id="strengthText">Password Strength</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i> Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bell"></i> Notification Preferences</h2>
+                </div>
+                <div class="settings-form">
+                    <form id="notificationForm">
+                        <div class="notification-group">
+                            <h3>Email Notifications</h3>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="eventReminders" name="eventReminders" checked>
+                                    <span class="toggle-slider"></span>
+                                    Event Reminders
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="registrationUpdates" name="registrationUpdates" checked>
+                                    <span class="toggle-slider"></span>
+                                    Registration Updates
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="societyUpdates" name="societyUpdates" checked>
+                                    <span class="toggle-slider"></span>
+                                    Society Updates
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="feedbackReminders" name="feedbackReminders" checked>
+                                    <span class="toggle-slider"></span>
+                                    Feedback Reminders
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Privacy Settings -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-shield"></i> Privacy Settings</h2>
+                </div>
+                <div class="settings-form">
+                    <form id="privacyForm">
+                        <div class="privacy-group">
+                            <h3>Profile Visibility</h3>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showEmail" name="showEmail">
+                                    <span class="toggle-slider"></span>
+                                    Show Email Address
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showRegistrations" name="showRegistrations" checked>
+                                    <span class="toggle-slider"></span>
+                                    Show Event Registrations
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showFeedback" name="showFeedback" checked>
+                                    <span class="toggle-slider"></span>
+                                    Show Public Feedback
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Privacy Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="content-section danger-zone">
+                <div class="section-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
+                </div>
+                <div class="danger-actions">
+                    <div class="danger-action">
+                        <div class="danger-info">
+                            <h3>Delete Account</h3>
+                            <p>Once you delete your account, there is no going back. Please be certain.</p>
+                        </div>
+                        <button class="btn btn-danger" id="deleteAccountBtn">
+                            <i class="fas fa-trash"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>

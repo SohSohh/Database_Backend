@@ -1,0 +1,416 @@
+/* Updated society-details.css */
+
+/* Society Details Page Styles */
+:root {
+  --card-bg-light: #ffffff;
+  --border-color-light: #e9ecef;
+  --glow-color: #002366;
+  --glow-color-rgb: 0, 35, 102;
+  --arctic: #262626;
+  --apres-ski: #8c8c8c;
+}
+
+/* Fix for the main content - ensure proper centering */
+.main-content {
+  margin-left: 12px !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 2rem !important;
+  display: flex;
+  justify-content: center;
+}
+
+.society-container {
+  max-width: 1200px !important;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* Enhanced Society Header */
+.society-header {
+  background: var(--card-bg-light);
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 15px 35px rgba(var(--glow-color-rgb), 0.08);
+  border: 1px solid var(--border-color-light);
+  transition: all 0.4s ease;
+  position: relative;
+  width: 100%;
+}
+
+.society-header:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(var(--glow-color-rgb), 0.12);
+}
+
+/* Decorative elements */
+.society-header::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(var(--glow-color-rgb), 0.1);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.society-header::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(var(--glow-color-rgb), 0.1);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.society-banner {
+  background: linear-gradient(135deg, 
+    rgba(var(--glow-color-rgb), 0.07) 0%,
+    rgba(var(--glow-color-rgb), 0.03) 100%);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  position: relative;
+  border-radius: 24px;
+  box-shadow: inset 0 0 20px rgba(var(--glow-color-rgb), 0.03);
+  overflow: hidden;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(var(--glow-color-rgb), 0.03) 0%, transparent 8%),
+    radial-gradient(circle at 80% 80%, rgba(var(--glow-color-rgb), 0.03) 0%, transparent 8%);
+  background-size: 40px 40px;
+  animation: bannerGlow 4s infinite ease-in-out;
+}
+
+.society-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--glow-color), transparent);
+  opacity: 0.8;
+}
+
+.society-banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(to right, 
+    transparent, 
+    rgba(var(--glow-color-rgb), 0.3), 
+    transparent);
+}
+
+/* Improved society info styling */
+.society-info {
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.society-info h1 {
+  font-size: 2.8rem;
+  margin-bottom: 1.2rem;
+  font-family: "BlushAsliring", "Poppins", sans-serif;
+  background: linear-gradient(45deg, var(--arctic), var(--glow-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleFade 1s ease-out forwards;
+  letter-spacing: 0.5px;
+  text-align: center;
+  text-shadow: 0 5px 10px rgba(var(--glow-color-rgb), 0.1);
+  position: relative;
+  display: inline-block;
+}
+
+.society-info h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, transparent, var(--glow-color), transparent);
+  border-radius: 2px;
+}
+
+/* Improved meta information layout */
+.society-meta {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  font-size: 1rem;
+  margin-top: 2rem;
+  font-family: "Retro Floral", "Poppins", sans-serif;
+  position: relative;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+.society-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--apres-ski);
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  background: rgba(var(--glow-color-rgb), 0.04);
+  border: 1px solid rgba(var(--glow-color-rgb), 0.08);
+  box-shadow: 0 4px 12px rgba(var(--glow-color-rgb), 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.society-meta span:hover {
+  transform: translateY(-3px);
+  color: var(--glow-color);
+  background: rgba(var(--glow-color-rgb), 0.08);
+  box-shadow: 0 6px 15px rgba(var(--glow-color-rgb), 0.1);
+  border-color: rgba(var(--glow-color-rgb), 0.2);
+}
+
+.society-meta span i {
+  color: var(--glow-color);
+  font-size: 1.2rem;
+}
+
+/* Enhanced Content Section */
+.content-section {
+  background: var(--card-bg-light);
+  border-radius: 24px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(var(--glow-color-rgb), 0.05);
+  border: 1px solid var(--border-color-light);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.8s ease-out forwards;
+  width: 100%;
+}
+
+.content-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--glow-color), transparent);
+}
+
+.content-section:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(var(--glow-color-rgb), 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color-light);
+  position: relative;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--glow-color), transparent);
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  color: var(--arctic);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "BlushAsliring", "Poppins", sans-serif;
+}
+
+.section-header h2 i {
+  color: var(--glow-color);
+}
+
+/* Events Grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+}
+
+/* Event Card Styles - Matching viewer dashboard */
+.event-card {
+  background: var(--card-bg-light);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: 1px solid var(--border-color-light);
+  position: relative;
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.event-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.event-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--glow-color);
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--glow-color), transparent);
+  z-index: 2;
+}
+
+/* Loading Message */
+.loading-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--apres-ski);
+  font-size: 1.1rem;
+  font-family: "Retro Floral", "Poppins", sans-serif;
+  width: 100%;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes titleFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bannerGlow {
+  0% {
+    box-shadow: inset 0 0 20px rgba(var(--glow-color-rgb), 0.03);
+  }
+  50% {
+    box-shadow: inset 0 0 30px rgba(var(--glow-color-rgb), 0.08);
+  }
+  100% {
+    box-shadow: inset 0 0 20px rgba(var(--glow-color-rgb), 0.03);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .society-container {
+    padding: 0;
+  }
+  
+  .society-info h1 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .society-meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .society-info h1 {
+    font-size: 2.2rem;
+  }
+
+  .content-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .society-container {
+    padding: 0;
+  }
+
+  .society-banner {
+    padding: 2rem 1rem;
+  }
+
+  .society-info h1 {
+    font-size: 1.8rem;
+  }
+
+  .society-meta {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

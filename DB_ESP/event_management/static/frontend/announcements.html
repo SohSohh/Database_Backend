@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events & Announcements - EventHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        :root {
+            /* Color Palette */
+            --midnight: #F2EFE9;     /* Main background (Very light off-white/beige) */
+            --midnight-rgb: 242, 239, 233; /* RGB for midnight */
+            --arctic: #262626;       /* Primary text color (Dark gray) */
+            --apres-ski: #8C8C8C;    /* Muted/secondary text (Mid gray) */
+            --slopes: #BFBFBD;       /* Lighter gray for subtle elements/text/borders (Light-mid gray) */
+            --mountainside: #E9E5DC; /* Secondary light background / Sections (Light beige/gray) */
+            --mountainside-rgb: 233, 229, 220; /* RGB for --mountainside */
+            
+            /* Accent colors */
+            --glow-color: #002366;       /* Primary accent - US Navy Blue */
+            --glow-color-rgb: 0, 35, 102;  /* RGB version for US Navy Blue */
+            --accent-color: #8C8C8C;     /* Using a new palette gray for other accents/text */
+            --hover-color: #001a4d;      /* Darker Navy Blue for hover */
+            --highlight-color: #F5A623;  /* Warm accent for highlights */
+
+            /* Helper variables */
+            --border-color-light: #BFBFBD; /* Using --slopes */
+            --card-bg-light: #FFFFFF; /* Pure white for cards */
+            --card-bg-subtle-light: #F2EFE9; /* For less prominent cards */
+            --shadow-color-light: rgba(38, 38, 38, 0.08); /* Subtle shadow using --arctic as base */
+            --shadow-color-medium: rgba(38, 38, 38, 0.15); /* Medium shadow */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Hide default cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--midnight);
+            color: var(--arctic);
+            line-height: 1.6;
+            overflow-x: hidden;
+              /* Enhanced background with layered gradients */
+            background:
+              /* Top light spot */
+              radial-gradient(ellipse at 50% -20%, rgba(var(--mountainside-rgb), 0.5) 0%, transparent 50%),
+              /* Bottom glow spot */
+              radial-gradient(ellipse at 50% 120%, rgba(var(--glow-color-rgb), 0.12) 0%, transparent 50%),
+              /* Base angled gradient */
+              linear-gradient(175deg, var(--midnight) 10%, var(--mountainside) 55%, var(--midnight) 90%);
+        }
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--glow-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999; 
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+        }
+        
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(var(--glow-color-rgb), 0.1);
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.15s ease-out, background 0.3s ease;
+        }
+        
+        .cursor-hover {
+            width: 30px;
+            height: 30px;
+            border-color: var(--highlight-color);
+        }
+        
+        .follower-hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: rgba(var(--glow-color-rgb), 0.2);
+        }
+
+        /* Header Styles */
+        header {
+            padding: 1rem;
+            background-color: rgba(242, 239, 233, 0.85);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--shadow-color-light);
+        }
+        
+        header.scrolled {
+            padding: 0.7rem 1rem;
+            background-color: rgba(242, 239, 233, 0.95);
+            box-shadow: 0 8px 20px var(--shadow-color-medium);
+        }
+        
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .logo a {
+            color: var(--arctic);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+        
+        .logo a::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--glow-color);
+            transform: translateX(-100%);
+            transition: all 0.3s ease;
+        }
+        
+        .logo a:hover::before {
+            transform: translateX(0);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        .nav-links li a {
+            color: var(--apres-ski);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links li a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--glow-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-links li a:hover, .nav-links li a.active {
+            color: var(--glow-color);
+        }
+        
+        .nav-links li a:hover::after, .nav-links li a.active::after {
+            width: 100%;
+        }
+        
+        .profile-icon a {
+            color: var(--apres-ski);
+            font-size: 1.5rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        .profile-icon a i {
+            font-size: 2rem;
+            color: var(--apres-ski);
+            transition: color 0.3s ease;
+        }
+        
+        .profile-icon a:hover {
+            color: var(--glow-color);
+            transform: scale(1.1);
+        }
+        .profile-icon a:hover i {
+            color: var(--glow-color);
+        }
+        /* Profile Dropdown Menu */
+        .profile-icon {
+            position: relative; /* For dropdown positioning */
+        }
+
+        .profile-dropdown-menu {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon with a small gap */
+            right: 0;
+            background-color: var(--card-bg-light);
+            border: 1px solid var(--border-color-light);
+            border-radius: 8px;
+            box-shadow: 0 8px 16px var(--shadow-color-light);
+            z-index: 101; 
+            min-width: 220px; 
+            padding: 0.5rem 0;
+        }
+
+        .profile-icon .profile-dropdown-menu.active { /* Show when active class is present (for JS click) */
+            display: block;
+        }
+
+        .profile-dropdown-menu a {
+            display: flex; /* Use flex for icon alignment */
+            align-items: center;
+            padding: 0.85rem 1.5rem;
+            color: var(--arctic);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: none; /* Removed hover/click transition effects */
+        }        .profile-dropdown-menu a:hover {
+            background-color: rgba(var(--glow-color-rgb), 0.05);
+            color: var(--glow-color);
+        }
+
+        .profile-dropdown-menu a i {
+            margin-right: 12px;
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+            color: var(--apres-ski);
+            transition: color 0.2s ease;
+        }
+
+        .profile-dropdown-menu a:hover i {
+            color: var(--glow-color);
+        }
+
+        .profile-dropdown-menu a#logoutBtnDropdown {
+            color: #e74c3c; /* Distinct color for logout */
+        }        .profile-dropdown-menu a#logoutBtnDropdown:hover {
+            background-color: rgba(231, 76, 60, 0.05);
+            color: #c0392b;
+        }
+        .profile-dropdown-menu a#logoutBtnDropdown:hover i {
+            color: #c0392b;
+        }
+
+        /* Hamburger Menu (existing styles) */
+        /* Hamburger Menu */
+        #hamburger-menu {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 2rem;
+            height: 2rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+
+        #hamburger-menu span {
+            width: 2rem;
+            height: 0.25rem;
+            background: var(--arctic);
+            border-radius: 10px;
+            transition: all 0.3s linear;
+            position: relative;
+            transform-origin: 1px;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--mountainside);
+            color: var(--arctic);
+            padding: 4rem 1rem 2rem;
+        }
+        
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--arctic);
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-description {
+            color: var(--apres-ski);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(var(--glow-color-rgb), 0.1);
+            color: var(--glow-color);
+            transition: all 0.3s ease;
+        }
+        
+        .footer-social a:hover {
+            background-color: var(--glow-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .footer-links h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: var(--arctic);
+            position: relative;
+        }
+        
+        .footer-links h4::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--glow-color);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--apres-ski);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .footer-links a:hover {
+            color: var(--glow-color);
+            transform: translateX(5px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color-light);
+            color: var(--apres-ski);
+            font-size: 0.9rem;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg-light);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: var(--apres-ski);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--glow-color);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color-light);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--arctic);
+        }
+
+        .rsvp-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rsvp-option {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border-color-light);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rsvp-option:hover, .rsvp-option.selected {
+            border-color: var(--glow-color);
+            background-color: rgba(var(--glow-color-rgb), 0.05);
+            transform: translateY(-5px);
+        }
+
+        .rsvp-option i {
+            font-size: 1.5rem;
+            color: var(--apres-ski);
+            margin-bottom: 0.5rem;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .rsvp-option:hover i, .rsvp-option.selected i {
+            color: var(--glow-color);
+        }
+
+        .modal-footer {
+            text-align: right;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--glow-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--hover-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(var(--glow-color-rgb), 0.3);
+        }        /* RSVP Modal Specific Styles (if different from general modal) */
+        #rsvpModal .modal-content { /* More specific if needed */
+            max-width: 90%;
+            width: 450px;
+        }
+        
+        /* General Modal Styles (if you plan to have other modals) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+            backdrop-filter: blur(5px);
+        }
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .nav-links {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background-color: var(--midnight);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: right 0.5s ease;
+                z-index: 99;
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            #hamburger-menu {
+                display: flex;
+                z-index: 100;
+            }
+            
+            .rsvp-options {
+                flex-direction: column;
+            }
+        }
+
+        .events-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            perspective: 1000px; /* Add perspective for 3D hover effects on cards */
+            position: relative;
+        }
+        
+        .events-grid::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        .event-card {
+            flex: 0 0 300px; /* Card width */
+            min-height: 450px;
+            background-color: var(--card-bg-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px var(--shadow-color-light); /* Adjusted base shadow */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), /* Bouncier/floaty transition */
+                        box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        border-color 0.3s ease,
+                        background-color 0.3s ease; /* Added background-color to transition */
+            scroll-snap-align: start;
+            position: relative;
+            border: 1px solid var(--border-color-light);
+        }
+        .event-card::before { /* Sheen effect on hover */
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(var(--glow-color-rgb), 0.08),
+                rgba(var(--glow-color-rgb), 0.02),
+                transparent
+            );
+            transform: rotate(45deg);
+            z-index: 0; /* Behind card content */
+            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .event-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px var(--shadow-color-medium);
+            background-color: var(--card-bg-subtle-light);
+        }
+        
+        .event-card:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--glow-color), var(--highlight-color), var(--glow-color));
+            border-radius: 16px 16px 0 0;
+            opacity: 0.8;
+        }
+        
+        .event-image {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        .event-card:hover::before { /* Move sheen on hover */
+            transform: rotate(45deg) translateX(10%) translateY(-10%);
+        }
+        
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .event-card:hover .event-image img {
+            transform: scale(1.05);
+        }
+        
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--glow-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            z-index: 2;
+        }
+        
+        .event-details {
+            padding: 15px;
+            position: relative; /* Ensure details are above the sheen */
+            z-index: 1;
+        }
+          .event-details h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--arctic);
+            line-height: 1.3;
+            position: relative;
+            display: inline-block;
+            font-family: 'PlayfairDisplay', serif;
+            font-weight: 600;
+        }
+        
+        .event-details h3::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--glow-color), var(--highlight-color));
+            transition: width 0.4s ease;
+        }
+        
+        .event-card:hover .event-details h3::after {
+            width: 100%;
+        }
+        
+        .event-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .event-meta p {
+            display: flex;
+            align-items: center;
+            color: var(--apres-ski);
+            margin: 0;
+        }
+        
+        .event-meta i {
+            color: var(--glow-color);
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+          .event-description {
+            font-size: 0.9rem;
+            color: var(--apres-ski);
+            margin: 12px 0;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3; /* Standard property for compatibility */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .event-footer {
+            display: flex;
+            flex-direction: column;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 35, 102, 0.08);
+        }
+        
+        .event-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(248, 248, 248, 0.5);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            color: var(--apres-ski);
+        }
+        
+        .event-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+        
+        .event-stats i {
+            color: var(--glow-color);
+            opacity: 0.85;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .details-btn,
+        .rsvp-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .details-btn {
+            background-color: transparent;
+            color: var(--glow-color);
+            border: 1px solid var(--glow-color);
+        }
+        
+        .details-btn:hover {
+            background-color: rgba(var(--glow-color-rgb), 0.1);
+        }
+        
+        .rsvp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.5rem 1rem;
+            background-color: transparent;
+            color: var(--glow-color);
+            border: 1px solid var(--glow-color);
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            position: relative; /* Ensure button is above the sheen */
+            z-index: 1;
+        }
+
+        .rsvp-btn:hover {
+            background-color: var(--glow-color);
+            color: white;
+        }
+
+        .rsvp-btn.rsvp-active {
+            background-color: var(--glow-color);
+            color: white;
+        }
+        
+        /* Carousel navigation buttons */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--glow-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-nav:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .prev-btn {
+            left: 10px;
+        }
+        
+        .next-btn {
+            right: 10px;
+        }
+        
+        /* Grabbing cursor for drag scrolling */
+        .events-grid.grabbing {
+            cursor: grabbing;
+        }
+        
+        /* Loading and error states */
+        .loading,
+        .error,
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .loading i {
+            color: var(--glow-color);
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .error {
+            color: #e74c3c;
+        }
+        
+        .no-results {
+            color: var(--apres-ski);
+            font-style: italic;
+        }
+        
+        /* Filter buttons */
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color-light);
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.9rem;
+            color: var(--apres-ski);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background-color: var(--glow-color);
+            color: white;
+            border-color: var(--glow-color);
+        }
+        
+        /* Hero section improvements */
+        .page-header {
+            position: relative;
+            min-height: 40vh; /* Adjusted from 100vh of about page */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding-top: 6rem;
+            background: linear-gradient(180deg, var(--midnight) 0%, var(--mountainside) 70%, var(--midnight) 100%);
+        }
+
+        .page-header-row { /* New class for content alignment */
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center content as it's single column */
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .page-header-left { /* New class for text content */
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .page-header-left h1 {
+            font-size: 3.5rem; /* Larger, like about page */
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            color: var(--arctic);
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            animation: reveal 1s ease forwards; /* Animation from about page */
+        }
+        
+        .page-header-left > p { /* More specific selector */
+            font-size: 1.2rem;
+            color: var(--apres-ski);
+            max-width: 700px; /* Centered text can be a bit wider */
+            margin: 0 auto 2rem auto; /* Center paragraph block and add bottom margin */
+            animation: fadeIn 1s ease 0.5s forwards; /* Animation from about page */
+            opacity: 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle shadow from about page */
+        }
+        
+        /* Remove old animations */
+        /* @keyframes fadeInDown (and its usage on h1) is removed */
+        /* @keyframes fadeInUp (and its usage on p) is removed */
+        /* Add reveal animation if not already present globally */
+        @keyframes reveal {
+            from {
+                clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+            }
+            to {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+            opacity: 0;
+            transform: translateY(20px);
+            }
+            to {
+            opacity: 1;
+            transform: translateY(0);
+            }
+        }
+
+        /* Styles for hero button (if added) */
+        .hero-btn-row {
+            display: flex;
+            gap: 1.2rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-hero-primary { /* New class to avoid conflict with modal's .btn-primary */
+            background: transparent;
+            color: var(--glow-color);
+            border: 2px solid var(--glow-color);
+            border-radius: 4px;
+            padding:.8rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            z-index: 1;
+            letter-spacing: 1px;
+        }
+        .btn-hero-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--glow-color);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        .btn-hero-primary:hover { color: var(--midnight); }
+        .btn-hero-primary:hover::before { width: 100%; }
+        .btn-hero-primary i { margin-left: 8px; transition: transform 0.3s ease; }
+        .btn-hero-primary:hover i { transform: translateX(5px); }
+
+
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            /* .event-card defined later with higher specificity */
+        
+            .event-meta {
+            grid-template-columns: 1fr;
+            }
+        
+            .page-header h1 {
+            font-size: 2rem;
+            }
+        
+            .page-header p {
+            font-size: 1rem;
+            }
+        }
+        
+        /* Main Content */
+        main {
+            padding-top: 5rem;
+        }
+        
+        /* Section Styling */
+        .section-light {
+            padding: 3rem 0;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            position: relative;
+        }
+        
+        /* Filters and Title Section */
+        .filters-and-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color-light);
+        }
+        
+        .filters-and-title h2 {
+            font-size: 2rem;
+            color: var(--arctic);
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        /* Events Container */
+        .events-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+/* Event Card Layout Fixes */
+.event-card {
+    flex: 0 0 300px;
+    height: auto;
+    min-height: 400px;
+    max-height: 550px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    margin: 12px 8px;
+    backdrop-filter: blur(5px);
+}
+        
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 35, 102, 0.15);
+            border-color: var(--glow-color);
+        }
+        
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--glow-color), transparent);
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .event-card:hover::before {
+            opacity: 1;
+        }
+        
+/* Event Image Sizing */
+.event-image {
+    position: relative;
+    height: 180px;
+    width: 100%;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+        
+        .event-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.25));
+            z-index: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .event-card:hover .event-image::after {
+            background: linear-gradient(to bottom, rgba(var(--glow-color-rgb), 0.1), rgba(0,0,0,0.3));
+        }
+        
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+        
+        .event-card:hover .event-image img {
+            transform: scale(1.1);
+        }
+        
+        .category-badge { /* This rule will take precedence */
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--glow-color); /* Changed from highlight-color to navy */
+            color: white; /* Confirming white text for better contrast on highlight color */
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 3;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .event-details {
+    padding: 20px;
+    z-index: 2;
+    color: var(--arctic);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(248,248,248,0.05) 100%);
+}
+        
+        .event-details h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    color: var(--arctic);
+    position: relative;
+    display: inline-block;
+}
+
+        .event-details h3::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--glow-color);
+    opacity: 0.7;
+    transition: width 0.3s ease;
+}
+
+        .event-card:hover .event-details h3::after {
+    width: 100%;
+}
+
+        
+.event-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+    margin-bottom: 10px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    font-family: 'SourceSans3', sans-serif;
+    background-color: rgba(var(--midnight-rgb), 0.3);
+    padding: 10px;
+    border-radius: 8px;
+}
+        
+        .event-meta p {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            color: var(--apres-ski);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .event-meta i {
+            color: var(--glow-color);
+            margin-right: 8px;
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+          .event-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 12px 0;
+    color: var(--apres-ski);
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Show 3 lines before truncating */
+    line-clamp: 3; /* Standard property for compatibility */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 0;
+    flex-shrink: 1;
+    background: linear-gradient(180deg, var(--apres-ski), var(--apres-ski) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    padding-bottom: 2px;
+}
+        
+.event-footer {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 35, 102, 0.08);
+    flex-shrink: 0;
+}
+        
+        .event-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: var(--apres-ski);
+            background: rgba(248, 248, 248, 0.5);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .event-card:hover .event-stats {
+            background: rgba(0, 35, 102, 0.03);
+        }
+        
+        .event-stats i {
+            color: var(--glow-color);
+            margin-right: 5px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 4px;
+        }
+        
+        .details-btn,
+        .rsvp-btn {
+            padding: 9px 0;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'SourceSans3', sans-serif;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+        }          .details-btn {
+            background-color: rgba(var(--glow-color-rgb), 0.04);
+            color: var(--glow-color);
+            border: none;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .details-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--glow-color);
+            transition: width 0.3s ease;
+        }
+        
+        .details-btn:hover {
+            background-color: rgba(var(--glow-color-rgb), 0.08);
+        }
+        
+        .details-btn:hover::after {
+            width: 100%;
+        }
+        
+        .rsvp-btn {
+            background-color: var(--glow-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .rsvp-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+        
+        .rsvp-btn:hover {
+            background-color: #001a4d; /* Darker shade of navy */
+        }
+        
+        .rsvp-btn:hover::before {
+            left: 100%;
+        }
+        
+        .rsvp-btn.rsvp-active {
+            background-color: #117a00; /* A green color for active state */
+            color: white;
+        }
+        
+        .rsvp-btn i, .details-btn i {
+            font-size: 0.9rem;
+        }
+        
+        /* Improved carousel navigation */
+        .carousel-nav { /* This rule will take precedence */
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--card-bg-light); /* Creamy/white base */
+            color: var(--glow-color); /* Navy icon/text */
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+        /* Success Toast Message */
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--glow-color);
+            color: var(--midnight);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px var(--shadow-color-medium);
+            opacity: 0;
+            transform: translateX(100%); /* Start off-screen to the right */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 2000;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .success-toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .success-toast.hide {
+            opacity: 0;
+            transform: translateX(100%);
+        }        
+        .carousel-nav:hover { /* This rule will take precedence */
+            background-color: var(--hover-color); /* Darker navy for hover */
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .prev-btn { /* This rule will take precedence */
+            left: 20px;
+        }
+        
+        .next-btn { /* This rule will take precedence */
+            right: 20px;
+        }
+        
+        .event-card { /* This rule will take precedence */
+            /* Changed animation to fadeInUp for a slide-up effect */
+            animation: fadeInUp 0.6s ease-out forwards; 
+            opacity: 0;
+        }
+        
+        /* Staggered animation for cards */
+        .event-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .event-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .event-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        .event-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+        .event-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+               @media (max-width: 576px) {
+            .event-card {
+                flex: 0 0 260px;
+                min-height: 380px;
+            }
+            
+            .event-image {
+                height: 160px;
+            }
+            
+            .event-details h3 {
+                font-size: 1.1rem;
+                margin-bottom: 8px;
+            }
+            
+            .event-description {
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                font-size: 0.85rem;
+                margin: 8px 0;
+            }
+            
+            .event-details { 
+                padding: 15px;
+            }
+            
+            .event-meta {
+                grid-template-columns: 1fr;
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+        
+            .event-stats {
+                padding: 6px;
+                margin-bottom: 10px;
+            }
+            
+            .details-btn,
+            .rsvp-btn {
+                padding: 8px 0;
+                font-size: 0.8rem;
+            }
+        
+            .carousel-nav { 
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        @font-face {
+        font-family: 'PlayfairDisplay';
+        src: url('static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype'),
+             url('static/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'SourceSans3';
+        src: url('static/fonts/SourceSans3-VariableFont_wght.ttf') format('truetype'),
+             url('static/fonts/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* Headings use PlayfairDisplay */
+    h1, h2, h3, h4, h5, h6, .heading {
+        font-family: 'PlayfairDisplay', serif;
+        letter-spacing: 0.5px;
+    }    /* Secondary text uses SourceSans3 */
+    .event-meta, .announcement-meta, .footer-description, .footer-links, .category-badge, .event-description, .description, .apres-ski, .secondary-text {
+        font-family: 'SourceSans3', sans-serif;
+        letter-spacing: 0.2px;
+    }
+    /* PlayfairDisplay for nav links */
+    .nav-links li a {
+        font-family: 'PlayfairDisplay', serif !important;
+        letter-spacing: 0.5px;
+    }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <!-- Header -->
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <a href="#">EventHub</a>
+            </div>
+            <ul class="nav-links">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="announcements.html"  class="active" >Events</a></li>
+              <li><a href="about.html">About Us</a></li>
+              <li><a href="about.html#contact">Contact</a></li>
+          </ul>
+            <div class="profile-icon">
+                <a href="#" id="profileIconLink" aria-haspopup="true" aria-expanded="false" title="Profile menu">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="profile-dropdown-menu" role="menu" id="profileDropdown">
+                   
+                    <a href="handler-dashboard.html" role="menuitem"><i class="fas fa-tachometer-alt"></i> Handler Dashboard</a>
+                    <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+            <button id="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Events Section -->
+        <section class="section-light">
+            <div class="container">
+                <div class="filters-and-title">
+                    <h2 class="events-section-title">Upcoming Events</h2>
+                    <div id="category-filters" class="filter-container">
+                        <!-- Category filter buttons will be populated by JS -->
+                    </div>
+                </div>
+                <div class="events-container">
+                    <div class="events-grid" id="events-container">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading events...
+                        </div>
+                        <div class="event-footer">
+                            <div class="event-stats">
+                                <span class="attending-count">
+                                    <i class="fas fa-user-friends"></i>
+                                    <span class="count">0</span> attending
+                                </span>
+                            </div>
+                            <button class="rsvp-btn" data-event-name="Art Exhibition" data-event-id="1">
+                                <i class="far fa-star"></i>
+                                <span>RSVP Now</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="index.html" class="footer-logo">EventHub</a>
+                <p class="footer-description">Connecting people with experiences that matter. Discover, book, and enjoy events seamlessly with our innovative platform.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="announcements.html">Events</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="index.html#faq-section">FAQ</a></li>
+                </ul>
+            </div>
+            
+              <div class="footer-links">
+                  <h4>Account</h4>
+                  <ul>
+                      <li><a href="login.html">Login</a></li>
+                      <li><a href="register.html">Create Account</a></li>
+                      <li><a href="register-handler.html">Society Signup</a></li>
+                      <li><a href="profile.html">My Profile</a></li> 
+                  </ul>
+              </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 EventHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <style>
+        .rsvp-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 2px solid var(--glow-color);
+            border-radius: 20px;
+            background: transparent;
+            color: var(--glow-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rsvp-btn:hover {
+            background: var(--glow-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .rsvp-btn.rsvp-active {
+            background: var(--glow-color);
+            color: white;
+        }
+
+        .rsvp-btn i {
+            font-size: 0.9em;
+        }
+    </style>
+    <script src="config.js"></script>
+    <script src="announcements.js"></script>
+    <script>
+        // Cursor Effect
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                follower.style.left = e.clientX + 'px';
+                follower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('cursor-hover');
+            follower.classList.add('follower-hover');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('cursor-hover');
+            follower.classList.remove('follower-hover');
+        });
+        
+        const links = document.querySelectorAll('a, button, .btn-primary, .btn-outline');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursor.classList.add('cursor-hover');
+                follower.classList.add('follower-hover');
+            });
+            
+            link.addEventListener('mouseleave', () => {
+                cursor.classList.remove('cursor-hover');
+                follower.classList.remove('follower-hover');
+            });
+        });
+
+        // Sticky Header
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // --- RSVP Button Toggle & Success Message ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const rsvpButtons = document.querySelectorAll('.rsvp-btn');
+            console.log('RSVP buttons:', rsvpButtons); // Debugging log
+
+            if (rsvpButtons.length === 0) {
+                console.warn('No RSVP buttons found in the DOM.');
+                return;
+            }
+
+            rsvpButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    console.log('RSVP button clicked'); // Debugging log
+                    const eventName = this.getAttribute('data-event-name');
+                    const icon = this.querySelector('i');
+                    const span = this.querySelector('span');
+
+                    if (!eventName || !icon || !span) {
+                        console.error('RSVP button is missing data-event-name, icon, or span.', this);
+                        return;
+                    }
+
+                    this.classList.toggle('rsvp-active');
+
+                    if (this.classList.contains('rsvp-active')) {
+                        icon.classList.remove('far', 'fa-star');
+                        icon.classList.add('fas', 'fa-star');
+                        span.textContent = 'RSVP\'d';
+                        showSuccessToast(`You have successfully RSVP'd to ${eventName}!`);
+                    } else {
+                        icon.classList.remove('fas', 'fa-star');
+                        icon.classList.add('far', 'fa-star');
+                        span.textContent = 'RSVP Now';
+                        showSuccessToast(`You have canceled your RSVP for ${eventName}.`);
+                    }
+                });
+            });
+        });
+
+        // Success Toast Functionality
+        function showSuccessToast(message) {
+            const existingToast = document.querySelector('.success-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+          // Profile Dropdown Toggle
+          const profileIconLink = document.getElementById('profileIconLink');
+          const profileDropdown = document.getElementById('profileDropdown');
+
+          function updateProfileDropdown() {
+            const accessToken = localStorage.getItem('access_token');
+            const userType = localStorage.getItem('user_type');
+            profileDropdown.innerHTML = '';
+            if (accessToken) {
+              // User is logged in
+              profileDropdown.innerHTML = `
+                <a href="${userType === 'handler' ? 'handler-dashboard.html' : 'viewer-dashboard.html'}" role="menuitem">
+                  <i class="fas fa-tachometer-alt"></i> ${userType === 'handler' ? 'Handler Dashboard' : 'Viewer Dashboard'}
+                </a>
+                <a href="#" id="logoutBtnDropdown" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+              `;
+            } else {
+              // Not logged in
+              profileDropdown.innerHTML = `
+                <a href="login.html" role="menuitem"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="register.html" role="menuitem"><i class="fas fa-user-plus"></i> Register</a>
+              `;
+            }
+          }          // Initialize dropdown on page load
+          document.addEventListener('DOMContentLoaded', () => {
+            if (profileDropdown) {
+              updateProfileDropdown();
+            }
+          });
+
+          if (profileIconLink && profileDropdown) {
+            updateProfileDropdown(); // Initialize immediately as well
+            profileIconLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                const isExpanded = profileIconLink.getAttribute('aria-expanded') === 'true' || false;
+                profileIconLink.setAttribute('aria-expanded', !isExpanded);
+                profileDropdown.classList.toggle('active');
+                updateProfileDropdown();
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!profileIconLink.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    if (profileDropdown.classList.contains('active')) {
+                        profileDropdown.classList.remove('active');
+                        profileIconLink.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+
+            // Close dropdown with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && profileDropdown.classList.contains('active')) {
+                    profileDropdown.classList.remove('active');
+                    profileIconLink.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Logout button logic (delegated)
+            profileDropdown.addEventListener('click', (event) => {
+              if (event.target.closest('#logoutBtnDropdown')) {
+                event.preventDefault();
+                // Remove tokens and user info
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user_type');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('join_code');
+                // Redirect to login page
+                window.location.href = 'login.html';
+              }
+            });
+          }
+          
+    </script>
+</body>
+</html>

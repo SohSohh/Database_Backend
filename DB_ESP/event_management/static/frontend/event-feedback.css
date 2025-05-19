@@ -1,0 +1,210 @@
+/* Event Feedback Styles */
+
+.feedback-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.feedback-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.feedback-header h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    font-weight: 800;
+}
+
+.feedback-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Feedback Form */
+.feedback-form {
+    background: var(--bg-white);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    opacity: 0;
+    animation: slideUp 0.8s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    transition: var(--transition-fast);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1);
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-md) 0;
+}
+
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    padding: var(--spacing-xs);
+}
+
+.star-btn:hover,
+.star-btn.active {
+    color: #ffd700;
+    transform: scale(1.1);
+}
+
+/* Submit Button */
+.submit-feedback {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: var(--border-radius-xl);
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    margin-top: var(--spacing-lg);
+}
+
+.submit-feedback:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Success Message */
+.feedback-success {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: var(--success-color);
+    color: var(--white-color);
+    border-radius: var(--border-radius-lg);
+    margin-top: var(--spacing-xl);
+    opacity: 0;
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+.feedback-success i {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Error Message */
+.feedback-error {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--error-color);
+    color: var(--white-color);
+    border-radius: var(--border-radius-lg);
+    margin-top: var(--spacing-md);
+    opacity: 0;
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+/* Loading State */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--white-color);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .feedback-container {
+        padding: var(--spacing-md);
+    }
+
+    .feedback-form {
+        padding: var(--spacing-lg);
+    }
+
+    .star-rating {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .feedback-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .feedback-form {
+        padding: var(--spacing-md);
+    }
+
+    .star-btn {
+        font-size: 1.2rem;
+    }
+}
