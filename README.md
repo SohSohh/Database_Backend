@@ -2,7 +2,7 @@
 
 **Event Hub** is a Django-based web application that enables university societies (_handlers_) to manage events and memberships, while students (_viewers_) can join societies, RSVP to events, and participate in discussions.   
   
-Website is hosted on https://sohsohh.github.io/Database_Backend/DB_ESP/frontend/index.html with the backend Django server running on a Render server.
+Website is hosted [here](https://sohsohh.github.io/EventHub/DB_ESP/frontend/index.html) with the backend Django server running on a Render server.
   
 You may create a viewer account. For the handler account, use the following credentials if you're not running it locally:  
 Email: testsociety@example.com  
